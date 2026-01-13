@@ -6,10 +6,14 @@ import { api } from "@/convex/_generated/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Trophy, Target, Clock, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const history = useQuery(api.calculator.getHistory);
+  const quizStats = useQuery(api.quizzes.getUserStats);
 
   if (!isLoaded) return <div className="container py-10">Loading...</div>;
   if (!isSignedIn) return <RedirectToSignIn />;
@@ -60,14 +64,75 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Placeholder for Quiz Stats */}
-        <Card className="opacity-60">
-            <CardHeader>
-                <CardTitle>Quiz Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">Coming Soon...</p>
-            </CardContent>
+        {/* Quiz Stats */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle>Quiz Performance</CardTitle>
+            <Trophy className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {quizStats === undefined ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            ) : quizStats === null || quizStats.totalAttempts === 0 ? (
+              <div className="text-center py-6 space-y-4">
+                <div className="flex justify-center">
+                  <Target className="h-10 w-10 text-muted-foreground/50" />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">No quizzes taken yet</p>
+                  <p className="text-sm text-muted-foreground">Start practicing to track your progress.</p>
+                </div>
+                <Button variant="outline" asChild size="sm">
+                  <Link href="/quiz">Take a Quiz</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Average Score</p>
+                    <p className="text-2xl font-bold">{quizStats.averageScore.toFixed(0)}%</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Quizzes Taken</p>
+                    <p className="text-2xl font-bold">{quizStats.totalAttempts}</p>
+                  </div>
+                </div>
+
+                {quizStats.recentAttempts && quizStats.recentAttempts.length > 0 && (
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium">Recent Activity</p>
+                    <div className="space-y-2">
+                      {quizStats.recentAttempts.map((attempt) => (
+                        <div key={attempt._id} className="flex items-center justify-between text-sm border-b pb-2 last:border-0 last:pb-0">
+                          <div className="flex items-center gap-2">
+                             <Clock className="h-3 w-3 text-muted-foreground" />
+                             <span>{new Date(attempt.completedAt).toLocaleDateString()}</span>
+                          </div>
+                          <span className={
+                            attempt.score >= 80 ? "text-green-600 font-medium" :
+                            attempt.score >= 50 ? "text-yellow-600 font-medium" :
+                            "text-red-600 font-medium"
+                          }>
+                            {attempt.score.toFixed(0)}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Button variant="outline" asChild className="w-full">
+                  <Link href="/quiz">
+                    Continue Practicing <ArrowRight className="ml-2 h-3 w-3" />
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
         </Card>
       </div>
     </div>

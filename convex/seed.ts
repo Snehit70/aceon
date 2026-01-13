@@ -1,5 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 // Input validation schema matching the scraped data structure
 const videoSchema = v.object({
@@ -126,4 +127,112 @@ export const syncCourseData = mutation({
 
     return { success: true, courseId: course.courseId };
   },
+});
+
+const questionSchema = v.object({
+  text: v.string(),
+  options: v.array(v.string()),
+  correctOption: v.number(),
+  explanation: v.optional(v.string()),
+});
+
+const quizSchema = v.object({
+  courseId: v.string(), // "ns_24t3_cs1001" (external ID)
+  title: v.string(),
+  description: v.optional(v.string()),
+  durationMinutes: v.number(),
+  difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
+  questions: v.array(questionSchema),
+});
+
+export const seedQuiz = mutation({
+  args: {
+    quiz: quizSchema,
+  },
+  handler: async (ctx, args) => {
+    const { quiz } = args;
+
+    // 1. Find the course by its external ID
+    const course = await ctx.db
+      .query("courses")
+      .withIndex("by_courseId", (q) => q.eq("courseId", quiz.courseId))
+      .first();
+
+    if (!course) {
+      throw new Error(`Course not found: ${quiz.courseId}`);
+    }
+
+    // 2. Find admin user (or create a dummy one if needed for "createdBy")
+    // For seeding, we'll look for any admin, or just the first user, or create a system user
+    // Ideally, we should have a seeded admin. Let's see if we can find one.
+    let user = await ctx.db.query("users").first();
+    if (!user) {
+        // Create a dummy system user if none exists
+        // This is a bit hacky but needed if we seed on a fresh DB without users
+        const id = await ctx.db.insert("users", {
+            clerkId: "system_seeder",
+            email: "admin@aceon.ai",
+            name: "System Admin",
+            role: "admin",
+            enrolledCourses: [],
+            joinedAt: Date.now()
+        });
+        user = (await ctx.db.get(id))!;
+    }
+
+    // 3. Create or Update Quiz
+    // Check if quiz exists by title + course
+    const existingQuizzes = await ctx.db
+        .query("quizzes")
+        .withIndex("by_course", (q) => q.eq("courseId", course._id))
+        .collect();
+
+    const existingQuiz = existingQuizzes.find(q => q.title === quiz.title);
+    let quizId: Id<"quizzes">;
+
+    if (existingQuiz) {
+        quizId = existingQuiz._id;
+        await ctx.db.patch(quizId, {
+            description: quiz.description,
+            durationMinutes: quiz.durationMinutes,
+            difficulty: quiz.difficulty,
+            totalQuestions: quiz.questions.length,
+            isPublic: true,
+        });
+
+        // Delete existing questions to replace them (simplest sync strategy)
+        const existingQuestions = await ctx.db
+            .query("questions")
+            .withIndex("by_quiz", (q) => q.eq("quizId", quizId))
+            .collect();
+
+        for (const q of existingQuestions) {
+            await ctx.db.delete(q._id);
+        }
+    } else {
+        quizId = await ctx.db.insert("quizzes", {
+            courseId: course._id,
+            title: quiz.title,
+            description: quiz.description,
+            durationMinutes: quiz.durationMinutes,
+            difficulty: quiz.difficulty,
+            totalQuestions: quiz.questions.length,
+            isPublic: true,
+            createdBy: user._id,
+        });
+    }
+
+    // 4. Insert Questions
+    for (const q of quiz.questions) {
+        await ctx.db.insert("questions", {
+            quizId,
+            text: q.text,
+            options: q.options,
+            correctOption: q.correctOption,
+            explanation: q.explanation,
+        });
+    }
+
+    return { success: true, quizId };
+  }
 });
