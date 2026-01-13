@@ -14,7 +14,6 @@ export default function NotesPage() {
   // In a real app, this would use the search query. For now, we fetch all and filter client side
   // or use the simple searchNotes query we defined.
   const notes = useQuery(api.notes.searchNotes, { query: search });
-  const subjects = useQuery(api.notes.getSubjects); // We didn't export this in notes.ts, let's assume we fix that or just list notes
 
   return (
     <div className="container py-10">

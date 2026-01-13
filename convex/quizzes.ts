@@ -29,6 +29,7 @@ export const getQuestions = query({
       .collect();
 
     // Remove correctOption from client response to prevent cheating
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return questions.map(({ correctOption, ...q }) => q);
   },
 });

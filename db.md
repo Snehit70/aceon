@@ -14,25 +14,55 @@
 }
 ```
 
-## Academic Content
+## Academic Content (Scraped Schema)
 
-### Subjects
+### Courses (Refined)
+Mapped from `data_courses_index.json` and course details.
 ```typescript
-// subjects table
+// courses table
 {
-  code: string,         // e.g., "MA1001"
-  name: string,         // e.g., "Mathematics 1"
-  semester: number,     // 1-8
-  credits: number,
-  description?: string,
+  courseId: string,       // "ns_24t3_cs1001" (Unique ID from backend)
+  code: string,           // "cs1001"
+  term: string,           // "24t3"
+  title: string,          // "Computational Thinking"
+  forumUrl?: string,      // Link to Discourse
+  credits?: number,       // To be enriched manually or via curriculum map
+  level: "foundation" | "diploma" | "degree",
 }
 ```
 
-### Notes
+### Course Structure
+Derived from `week_wise` array in scraped JSON.
+
+```typescript
+// weeks table
+{
+  courseId: Id<"courses">,
+  title: string,          // "Week 1", "Week 2", "Course Introduction"
+  order: number,          // 0, 1, 2... for sorting
+}
+```
+
+```typescript
+// videos table
+{
+  weekId: Id<"weeks">,
+  courseId: Id<"courses">, // Denormalized for easier querying
+  title: string,          // "L1.1: Introduction"
+  youtubeId: string,      // "8ndsDXohLMQ"
+  duration: number,       // Seconds
+  slug: string,           // "l1-1-introduction" (for URLs)
+  isPublic: boolean,      // from "availability"
+  transcriptUrl?: string,
+  order: number,
+}
+```
+
+### Notes (User Uploaded)
 ```typescript
 // notes table
 {
-  subjectId: Id<"subjects">,
+  courseId: Id<"courses">,
   title: string,
   fileUrl: string,      // Convex Storage URL
   type: "pdf" | "link",

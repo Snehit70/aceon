@@ -1,88 +1,129 @@
 import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 
-export const populate = mutation({
-  args: {},
-  handler: async (ctx) => {
-    // 1. Check if data exists
-    const existingSubject = await ctx.db.query("subjects").first();
-    if (existingSubject) {
-      // Data already seeded
-      return "Data already exists";
-    }
+// Input validation schema matching the scraped data structure
+const videoSchema = v.object({
+  title: v.string(),
+  youtubeId: v.string(),
+  duration: v.number(),
+  slug: v.string(),
+  isPublic: v.boolean(),
+  order: v.number(),
+});
 
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Must be logged in to seed");
+const weekSchema = v.object({
+  title: v.string(),
+  order: v.number(),
+  videos: v.array(videoSchema),
+});
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+const courseSchema = v.object({
+  courseId: v.string(), // "ns_24t3_cs1001"
+  code: v.string(),
+  term: v.string(),
+  title: v.string(),
+  level: v.union(v.literal("foundation"), v.literal("diploma"), v.literal("degree")),
+  weeks: v.array(weekSchema),
+});
+
+export const syncCourseData = mutation({
+  args: {
+    course: courseSchema,
+  },
+  handler: async (ctx, args) => {
+    const { course } = args;
+
+    // 1. Sync Course
+    let courseId = null;
+    const existingCourse = await ctx.db
+      .query("courses")
+      .withIndex("by_courseId", (q) => q.eq("courseId", course.courseId))
       .first();
 
-    if (!user) throw new Error("User record not found");
+    if (existingCourse) {
+      courseId = existingCourse._id;
+      await ctx.db.patch(courseId, {
+        code: course.code,
+        term: course.term,
+        title: course.title,
+        level: course.level,
+      });
+    } else {
+      courseId = await ctx.db.insert("courses", {
+        courseId: course.courseId,
+        code: course.code,
+        term: course.term,
+        title: course.title,
+        level: course.level,
+      });
+    }
 
-    // 2. Create Subjects
-    const mathSubjectId = await ctx.db.insert("subjects", {
-      code: "MAT101",
-      name: "Engineering Mathematics I",
-      semester: 1,
-      credits: 4,
-      description: "Linear Algebra and Calculus",
-    });
+    // 2. Sync Weeks and Videos
+    for (const week of course.weeks) {
+      // Check if week exists for this course
+      let weekId = null;
+      // We don't have a unique ID for weeks from source, so we match by title + courseId
+      // A better approach would be adding an index on courseId + order or title
+      // For now, we'll just check all weeks for this course (usually small number ~12)
+      const existingWeeks = await ctx.db
+        .query("weeks")
+        .withIndex("by_course", (q) => q.eq("courseId", courseId!))
+        .collect();
 
-    await ctx.db.insert("subjects", {
-      code: "CS101",
-      name: "Programming in C",
-      semester: 1,
-      credits: 4,
-      description: "Introduction to structured programming",
-    });
+      const existingWeek = existingWeeks.find(w => w.title === week.title);
 
-    // 3. Create Notes
-    await ctx.db.insert("notes", {
-      subjectId: mathSubjectId,
-      title: "Unit 1: Matrices - Lecture Notes",
-      fileUrl: "https://example.com/notes.pdf", // Placeholder
-      type: "pdf",
-      tags: ["matrices", "linear-algebra"],
-      uploadedBy: user._id,
-      downloads: 0,
-    });
+      if (existingWeek) {
+        weekId = existingWeek._id;
+        await ctx.db.patch(weekId, {
+          order: week.order,
+        });
+      } else {
+        weekId = await ctx.db.insert("weeks", {
+          courseId: courseId!,
+          title: week.title,
+          order: week.order,
+        });
+      }
 
-    // 4. Create Quizzes
-    const quizId = await ctx.db.insert("quizzes", {
-      title: "Calculus Fundamentals",
-      subjectId: mathSubjectId,
-      description: "Test your understanding of limits and derivatives",
-      durationMinutes: 15,
-      totalQuestions: 3,
-      difficulty: "easy",
-      isPublic: true,
-      createdBy: user._id,
-    });
+      // 3. Sync Videos
+      for (const video of week.videos) {
+        // Check by youtubeId (globally unique usually) or slug
+        // We'll use weeks' children query if possible, but simplest is explicit check
+        // Ideally we'd have a unique index on youtubeId?
+        // Schema says: .index("by_week", ["weekId"])
 
-    // 5. Create Questions
-    await ctx.db.insert("questions", {
-      quizId,
-      text: "What is the derivative of x^2?",
-      options: ["x", "2x", "x^2", "2"],
-      correctOption: 1,
-      explanation: "Power rule: d/dx(x^n) = nx^(n-1)",
-    });
+        // Let's find if this video exists in this week
+        const existingVideosInWeek = await ctx.db
+          .query("videos")
+          .withIndex("by_week", (q) => q.eq("weekId", weekId!))
+          .collect();
 
-    await ctx.db.insert("questions", {
-      quizId,
-      text: "Limit of (1/x) as x approaches infinity is?",
-      options: ["0", "1", "Infinity", "Undefined"],
-      correctOption: 0,
-    });
+        const existingVideo = existingVideosInWeek.find(v => v.youtubeId === video.youtubeId);
 
-    await ctx.db.insert("questions", {
-      quizId,
-      text: "Integral of 2x dx is?",
-      options: ["x^2 + C", "2x^2 + C", "x + C", "2x"],
-      correctOption: 0,
-    });
+        if (existingVideo) {
+          await ctx.db.patch(existingVideo._id, {
+            title: video.title,
+            duration: video.duration,
+            slug: video.slug,
+            isPublic: video.isPublic,
+            order: video.order,
+            courseId: courseId!, // Ensure denormalized field is correct
+          });
+        } else {
+          await ctx.db.insert("videos", {
+            weekId: weekId!,
+            courseId: courseId!,
+            title: video.title,
+            youtubeId: video.youtubeId,
+            duration: video.duration,
+            slug: video.slug,
+            isPublic: video.isPublic,
+            order: video.order,
+          });
+        }
+      }
+    }
 
-    return "Seeding complete";
+    return { success: true, courseId: course.courseId };
   },
 });

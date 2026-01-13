@@ -1,16 +1,13 @@
 ## Raw Concept
 **Task:**
-Refine technical stack for Project Aceon based on implementation plans.
+Refine technical stack for Project Aceon.
 
 **Changes:**
-- Updated UI library to shadcn/ui Nova style.
-- Switched icons to HugeIcons.
-- Explicitly added Tailwind CSS to the stack.
+- Updated UI library details and added Sonner/Next-Themes to the stack.
 
 **Files:**
 - frontend.md
-- convex.md
-- db.md
+- components/providers.tsx
 
 **Flow:**
 Next.js (Frontend) <-> Convex (Backend) + Clerk (Auth)
@@ -34,3 +31,5 @@ Next.js (Frontend) <-> Convex (Backend) + Clerk (Auth)
 - Tailwind CSS
 - HugeIcons
 - Inter Font
+- **Sonner**: For toast notifications.
+- **Next-Themes**: For theme management.

@@ -1,15 +1,16 @@
 ## Raw Concept
 **Task:**
-Define frontend architecture and design system.
+Update frontend architecture with Quiz pages.
 
 **Changes:**
-- Documented frontend structure, core pages, and design guidelines.
+- Added Quiz and Quiz Player pages to the architecture.
 
 **Files:**
-- frontend.md
+- app/quiz/page.tsx
+- app/quiz/[id]/page.tsx
 
 **Flow:**
-Next.js App Router -> Core Pages -> Components/Hooks
+Quiz List -> Quiz Player -> Result Screen
 
 **Timestamp:** 2026-01-13
 
@@ -21,12 +22,21 @@ Next.js App Router -> Core Pages -> Components/Hooks
 - `lib/`: Utilities.
 - `hooks/`: Custom React hooks.
 
+# Providers (`components/providers.tsx`)
+- `ClerkProvider`: Handles authentication.
+- `ConvexProviderWithClerk`: Integrates Convex with Clerk auth.
+- `ThemeProvider`: Handles dark/light mode (`next-themes`).
+- `TooltipProvider`: UI tooltips.
+- `Toaster`: Notifications (`sonner`).
+
 ### Features
 # Core Pages
 - **Landing Page (/)**: Hero section, Bento-style features grid.
 - **Dashboard (/dashboard)**: Progress tracking.
 - **Notes (/notes)**: Subject-wise organization.
 - **Calculator (/calculator)**: GPA tools.
+- **Quiz (/quiz)**: List of available assessments.
+- **Quiz Player (/quiz/[id])**: Interactive quiz interface with progress tracking.
 
 # Design Guidelines
 - **Theme**: Nova (clean, modern).

@@ -1,4 +1,4 @@
-export default {
+const authConfig = {
   providers: [
     {
       domain: "https://related-snipe-20.clerk.accounts.dev",
@@ -6,3 +6,4 @@ export default {
     },
   ],
 };
+export default authConfig;

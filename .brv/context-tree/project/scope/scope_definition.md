@@ -1,14 +1,13 @@
 ## Raw Concept
 **Task:**
-Refine project scope for Aceon.
+Update project scope to reflect implemented Quiz feature.
 
 **Changes:**
-- Refined scope to include Dashboard and specific tool details.
-- Explicitly listed Quiz and Community as "Coming Soon".
+- Moved Quiz Simulator from "Coming Soon" to "Included Features".
 
 **Files:**
-- frontend.md
-- convex.md
+- convex/quizzes.ts
+- app/quiz/page.tsx
 
 **Flow:**
 N/A
@@ -21,8 +20,8 @@ N/A
 - **Resources**: Subject organization, PDF viewer/renderer.
 - **Tools**: GPA/CGPA calculator for IITM BS.
 - **Dashboard**: User overview and progress tracking.
+- **Quiz Simulator**: Practice with real exam conditions and server-side scoring.
 
 # Coming Soon (Future Scope)
-- **Quiz Simulator**: Practice with real exam conditions.
 - **Community**: Discussion forums, groups, and real-time chat.
 - **Note Search**: Full-text search for study materials.

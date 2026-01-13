@@ -9,6 +9,7 @@
  */
 
 import type * as calculator from "../calculator.js";
+import type * as courses from "../courses.js";
 import type * as notes from "../notes.js";
 import type * as quizzes from "../quizzes.js";
 import type * as seed from "../seed.js";
@@ -22,6 +23,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   calculator: typeof calculator;
+  courses: typeof courses;
   notes: typeof notes;
   quizzes: typeof quizzes;
   seed: typeof seed;

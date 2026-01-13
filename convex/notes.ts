@@ -1,19 +1,19 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 
-export const getSubjects = query({
+export const getCourses = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("subjects").collect();
+    return await ctx.db.query("courses").collect();
   },
 });
 
 export const getNotes = query({
-  args: { subjectId: v.id("subjects") },
+  args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("notes")
-      .withIndex("by_subject", (q) => q.eq("subjectId", args.subjectId))
+      .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
       .collect();
   },
 });

@@ -39,7 +39,7 @@ export default function QuizPlayerPage() {
     return (
       <div className="container py-20 text-center">
         <h1 className="text-2xl font-bold mb-4">Quiz Not Found</h1>
-        <p className="text-muted-foreground mb-8">This quiz doesn't exist or has no questions.</p>
+        <p className="text-muted-foreground mb-8">This quiz does not exist or has no questions.</p>
         <Button onClick={() => router.push("/quiz")}>Back to Quizzes</Button>
       </div>
     );
