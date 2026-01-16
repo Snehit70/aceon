@@ -23,6 +23,12 @@ export const get = query({
 export const getQuestions = query({
   args: { quizId: v.id("quizzes") },
   handler: async (ctx, args) => {
+    // Require authentication to access quiz questions
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized: Sign in to access quiz questions");
+    }
+
     const questions = await ctx.db
       .query("questions")
       .withIndex("by_quiz", (q) => q.eq("quizId", args.quizId))

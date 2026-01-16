@@ -25,20 +25,25 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center px-4 md:px-6">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center px-4 md:px-6">
         <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block">Aceon</span>
+          <Link href="/" className="mr-8 flex items-center space-x-2 transition-transform hover:scale-105">
+             <div className="p-1 bg-primary/10 rounded-md">
+                <BookOpenIcon className="h-5 w-5 text-primary" />
+             </div>
+            <span className="hidden font-bold sm:inline-block tracking-tight text-lg">Aceon</span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+          <nav className="flex items-center space-x-8 text-sm font-medium">
             {routes.map((route) => (
               <Link
                 key={route.path}
                 href={route.path}
                 className={cn(
-                  "transition-colors hover:text-foreground/80",
-                  pathname === route.path ? "text-foreground" : "text-foreground/60"
+                  "transition-all hover:text-primary relative py-1",
+                  pathname === route.path 
+                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full" 
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {route.name}
@@ -52,30 +57,35 @@ export function Navbar() {
           <SheetTrigger asChild>
             <Button
               variant="ghost"
-              className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+              size="icon"
+              className="mr-2 md:hidden hover:bg-primary/5 hover:text-primary"
             >
-              <MenuIcon className="h-5 w-5" />
+              <MenuIcon className="h-6 w-6" />
               <span className="sr-only">Toggle Menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="pr-0">
+          <SheetContent side="left" className="pr-0 border-r-primary/20 bg-background/95 backdrop-blur-xl">
              <VisuallyHidden>
                <SheetTitle>Menu</SheetTitle>
              </VisuallyHidden>
-            <Link href="/" className="flex items-center">
-              <span className="font-bold">Aceon</span>
+            <Link href="/" className="flex items-center gap-2 mb-8 pl-2">
+              <div className="p-1.5 bg-primary/10 rounded-lg">
+                  <BookOpenIcon className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-bold text-xl tracking-tight">Aceon</span>
             </Link>
-            <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-              <div className="flex flex-col space-y-3">
+            <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-2">
+              <div className="flex flex-col space-y-4">
                 {routes.map((route) => (
                   <Link
                     key={route.path}
                     href={route.path}
                     className={cn(
-                      "text-foreground/70 transition-colors hover:text-foreground",
-                      pathname === route.path && "text-foreground"
+                      "flex items-center gap-4 py-3 text-lg font-medium transition-colors hover:text-primary",
+                      pathname === route.path ? "text-primary" : "text-muted-foreground"
                     )}
                   >
+                    <route.icon className="h-5 w-5" />
                     {route.name}
                   </Link>
                 ))}
@@ -91,21 +101,21 @@ export function Navbar() {
           <div className="flex items-center gap-2">
              <SignedOut>
               <SignInButton mode="modal">
-                <Button variant="default" size="sm">
+                <Button variant="default" size="sm" className="rounded-full px-6 shadow-sm hover:shadow-primary/20">
                   Sign In
                 </Button>
               </SignInButton>
             </SignedOut>
             <SignedIn>
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="mr-2 hidden md:inline-flex">
+                <Button variant="ghost" size="sm" className="mr-2 hidden md:inline-flex rounded-full hover:bg-primary/5 hover:text-primary">
                   Dashboard
                 </Button>
               </Link>
               <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: "h-8 w-8"
+                    avatarBox: "h-9 w-9 ring-2 ring-primary/10 transition-all hover:ring-primary/30"
                   }
                 }}
               />

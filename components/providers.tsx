@@ -14,10 +14,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       appearance={{
-        variables: { colorPrimary: "#000000" },
+        variables: { colorPrimary: "hsl(var(--primary))" },
         elements: {
-          formButtonPrimary: "bg-black hover:bg-black/90 text-white",
-          footerActionLink: "text-black hover:text-black/90",
+          formButtonPrimary: "bg-primary hover:bg-primary/90 text-primary-foreground",
+          footerActionLink: "text-primary hover:text-primary/90",
         },
       }}
     >
