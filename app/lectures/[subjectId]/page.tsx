@@ -5,9 +5,10 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { Loader2, PlayCircle, Menu } from "lucide-react";
+import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import VideoPlayer from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -99,6 +100,7 @@ export default function LecturePlayerPage() {
   const content = useQuery(api.courses.getCourseContent, { courseId: subjectId });
 
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Determine which video to show (selected or default)
   let activeVideoId = selectedVideoId;
@@ -136,16 +138,41 @@ export default function LecturePlayerPage() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0">
-        <LectureSidebar
-          courseTitle={course.title}
-          courseCode={course.code}
-          courseTerm={course.term}
-          content={content}
-          currentVideoId={activeVideoId}
-          onVideoSelect={setSelectedVideoId}
-        />
-      </aside>
+      {isSidebarOpen && (
+        <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 z-20 h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={() => setIsSidebarOpen(false)}
+            title="Close Sidebar"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </Button>
+          <LectureSidebar
+            courseTitle={course.title}
+            courseCode={course.code}
+            courseTerm={course.term}
+            content={content}
+            currentVideoId={activeVideoId}
+            onVideoSelect={setSelectedVideoId}
+          />
+        </aside>
+      )}
+
+      {/* Sidebar Toggle Button (When Closed) */}
+      {!isSidebarOpen && (
+        <div className="hidden md:flex border-r bg-background items-start py-2 px-1">
+           <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSidebarOpen(true)}
+            title="Open Sidebar"
+          >
+            <PanelLeftOpen className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-muted/10 overflow-y-auto">
@@ -174,15 +201,10 @@ export default function LecturePlayerPage() {
         <div className="flex-1 p-4 md:p-6 max-w-5xl mx-auto w-full space-y-6">
           {currentVideo ? (
             <>
-              <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-lg ring-1 ring-border">
-                <iframe
-                  src={`https://www.youtube.com/embed/${currentVideo.youtubeId}`}
-                  title={currentVideo.title}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
+              <VideoPlayer 
+                videoId={currentVideo.youtubeId}
+                title={currentVideo.title}
+              />
 
               <div className="space-y-4">
                 <div>
