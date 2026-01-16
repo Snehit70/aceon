@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Loader2, PlayCircle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -33,15 +32,19 @@ interface SidebarProps {
 
 // Extracted Sidebar Component
 function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentVideoId, onVideoSelect }: SidebarProps) {
+  // Find the week containing the current video to open it by default
+  const activeWeekId = content.find(w => w.videos.some(v => v._id === currentVideoId))?._id;
+  const defaultOpen = activeWeekId ? [activeWeekId] : [];
+
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b">
+      <div className="p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
         <h2 className="font-semibold text-lg">{courseTitle}</h2>
         <p className="text-sm text-muted-foreground">{courseCode} • {courseTerm}</p>
       </div>
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-4">
-          <Accordion type="multiple" defaultValue={content.map(w => w._id)} className="space-y-2">
+          <Accordion type="single" collapsible defaultValue={activeWeekId} className="space-y-2">
             {content.map((week) => (
               <AccordionItem key={week._id} value={week._id} className="border-none">
                 <AccordionTrigger className="px-2 py-2 hover:no-underline hover:bg-muted/50 rounded-md text-sm font-medium">
@@ -83,7 +86,7 @@ function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentV
             ))}
           </Accordion>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

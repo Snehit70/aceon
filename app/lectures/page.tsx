@@ -64,7 +64,7 @@ export default function LecturesPage() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-between sticky top-20 z-40 bg-background/80 backdrop-blur-xl p-4 -mx-4 rounded-2xl border border-border/50 shadow-sm">
+      <div className="flex flex-col md:flex-row gap-6 items-center justify-between sticky top-16 z-40 bg-background/80 backdrop-blur-xl p-4 -mx-4 rounded-2xl border border-border/50 shadow-sm">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
