@@ -78,3 +78,36 @@ export const getCourseContent = query({
     return weeksWithVideos;
   },
 });
+
+export const searchLectures = query({
+  args: {
+    searchQuery: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 20;
+    const query = args.searchQuery.toLowerCase().trim();
+
+    if (!query) return [];
+
+    const allVideos = await ctx.db.query("videos").collect();
+
+    const matchingVideos = allVideos
+      .filter((video) => video.title.toLowerCase().includes(query))
+      .slice(0, limit);
+
+    const results = await Promise.all(
+      matchingVideos.map(async (video) => {
+        const course = await ctx.db.get(video.courseId);
+        const week = await ctx.db.get(video.weekId);
+        return {
+          ...video,
+          course,
+          week,
+        };
+      })
+    );
+
+    return results.filter((r) => r.course && r.week);
+  },
+});

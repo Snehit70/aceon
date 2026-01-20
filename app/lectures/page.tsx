@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-import { BookOpen, Search, PlayCircle } from "lucide-react";
+import { BookOpen, Search, PlayCircle, Clock, ArrowRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LecturesPage() {
+  const { user } = useUser();
   const courses = useQuery(api.courses.list);
+  const continueWatching = useQuery(
+    api.progress.getContinueWatching,
+    user?.id ? { clerkId: user.id, limit: 5 } : "skip"
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<"all" | "foundation" | "diploma" | "degree">("all");
 
@@ -63,6 +70,50 @@ export default function LecturesPage() {
           Access course lectures and video resources. Organized by course and term.
         </p>
       </div>
+
+      {user && continueWatching && continueWatching.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold tracking-tight">Continue Watching</h2>
+            <Clock className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {continueWatching.map((item: NonNullable<typeof continueWatching>[number]) => {
+              if (!item.video || !item.course) return null;
+              return (
+              <Card key={item._id} className="group overflow-hidden border-border/60 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-base line-clamp-2 group-hover:text-primary transition-colors">
+                        {item.video.title}
+                      </CardTitle>
+                      <CardDescription className="text-xs mt-1">
+                        {item.course.code} • {item.course.title}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{Math.round(item.progress * 100)}% complete</span>
+                      <span>{Math.floor(item.lastPosition / 60)}:{(item.lastPosition % 60).toString().padStart(2, '0')}</span>
+                    </div>
+                    <Progress value={item.progress * 100} className="h-1.5" />
+                  </div>
+                  <Button asChild size="sm" className="w-full group-hover:bg-primary transition-all">
+                    <Link href={`/lectures/${item.courseId}`}>
+                      Resume <ArrowRight className="ml-2 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-6 items-center justify-between sticky top-16 z-40 bg-background/80 backdrop-blur-xl p-4 -mx-4 rounded-2xl border border-border/50 shadow-sm">
         <div className="relative w-full md:w-96">

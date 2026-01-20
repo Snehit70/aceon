@@ -34,8 +34,6 @@ export const syncUser = mutation({
       email: args.email,
       name: args.name,
       avatarUrl: args.avatarUrl,
-      role: "student",
-      enrolledCourses: [],
       joinedAt: Date.now(),
     });
 

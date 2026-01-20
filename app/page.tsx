@@ -10,17 +10,15 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
-      {/* Hero Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center space-y-10 py-32 md:py-40 lg:py-48 overflow-hidden">
-        {/* Background Gradients */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/10 rounded-full blur-[100px] opacity-50 mix-blend-multiply dark:opacity-20 animate-pulse" />
-          <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-secondary/30 rounded-full blur-[120px] opacity-30 dark:opacity-10" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/10 blur-[100px] opacity-50 mix-blend-multiply dark:opacity-20 animate-pulse" />
+          <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-secondary/30 blur-[120px] opacity-30 dark:opacity-10" />
         </div>
 
         <div className="container px-4 md:px-6 flex flex-col items-center space-y-8 text-center relative z-10">
-          <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm transition-colors hover:bg-primary/10 hover:border-primary/30">
-            <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse" />
+          <div className="inline-flex items-center border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm transition-colors hover:bg-primary/10 hover:border-primary/30">
+            <span className="flex h-2 w-2 bg-primary mr-2 animate-pulse" />
             Ace your IITM BS Degree
           </div>
           
@@ -35,12 +33,12 @@ export default function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4">
-            <Button asChild size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5">
+            <Button asChild size="lg" className="h-14 px-8 text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5">
               <Link href={isSignedIn ? "/dashboard" : "/sign-up"}>
                 Get Started <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
+            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
               <Link href="/calculator">
                 Try GPA Calculator
               </Link>
@@ -48,7 +46,6 @@ export default function LandingPage() {
           </div>
 
           <div className="pt-8 flex items-center justify-center gap-8 text-muted-foreground grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-             {/* Social Proof / Trust Indicators can go here */}
              <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
                 <span className="text-sm font-medium">100% Free</span>
@@ -65,7 +62,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Grid */}
       <section className="container px-4 md:px-6 py-24 space-y-16">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <h2 className="text-4xl font-bold tracking-tighter md:text-5xl">Everything you need to excel</h2>
@@ -75,11 +71,10 @@ export default function LandingPage() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {/* Feature 1 */}
-          <div className="group relative overflow-hidden rounded-3xl border bg-card p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
+          <div className="group relative overflow-hidden border bg-card p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full">
-              <div className="p-4 bg-primary/10 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-4 bg-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Calculator className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-3 tracking-tight">GPA Calculator</h3>
@@ -92,11 +87,10 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Feature 2 */}
-          <div className="group relative overflow-hidden rounded-3xl border bg-card p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
+          <div className="group relative overflow-hidden border bg-card p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full">
-              <div className="p-4 bg-primary/10 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-4 bg-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Trophy className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-3 tracking-tight">Interactive Quizzes</h3>
@@ -109,11 +103,10 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Feature 3 */}
-          <div className="group relative overflow-hidden rounded-3xl border bg-card p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
+          <div className="group relative overflow-hidden border bg-card p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5">
              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full">
-              <div className="p-4 bg-primary/10 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-4 bg-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <BookOpen className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-3 tracking-tight">Study Resources</h3>
@@ -128,11 +121,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="border-t py-12 bg-muted/30">
         <div className="container flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-muted-foreground">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary text-primary-foreground rounded-lg">
+            <div className="p-2 bg-primary text-primary-foreground">
                 <GraduationCap className="h-6 w-6" />
             </div>
             <span className="font-bold text-xl text-foreground tracking-tight">Aceon</span>

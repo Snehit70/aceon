@@ -53,8 +53,9 @@ async function probe(endpoint: string, method: string = 'GET') {
 
         console.log(`${method} ${endpoint.padEnd(40)} : ${status} [${type || 'unknown'}] - ${preview}`);
 
-    } catch (e: any) {
-        console.log(`${method} ${endpoint.padEnd(40)} : ERROR ${e.message}`);
+    } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        console.log(`${method} ${endpoint.padEnd(40)} : ERROR ${message}`);
     }
 }
 

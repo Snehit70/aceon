@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { MenuIcon, CalculatorIcon, BookOpenIcon, HomeIcon } from "lucide-react";
+import { MenuIcon, BookOpenIcon, HomeIcon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -17,8 +17,6 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 const routes = [
   { name: "Home", path: "/", icon: HomeIcon },
   { name: "Lectures", path: "/lectures", icon: BookOpenIcon },
-  { name: "Calculator", path: "/calculator", icon: CalculatorIcon },
-  { name: "Notes", path: "/notes", icon: BookOpenIcon },
 ];
 
 export function Navbar() {
@@ -107,11 +105,6 @@ export function Navbar() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="mr-2 hidden md:inline-flex rounded-full hover:bg-primary/5 hover:text-primary">
-                  Dashboard
-                </Button>
-              </Link>
               <UserButton
                 appearance={{
                   elements: {

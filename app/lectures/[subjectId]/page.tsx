@@ -1,17 +1,21 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import VideoPlayer from "@/components/shared/video-player";
+import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useUser } from "@clerk/nextjs";
+import { BookmarkPanel } from "@/components/lectures/bookmark-panel";
+import { NotesPanel } from "@/components/lectures/notes-panel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Define types for props
 interface SidebarProps {
@@ -29,13 +33,17 @@ interface SidebarProps {
   }>;
   currentVideoId: string | null;
   onVideoSelect: (id: string) => void;
+  progressData?: Doc<"videoProgress">[];
 }
 
 // Extracted Sidebar Component
-function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentVideoId, onVideoSelect }: SidebarProps) {
+function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentVideoId, onVideoSelect, progressData }: SidebarProps) {
   // Find the week containing the current video to open it by default
   const activeWeekId = content.find(w => w.videos.some(v => v._id === currentVideoId))?._id;
-  const defaultOpen = activeWeekId ? [activeWeekId] : [];
+  
+  const getProgress = (videoId: string) => {
+    return progressData?.find(p => p.videoId === videoId);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -56,30 +64,42 @@ function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentV
                     {week.videos.length === 0 ? (
                       <p className="text-xs text-muted-foreground px-2 py-1">No videos</p>
                     ) : (
-                      week.videos.map((video) => (
-                        <Button
-                          key={video._id}
-                          variant={currentVideoId === video._id ? "secondary" : "ghost"}
-                          className={cn(
-                            "w-full justify-start text-left h-auto py-2 px-3",
-                            currentVideoId === video._id && "bg-secondary"
-                          )}
-                          onClick={() => onVideoSelect(video._id)}
-                        >
-                          <div className="flex items-start gap-3 w-full">
-                            <PlayCircle className={cn(
-                              "h-4 w-4 mt-1 shrink-0",
-                              currentVideoId === video._id ? "text-primary" : "text-muted-foreground"
-                            )} />
-                            <div className="flex-1 overflow-hidden">
-                              <p className="text-sm font-medium line-clamp-2">{video.title}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {Math.floor(video.duration / 60)}:{(video.duration % 60).toString().padStart(2, '0')}
-                              </p>
+                      week.videos.map((video) => {
+                        const progress = getProgress(video._id);
+                        const isCompleted = progress?.completed;
+                        const isInProgress = progress && !progress.completed && (progress.progress > 0 || progress.watchedSeconds > 0);
+                        
+                        return (
+                          <Button
+                            key={video._id}
+                            variant={currentVideoId === video._id ? "secondary" : "ghost"}
+                            className={cn(
+                              "w-full justify-start text-left h-auto py-2 px-3",
+                              currentVideoId === video._id && "bg-secondary"
+                            )}
+                            onClick={() => onVideoSelect(video._id)}
+                          >
+                            <div className="flex items-start gap-3 w-full">
+                              {isCompleted ? (
+                                <CheckCircle2 className="h-4 w-4 mt-1 shrink-0 text-green-500" />
+                              ) : isInProgress ? (
+                                <Circle className="h-4 w-4 mt-1 shrink-0 text-yellow-500 fill-yellow-500/20" />
+                              ) : (
+                                <PlayCircle className={cn(
+                                  "h-4 w-4 mt-1 shrink-0",
+                                  currentVideoId === video._id ? "text-primary" : "text-muted-foreground"
+                                )} />
+                              )}
+                              <div className="flex-1 overflow-hidden">
+                                <p className="text-sm font-medium line-clamp-2">{video.title}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  {Math.floor(video.duration / 60)}:{(video.duration % 60).toString().padStart(2, '0')}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </Button>
-                      ))
+                          </Button>
+                        );
+                      })
                     )}
                   </div>
                 </AccordionContent>
@@ -93,14 +113,29 @@ function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentV
 }
 
 export default function LecturePlayerPage() {
+  const { user } = useUser();
   const params = useParams();
   const subjectId = params.subjectId as Id<"courses">;
 
   const course = useQuery(api.courses.get, { id: subjectId });
   const content = useQuery(api.courses.getCourseContent, { courseId: subjectId });
+  
+  const progressData = useQuery(
+    api.progress.getCourseProgress, 
+    user ? { clerkId: user.id, courseId: subjectId } : "skip"
+  );
+
+  const updateProgress = useMutation(api.progress.updateProgress);
 
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  const [currentTime, setCurrentTime] = useState(0);
+  const [theaterMode, setTheaterMode] = useState(false);
+  const [activeTab, setActiveTab] = useState("bookmarks");
+  
+  const playerRef = useRef<VideoPlayerRef>(null);
+  const lastProgressUpdate = useRef<number>(0);
 
   // Determine which video to show (selected or default)
   let activeVideoId = selectedVideoId;
@@ -123,6 +158,45 @@ export default function LecturePlayerPage() {
 
   const currentVideo = findVideo(activeVideoId);
 
+  const handleSeek = (timestamp: number) => {
+    if (playerRef.current) {
+      playerRef.current.seekTo(timestamp);
+      setCurrentTime(timestamp);
+    }
+  };
+
+  const handleProgressUpdate = useCallback((progress: { played: number; playedSeconds: number }) => {
+    setCurrentTime(progress.playedSeconds);
+    
+    if (!user || !activeVideoId || !currentVideo) return;
+
+    const now = Date.now();
+    if (now - lastProgressUpdate.current >= 5000) { 
+      lastProgressUpdate.current = now;
+      
+      updateProgress({
+        clerkId: user.id,
+        videoId: activeVideoId as Id<"videos">,
+        courseId: subjectId,
+        progress: progress.played,
+        watchedSeconds: Math.floor(progress.playedSeconds),
+        lastPosition: progress.playedSeconds
+      }).catch(console.error);
+    }
+  }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
+
+  const handleVideoSelect = (id: string) => {
+    setSelectedVideoId(id);
+    const savedProgress = progressData?.find((p: Doc<"videoProgress">) => p.videoId === id);
+    if (savedProgress && savedProgress.lastPosition > 0) {
+      setTimeout(() => {
+        if (playerRef.current) {
+          playerRef.current.seekTo(savedProgress.lastPosition);
+        }
+      }, 500);
+    }
+  };
+
   if (course === undefined || content === undefined) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
@@ -139,7 +213,7 @@ export default function LecturePlayerPage() {
     <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
       {/* Desktop Sidebar */}
       {isSidebarOpen && (
-        <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative">
+        <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative transition-all">
           <Button
             variant="ghost"
             size="icon"
@@ -155,7 +229,8 @@ export default function LecturePlayerPage() {
             courseTerm={course.term}
             content={content}
             currentVideoId={activeVideoId}
-            onVideoSelect={setSelectedVideoId}
+            onVideoSelect={handleVideoSelect}
+            progressData={progressData}
           />
         </aside>
       )}
@@ -191,39 +266,80 @@ export default function LecturePlayerPage() {
                 courseTerm={course.term}
                 content={content}
                 currentVideoId={activeVideoId}
-                onVideoSelect={setSelectedVideoId}
+                onVideoSelect={handleVideoSelect}
+                progressData={progressData}
               />
             </SheetContent>
           </Sheet>
           <span className="font-semibold truncate">{currentVideo?.title || course.title}</span>
         </div>
 
-        <div className="flex-1 p-4 md:p-6 max-w-5xl mx-auto w-full space-y-6">
+        <div className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full space-y-6">
           {currentVideo ? (
-            <>
-              <VideoPlayer 
-                videoId={currentVideo.youtubeId}
-                title={currentVideo.title}
-              />
+            <div className={cn("grid gap-6 transition-all", theaterMode ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3")}>
+              <div className={cn("space-y-4", theaterMode ? "col-span-1" : "lg:col-span-2")}>
+                <VideoPlayer 
+                  ref={playerRef}
+                  videoId={currentVideo.youtubeId}
+                  title={currentVideo.title}
+                  onProgressUpdate={handleProgressUpdate}
+                  theaterMode={theaterMode}
+                  onTheaterModeChange={setTheaterMode}
+                />
 
-              <div className="space-y-4">
-                <div>
-                  <h1 className="text-2xl font-bold">{currentVideo.title}</h1>
-                  <p className="text-muted-foreground mt-1">
-                    {currentVideo.weekTitle}
-                  </p>
-                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h1 className="text-2xl font-bold">{currentVideo.title}</h1>
+                    <p className="text-muted-foreground mt-1">
+                      {currentVideo.weekTitle}
+                    </p>
+                  </div>
 
-                <Separator />
+                  <Separator />
 
-                <div className="prose dark:prose-invert max-w-none">
-                  <h3 className="text-lg font-semibold">About this lecture</h3>
-                  <p className="text-muted-foreground">
-                    Video ID: {currentVideo.youtubeId}
-                  </p>
+                  <div className="prose dark:prose-invert max-w-none">
+                    <h3 className="text-lg font-semibold">About this lecture</h3>
+                    <p className="text-muted-foreground">
+                      Duration: {Math.floor(currentVideo.duration / 60)} minutes
+                    </p>
+                  </div>
                 </div>
               </div>
-            </>
+
+              <div className={cn("flex flex-col h-[600px] lg:h-auto", theaterMode ? "hidden" : "block")}>
+                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-2">
+                    <TabsTrigger value="bookmarks">Bookmarks</TabsTrigger>
+                    <TabsTrigger value="notes">Notes</TabsTrigger>
+                  </TabsList>
+                  
+                  <div className="flex-1 min-h-0 relative rounded-xl overflow-hidden border bg-background/50 backdrop-blur-sm">
+                    <TabsContent value="bookmarks" className="absolute inset-0 m-0 h-full w-full">
+                      {user && (
+                        <BookmarkPanel
+                          videoId={currentVideo._id as Id<"videos">}
+                          clerkId={user.id}
+                          currentTime={currentTime}
+                          onSeek={handleSeek}
+                          className="h-full border-0 bg-transparent"
+                        />
+                      )}
+                    </TabsContent>
+                    <TabsContent value="notes" className="absolute inset-0 m-0 h-full w-full">
+                      {user && (
+                        <NotesPanel
+                          videoId={currentVideo._id as Id<"videos">}
+                          clerkId={user.id}
+                          currentTime={currentTime}
+                          onSeek={handleSeek}
+                          className="h-full border-0 bg-transparent w-full"
+                        />
+                      )}
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              </div>
+            </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-10">
               <p>Select a lecture to start watching.</p>
@@ -235,3 +351,4 @@ export default function LecturePlayerPage() {
     </div>
   );
 }
+
