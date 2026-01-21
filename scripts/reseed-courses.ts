@@ -79,7 +79,7 @@ async function reseed() {
     console.log(`  Videos: ${weeks.reduce((s: number, w: { videos: unknown[] }) => s + w.videos.length, 0)}`);
 
     try {
-      // @ts-expect-error - Script environment types
+      // @ts-ignore - Script environment types
       const result = await client.mutation(api.seed.syncCourseData, { course: payload });
       console.log(`✅ Synced: ${result.courseId}\n`);
     } catch (error) {
