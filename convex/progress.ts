@@ -179,3 +179,45 @@ export const getContinueWatching = query({
     return results.filter((r) => r.video && r.course);
   },
 });
+
+export const getAllCoursesProgress = query({
+  args: {
+    clerkId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const allProgress = await ctx.db
+      .query("videoProgress")
+      .withIndex("by_user", (q) => q.eq("clerkId", args.clerkId))
+      .collect();
+
+    const progressByCourseTmp: Record<string, { completed: number; total: number }> = {};
+
+    for (const record of allProgress) {
+      const courseId = record.courseId;
+      if (!progressByCourseTmp[courseId]) {
+        progressByCourseTmp[courseId] = { completed: 0, total: 0 };
+      }
+      progressByCourseTmp[courseId].total++;
+      if (record.completed) {
+        progressByCourseTmp[courseId].completed++;
+      }
+    }
+
+    const courses = await ctx.db.query("courses").collect();
+    const result: Record<string, number> = {};
+
+    for (const course of courses) {
+      const allVideos = await ctx.db
+        .query("videos")
+        .withIndex("by_course", (q) => q.eq("courseId", course._id))
+        .collect();
+
+      const totalVideos = allVideos.length;
+      const completedVideos = progressByCourseTmp[course._id]?.completed || 0;
+
+      result[course._id] = totalVideos > 0 ? (completedVideos / totalVideos) * 100 : 0;
+    }
+
+    return result;
+  },
+});

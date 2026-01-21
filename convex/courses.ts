@@ -8,6 +8,40 @@ export const list = query({
   },
 });
 
+export const listWithStats = query({
+  args: {},
+  handler: async (ctx) => {
+    const courses = await ctx.db.query("courses").collect();
+
+    const coursesWithStats = await Promise.all(
+      courses.map(async (course) => {
+        const videos = await ctx.db
+          .query("videos")
+          .withIndex("by_course", (q) => q.eq("courseId", course._id))
+          .collect();
+
+        const totalVideos = videos.length;
+        const totalSeconds = videos.reduce((sum, v) => sum + (v.duration || 0), 0);
+
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const formatted = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+        return {
+          ...course,
+          stats: {
+            lectureCount: totalVideos,
+            totalDurationSeconds: totalSeconds,
+            totalDurationFormatted: formatted,
+          },
+        };
+      })
+    );
+
+    return coursesWithStats;
+  },
+});
+
 export const get = query({
   args: { id: v.id("courses") },
   handler: async (ctx, args) => {
@@ -109,5 +143,28 @@ export const searchLectures = query({
     );
 
     return results.filter((r) => r.course && r.week);
+  },
+});
+
+export const getCourseStats = query({
+  args: { courseId: v.id("courses") },
+  handler: async (ctx, args) => {
+    const videos = await ctx.db
+      .query("videos")
+      .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
+      .collect();
+
+    const totalVideos = videos.length;
+    const totalSeconds = videos.reduce((sum, v) => sum + (v.duration || 0), 0);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const formatted = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+    return {
+      lectureCount: totalVideos,
+      totalDurationSeconds: totalSeconds,
+      totalDurationFormatted: formatted,
+    };
   },
 });
