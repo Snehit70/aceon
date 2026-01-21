@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CourseCard } from "@/components/shared/course-card";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export default function LecturesPage() {
   const { user } = useUser();
@@ -71,7 +72,12 @@ export default function LecturesPage() {
 
       {/* Continue Watching - Horizontal Scroll */}
       {user && continueWatching && continueWatching.length > 0 && (
-        <div className="space-y-4">
+        <motion.div 
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
               <Play className="h-5 w-5 fill-current text-primary" /> Continue Watching
@@ -80,18 +86,23 @@ export default function LecturesPage() {
           
           <div className="relative -mx-4 px-4 overflow-hidden">
             <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {continueWatching.map((item: NonNullable<typeof continueWatching>[number]) => {
+              {continueWatching.map((item: NonNullable<typeof continueWatching>[number], index) => {
                 if (!item.video || !item.course) return null;
                 const progressPercent = Math.round(item.progress * 100);
                 const remainingSecs = Math.max(0, item.video.duration - item.lastPosition);
                 const remainingMins = Math.floor(remainingSecs / 60);
                 
                 return (
-                  <Link 
-                    key={item._id} 
-                    href={`/lectures/${item.courseId}`}
-                    className="flex-none w-[280px] snap-start group relative rounded-xl overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+                  <motion.div
+                    key={item._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
                   >
+                    <Link 
+                      href={`/lectures/${item.courseId}`}
+                      className="flex-none w-[280px] snap-start group relative rounded-xl overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+                    >
                     {/* Thumbnail Area */}
                     <div className="relative h-36 bg-muted/30 overflow-hidden">
                       {item.video.youtubeId ? (
@@ -137,16 +148,17 @@ export default function LecturesPage() {
                         {item.video.title}
                       </h3>
                       
-                      <div className="pt-2 flex items-center text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                        Resume Lecture <ArrowRight className="ml-1 h-3 w-3" />
-                      </div>
-                    </div>
-                  </Link>
+                       <div className="pt-2 flex items-center text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                         Resume Lecture <ArrowRight className="ml-1 h-3 w-3" />
+                       </div>
+                     </div>
+                   </Link>
+                 </motion.div>
                 );
               })}
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Filter Bar */}
@@ -181,19 +193,25 @@ export default function LecturesPage() {
 
       {/* Course Grid */}
       <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
-        {filteredCourses.map((course) => (
-          <CourseCard
+        {filteredCourses.map((course, index) => (
+          <motion.div
             key={course._id}
-            id={course._id}
-            href={`/lectures/${course._id}`}
-            code={course.code}
-            term={course.term}
-            title={course.title}
-            level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-            lectureCount={course.stats.lectureCount}
-            totalDuration={course.stats.totalDurationFormatted}
-            progress={coursesProgress?.[course._id] || 0}
-          />
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+          >
+            <CourseCard
+              id={course._id}
+              href={`/lectures/${course._id}`}
+              code={course.code}
+              term={course.term}
+              title={course.title}
+              level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+              lectureCount={course.stats.lectureCount}
+              totalDuration={course.stats.totalDurationFormatted}
+              progress={coursesProgress?.[course._id] || 0}
+            />
+          </motion.div>
         ))}
 
         {filteredCourses.length === 0 && (
