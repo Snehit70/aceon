@@ -102,26 +102,32 @@ async function main() {
     // We know the pattern is ns_24t3_{code}
     // List based on standard IITM BS curriculum
     const courseCodes = [
-        // Foundation Level
-        'ma1001', // Math 1
-        'ma1002', // Math 2
-        'st1001', // Stats 1
-        'st1002', // Stats 2
+        // Foundation Level (8 courses - 32 credits)
+        'ma1001', // Mathematics for Data Science I
+        'ma1002', // Statistics for Data Science I
         'cs1001', // Computational Thinking
-        'cs1002', // Intro to Python
-        'gn1001', // English 1
-        'gn1002', // English 2
+        'hs1001', // English I
+        'ma1003', // Mathematics for Data Science II
+        'ma1004', // Statistics for Data Science II
+        'cs1002', // Programming in Python
+        'hs1002', // English II
 
-        // Diploma Level (Data Science & Programming)
-        'cs2001', // DBMS
-        'cs2002', // PDSA
-        'cs2003', // AppDev 1
-        'cs2004', // Java
-        'cs2005', // System Commands
-        'cs2006', // Business Data Management
-        'ms2001', // ML Foundations
-        'cs2007', // ML Practice
-        'cs2008', // AppDev 2
+        // Diploma Level - Programming Track (8 courses)
+        'cs2001', // Database Management Systems
+        'cs2002', // Programming, Data Structures and Algorithms using Python
+        'cs2003', // Modern Application Development I
+        'cs2003p', // Modern Application Development I - Project
+        'cs2005', // Programming Concepts using Java
+        'cs2006', // Modern Application Development II
+        'cs2006p', // Modern Application Development II - Project
+        'se2001', // System Commands
+        
+        // Diploma Level - Data Science Track (6 courses)
+        'cs2004', // Machine Learning Foundations
+        'ms2001', // Business Data Management
+        'ms2001p', // Business Data Management - Project
+        'cs2007', // Machine Learning Techniques
+        'cs2008', // Machine Learning Practice
         'cs2009', // Tools in Data Science
 
         // Degree Level (Sample)

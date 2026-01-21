@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calculator, BookOpen, Trophy, GraduationCap, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Play, Bookmark, StickyNote, GraduationCap, CheckCircle2 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 export default function LandingPage() {
@@ -23,24 +23,24 @@ export default function LandingPage() {
           </div>
           
           <h1 className="font-bold tracking-tighter text-6xl md:text-8xl lg:text-9xl bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70 drop-shadow-sm">
-            Your Academic <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">Superpower</span>
+            Your Lecture <br className="hidden sm:inline" />
+            <span className="bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">Companion</span>
           </h1>
           
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 font-medium">
-            The all-in-one companion for IIT Madras BS students. 
-            Track GPA, practice quizzes, and access resources in a unified, premium interface.
+            The best lecture viewer for IIT Madras BS students. 
+            Watch videos, track your progress, bookmark key moments, and take timestamped notes.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4">
             <Button asChild size="lg" className="h-14 px-8 text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5">
-              <Link href={isSignedIn ? "/dashboard" : "/sign-up"}>
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+              <Link href="/lectures">
+                Start Watching <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
-              <Link href="/calculator">
-                Try GPA Calculator
+              <Link href={isSignedIn ? "/lectures" : "/sign-up"}>
+                {isSignedIn ? "My Lectures" : "Sign Up Free"}
               </Link>
             </Button>
           </div>
@@ -64,9 +64,9 @@ export default function LandingPage() {
 
       <section className="container px-4 md:px-6 py-24 space-y-16">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h2 className="text-4xl font-bold tracking-tighter md:text-5xl">Everything you need to excel</h2>
+          <h2 className="text-4xl font-bold tracking-tighter md:text-5xl">Everything you need to learn</h2>
           <p className="text-xl text-muted-foreground">
-            Stop juggling multiple spreadsheets and drive folders. Aceon brings your entire academic life into one cohesive dashboard.
+            Stop switching between tabs and losing your place. Aceon is the ultimate lecture viewing experience with progress tracking built in.
           </p>
         </div>
 
@@ -75,14 +75,14 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full">
               <div className="p-4 bg-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Calculator className="h-8 w-8 text-primary" />
+                <Play className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 tracking-tight">GPA Calculator</h3>
+              <h3 className="text-2xl font-bold mb-3 tracking-tight">Progress Tracking</h3>
               <p className="text-muted-foreground leading-relaxed flex-1">
-                Calculate your SGPA and CGPA with precision using the official grading system. Save your history to visualize your progress over terms.
+                Never lose your place. Your progress is saved automatically so you can pick up exactly where you left off, on any device.
               </p>
               <div className="mt-6 flex items-center text-primary font-medium opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                Calculate Now <ArrowRight className="ml-2 h-4 w-4" />
+                Continue Watching <ArrowRight className="ml-2 h-4 w-4" />
               </div>
             </div>
           </div>
@@ -91,14 +91,14 @@ export default function LandingPage() {
              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full">
               <div className="p-4 bg-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Trophy className="h-8 w-8 text-primary" />
+                <Bookmark className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 tracking-tight">Interactive Quizzes</h3>
+              <h3 className="text-2xl font-bold mb-3 tracking-tight">Smart Bookmarks</h3>
               <p className="text-muted-foreground leading-relaxed flex-1">
-                Test your mastery with subject-wise quizzes. Get instant feedback, explanations, and performance tracking to identify weak areas.
+                Mark important moments with one click. Jump back to key concepts instantly during revision or exam prep.
               </p>
                <div className="mt-6 flex items-center text-primary font-medium opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                Start Quiz <ArrowRight className="ml-2 h-4 w-4" />
+                Save Moments <ArrowRight className="ml-2 h-4 w-4" />
               </div>
             </div>
           </div>
@@ -107,14 +107,14 @@ export default function LandingPage() {
              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full">
               <div className="p-4 bg-primary/10 mb-6 group-hover:scale-110 transition-transform duration-300">
-                <BookOpen className="h-8 w-8 text-primary" />
+                <StickyNote className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 tracking-tight">Study Resources</h3>
+              <h3 className="text-2xl font-bold mb-3 tracking-tight">Timestamped Notes</h3>
               <p className="text-muted-foreground leading-relaxed flex-1">
-                Access a curated library of lecture notes, previous year questions, and reference materials. Everything organized by course and week.
+                Take notes that link to the exact moment in the video. Click any note to jump straight to that point in the lecture.
               </p>
                <div className="mt-6 flex items-center text-primary font-medium opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                Browse Resources <ArrowRight className="ml-2 h-4 w-4" />
+                Start Taking Notes <ArrowRight className="ml-2 h-4 w-4" />
               </div>
             </div>
           </div>

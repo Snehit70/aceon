@@ -206,7 +206,7 @@ export default function LecturePlayerPage() {
   }
 
   if (course === null) {
-    return <div className="container py-10">Course not found</div>;
+    return <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10">Course not found</div>;
   }
 
   return (

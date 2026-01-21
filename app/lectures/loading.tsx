@@ -3,7 +3,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 export default function LecturesLoading() {
   return (
-    <div className="container py-10 max-w-5xl space-y-8">
+    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10 max-w-5xl space-y-8">
       <div className="space-y-2">
         <Skeleton className="h-9 w-32" />
         <Skeleton className="h-5 w-80" />
