@@ -12,7 +12,10 @@ import {
   Minimize, 
   Loader2, 
   Monitor,
-  Settings
+  Settings,
+  Gauge,
+  LogOut,
+  PlayCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +54,8 @@ const formatTime = (seconds: number) => {
 };
 
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({ 
-  videoId, 
+  videoId,
+  title, 
   onEnded,
   onProgressUpdate,
   onSeek,
@@ -73,6 +77,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   const [isReady, setIsReady] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [showNativeControls, setShowNativeControls] = useState(false);
+  const [savedTime, setSavedTime] = useState(0);
+  const isTogglingRef = useRef(false);
 
   const playerRef = useRef<PlayerRef | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -170,6 +177,15 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     }
   }, [onTheaterModeChange, theaterMode]);
 
+  const toggleNativeControls = useCallback(() => {
+    const time = (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') 
+      ? playerRef.current.getCurrentTime() 
+      : 0;
+    setSavedTime(time);
+    isTogglingRef.current = true;
+    setShowNativeControls((prev) => !prev);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -259,8 +275,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     >
       <div 
         className="absolute inset-0 z-10" 
-        onClick={handlePlayPause}
-        onDoubleClick={toggleFullscreen}
+        onClick={showNativeControls ? undefined : handlePlayPause}
+        onDoubleClick={showNativeControls ? undefined : toggleFullscreen}
+        style={{ pointerEvents: showNativeControls ? 'none' : 'auto' }}
       >
         <ReactPlayer
           ref={(player) => {
@@ -276,32 +293,28 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           volume={volume}
           muted={muted}
           playbackRate={playbackRate}
-          onTimeUpdate={(e) => {
-            const video = e.currentTarget;
-            if (!stateRef.current.seeking && video.duration > 0) {
-              const playedFraction = video.currentTime / video.duration;
-              setPlayed(playedFraction);
+          onProgress={(progress: any) => {
+            if (!stateRef.current.seeking) {
+              setPlayed(progress.played);
               if (onProgressUpdate) {
                 onProgressUpdate({
-                  played: playedFraction,
-                  playedSeconds: video.currentTime
+                  played: progress.played,
+                  playedSeconds: progress.playedSeconds
                 });
               }
             }
           }}
-          onDurationChange={(e) => {
-            const video = e.currentTarget;
-            if (video.duration && !isNaN(video.duration)) {
-              setDuration(video.duration);
-            }
-          }}
-          onLoadedMetadata={(e) => {
-            const video = e.currentTarget;
-            setDuration(video.duration);
+          onDuration={(d: number) => {
+            setDuration(d);
           }}
           onReady={() => {
             setIsReady(true);
-            if (initialPosition > 0 && playerRef.current) {
+            if (isTogglingRef.current) {
+              if (playerRef.current) {
+                playerRef.current.seekTo(savedTime, "seconds");
+              }
+              isTogglingRef.current = false;
+            } else if (initialPosition > 0 && playerRef.current) {
               playerRef.current.seekTo(initialPosition, "seconds");
             }
           }}
@@ -316,11 +329,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           }}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
-          controls={false}
+          controls={showNativeControls}
           config={{
             youtube: {
               playerVars: { 
-                controls: 0,
+                controls: showNativeControls ? 1 : 0,
                 modestbranding: 1,
                 rel: 0,
                 showinfo: 0,
@@ -334,6 +347,45 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
         />
       </div>
 
+      {!playing && isReady && !seeking && !showNativeControls && !buffer && (
+        <div 
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md animate-in fade-in duration-300"
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePlayPause();
+          }}
+        >
+          <div className="flex flex-col items-center transform transition-transform hover:scale-105 duration-300">
+            <h3 className="text-white/90 font-medium text-lg mb-3 tracking-tight drop-shadow-lg text-center max-w-2xl px-4">{title}</h3>
+            
+            <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-mono text-teal-400 mb-8 uppercase tracking-widest backdrop-blur-md shadow-lg">
+              Paused
+            </div>
+
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePlayPause();
+              }}
+              className="group relative focus:outline-none"
+            >
+              <div className="absolute inset-0 bg-teal-500 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity rounded-full" />
+              <PlayCircle className="w-24 h-24 text-white/90 group-hover:text-teal-400 fill-white/5 transition-all duration-300" strokeWidth={1} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showNativeControls && (
+        <button
+          onClick={toggleNativeControls}
+          className="absolute top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-md border border-white/10 text-white hover:text-teal-400 rounded-sm transition-all shadow-xl group hover:bg-black/90"
+        >
+          <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="text-xs font-mono uppercase tracking-wider">Exit Native</span>
+        </button>
+      )}
+
       {buffer && (
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]" />
@@ -344,12 +396,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
         className={cn(
           "absolute inset-0 z-30 flex flex-col justify-end transition-opacity duration-300 pointer-events-none",
           (playing && !isHovering && !seeking && !showSpeedMenu) ? "opacity-0" : "opacity-100",
-          !isReady && "opacity-0"
+          (!isReady || showNativeControls) && "opacity-0"
         )}
       >
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none" />
 
-        <div className="relative z-40 px-4 pb-4 pointer-events-auto w-full">
+        <div className={cn("relative z-40 px-4 pb-4 pointer-events-auto w-full", showNativeControls && "pointer-events-none")}>
           
           <div className="w-full mb-4 group/slider">
             <Slider.Root
@@ -414,8 +466,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
                     "flex items-center gap-1 text-sm font-medium hover:text-teal-400 transition-colors focus:outline-none",
                     showSpeedMenu ? "text-teal-400" : "text-white"
                   )}
+                  title="Playback Speed"
                 >
-                  <Settings className="w-5 h-5 mr-1" />
+                  <Gauge className="w-5 h-5 mr-1" />
                   <span>{playbackRate}x</span>
                 </button>
                 
@@ -449,6 +502,14 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
                   <Monitor className="w-6 h-6" />
                 </button>
               )}
+
+              <button 
+                onClick={toggleNativeControls} 
+                className="text-white hover:text-teal-400 transition-colors focus:outline-none" 
+                title="Player Settings"
+              >
+                <Settings className="w-6 h-6" />
+              </button>
 
               <button 
                 onClick={toggleFullscreen} 
