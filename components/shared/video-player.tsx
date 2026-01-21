@@ -324,7 +324,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
                 modestbranding: 1,
                 rel: 0,
                 showinfo: 0,
-                iv_load_policy: 3
+                iv_load_policy: 3,
+                fs: 0,
+                disablekb: 1,
+                playsinline: 1
               }
             } as any
           }}
