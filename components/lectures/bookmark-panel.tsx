@@ -88,7 +88,7 @@ export function BookmarkPanel({
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden transition-all duration-300",
+      "flex flex-col h-full bg-white/5 backdrop-blur-xl border border-white/10  overflow-hidden transition-all duration-300",
       className
     )}>
       <div className="flex items-center justify-between p-4 border-b border-white/10">
@@ -101,7 +101,7 @@ export function BookmarkPanel({
             size="sm"
             variant="ghost"
             onClick={() => setIsAdding(true)}
-            className="h-8 w-8 p-0 text-white/70 hover:text-indigo-300 hover:bg-white/5 rounded-full"
+            className="h-8 w-8 p-0 text-white/70 hover:text-indigo-300 hover:bg-white/5 "
           >
             <Plus className="w-4 h-4" />
             <span className="sr-only">Add bookmark</span>
@@ -152,8 +152,8 @@ export function BookmarkPanel({
         <div className="p-2 space-y-1">
           {bookmarks === undefined ? (
             <div className="p-8 text-center space-y-2">
-              <div className="w-full h-8 bg-white/5 rounded animate-pulse" />
-              <div className="w-2/3 h-8 bg-white/5 rounded animate-pulse mx-auto" />
+              <div className="w-full h-8 bg-white/5  animate-pulse" />
+              <div className="w-2/3 h-8 bg-white/5  animate-pulse mx-auto" />
             </div>
           ) : bookmarks.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-white/30">
@@ -174,10 +174,10 @@ export function BookmarkPanel({
             bookmarks.map((bookmark: Doc<"bookmarks">) => (
               <div
                 key={bookmark._id}
-                className="group flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors duration-200 cursor-pointer border border-transparent hover:border-white/5"
+                className="group flex items-center gap-3 p-2  hover:bg-white/5 transition-colors duration-200 cursor-pointer border border-transparent hover:border-white/5"
                 onClick={() => onSeek(bookmark.timestamp)}
               >
-                <div className="shrink-0 flex items-center justify-center w-12 py-1 bg-black/20 rounded text-xs font-mono text-indigo-300 group-hover:text-indigo-200 border border-white/5 group-hover:border-indigo-500/30 transition-colors">
+                <div className="shrink-0 flex items-center justify-center w-12 py-1 bg-black/20  text-xs font-mono text-indigo-300 group-hover:text-indigo-200 border border-white/5 group-hover:border-indigo-500/30 transition-colors">
                   {formatTimestamp(bookmark.timestamp)}
                 </div>
                 
@@ -197,7 +197,7 @@ export function BookmarkPanel({
                     e.stopPropagation();
                     handleRemove(bookmark._id);
                   }}
-                  className="shrink-0 h-7 w-7 opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-all rounded-full"
+                  className="shrink-0 h-7 w-7 opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-all "
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span className="sr-only">Delete</span>

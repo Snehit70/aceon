@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/shared/navbar";
 
-const dmSans = DM_Sans({ 
-  subsets: ["latin"], 
-  variable: "--font-sans",
-  weight: ["400", "500", "700"] 
-});
-
 const jetbrainsMono = JetBrains_Mono({ 
   subsets: ["latin"], 
+  variable: "--font-sans",
+});
+
+const jetbrainsMonoMono = JetBrains_Mono({ 
+  subsets: ["latin"], 
   variable: "--font-mono",
-  weight: ["400", "600"] 
 });
 
 export const metadata: Metadata = {
@@ -31,8 +29,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased", 
-        dmSans.variable, 
-        jetbrainsMono.variable
+        jetbrainsMono.variable, 
+        jetbrainsMonoMono.variable
       )}>
         <Providers>
           <div className="relative flex min-h-screen flex-col">

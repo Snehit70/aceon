@@ -27,7 +27,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center px-4 md:px-6">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-8 flex items-center space-x-2 transition-transform hover:scale-105">
-             <div className="p-1 bg-primary/10 rounded-md">
+             <div className="p-1 bg-primary/10 ">
                 <BookOpenIcon className="h-5 w-5 text-primary" />
              </div>
             <span className="hidden font-bold sm:inline-block tracking-tight text-lg">Aceon</span>
@@ -40,7 +40,7 @@ export function Navbar() {
                 className={cn(
                   "transition-all hover:text-primary relative py-1",
                   pathname === route.path 
-                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full" 
+                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:" 
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -67,7 +67,7 @@ export function Navbar() {
                <SheetTitle>Menu</SheetTitle>
              </VisuallyHidden>
             <Link href="/" className="flex items-center gap-2 mb-8 pl-2">
-              <div className="p-1.5 bg-primary/10 rounded-lg">
+              <div className="p-1.5 bg-primary/10 ">
                   <BookOpenIcon className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl tracking-tight">Aceon</span>
@@ -99,7 +99,7 @@ export function Navbar() {
           <div className="flex items-center gap-2">
              <SignedOut>
               <SignInButton mode="modal">
-                <Button variant="default" size="sm" className="rounded-full px-6 shadow-sm hover:shadow-primary/20">
+                <Button variant="default" size="sm" className=" px-6 shadow-sm hover:shadow-primary/20">
                   Sign In
                 </Button>
               </SignInButton>

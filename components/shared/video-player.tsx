@@ -11,9 +11,8 @@ import {
   Maximize, 
   Minimize, 
   Loader2, 
-  RotateCcw, 
-  RotateCw,
-  Monitor
+  Monitor,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -53,7 +52,6 @@ const formatTime = (seconds: number) => {
 
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({ 
   videoId, 
-  title, 
   onEnded,
   onProgressUpdate,
   onSeek,
@@ -74,6 +72,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
   const playerRef = useRef<PlayerRef | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -149,9 +148,6 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
       playerRef.current.seekTo(newTime, "seconds");
     }
   }, []);
-
-  const handleRewind = useCallback(() => seekRelative(-10), [seekRelative]);
-  const handleFastForward = useCallback(() => seekRelative(10), [seekRelative]);
 
   const handlePlaybackRateChange = useCallback((rate: number) => {
     setPlaybackRate(rate);
@@ -246,7 +242,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   }, []);
 
   if (!mounted) {
-    return <div className="w-full aspect-video bg-slate-900 rounded-xl animate-pulse" />;
+    return <div className="w-full aspect-video bg-black animate-pulse" />;
   }
 
   const currentTime = duration * played;
@@ -254,16 +250,18 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   return (
     <div 
       ref={containerRef}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       className={cn(
-        "relative w-full aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 group bg-black transition-all duration-500",
-        theaterMode ? "z-50 scale-[1.02]" : "z-0"
+        "relative w-full aspect-video overflow-hidden bg-black transition-all duration-500",
+        theaterMode ? "z-50 scale-100" : "z-0"
       )}
     >
-      <div className="absolute -inset-8 bg-gradient-to-r from-primary/30 via-accent/20 to-primary/30 blur-[80px] opacity-30 pointer-events-none animate-pulse" />
-      <div className="absolute -inset-6 bg-primary/20 blur-[60px] opacity-40 pointer-events-none" />
-      <div className="absolute -inset-4 bg-primary/30 blur-[40px] opacity-25 pointer-events-none group-hover:opacity-40 transition-opacity duration-700" />
-      
-      <div className="absolute inset-0 z-10" onClick={handlePlayPause}>
+      <div 
+        className="absolute inset-0 z-10" 
+        onClick={handlePlayPause}
+        onDoubleClick={toggleFullscreen}
+      >
         <ReactPlayer
           ref={(player) => {
             if (player) {
@@ -321,115 +319,112 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           controls={false}
           config={{
             youtube: {
-              color: "white"
-            }
+              playerVars: { 
+                controls: 0,
+                modestbranding: 1,
+                rel: 0,
+                showinfo: 0,
+                iv_load_policy: 3
+              }
+            } as any
           }}
         />
       </div>
 
       {buffer && (
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          <Loader2 className="w-12 h-12 text-primary animate-spin drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]" />
+          <Loader2 className="w-12 h-12 text-teal-500 animate-spin drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]" />
         </div>
       )}
 
       <div 
         className={cn(
-          "absolute inset-0 z-30 flex flex-col justify-between p-6 bg-gradient-to-t from-black/90 via-black/20 to-black/60 transition-opacity duration-300",
-          (playing && !seeking && !showSpeedMenu) ? "opacity-0 group-hover:opacity-100" : "opacity-100",
+          "absolute inset-0 z-30 flex flex-col justify-end transition-opacity duration-300 pointer-events-none",
+          (playing && !isHovering && !seeking && !showSpeedMenu) ? "opacity-0" : "opacity-100",
           !isReady && "opacity-0"
         )}
       >
-        <div className="flex justify-between items-start pointer-events-auto">
-          <h3 className="text-white/90 font-medium text-lg drop-shadow-md tracking-tight truncate max-w-[80%]">{title}</h3>
-        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none" />
 
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <button 
-            onClick={handlePlayPause}
-            className="w-20 h-20 bg-white/10 hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 pointer-events-auto ring-1 ring-white/20 shadow-2xl hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-          >
-            {playing ? (
-              <Pause className="w-8 h-8 fill-white" />
-            ) : (
-              <Play className="w-8 h-8 fill-white ml-1" />
-            )}
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4 pointer-events-auto bg-black/40 backdrop-blur-sm p-4 rounded-xl border border-white/5">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-medium text-white/80 w-12 text-right tabular-nums font-mono">{formatTime(currentTime)}</span>
+        <div className="relative z-40 px-4 pb-4 pointer-events-auto w-full">
+          
+          <div className="w-full mb-4 group/slider">
             <Slider.Root
-              className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer group/slider"
+              className="relative flex items-center select-none touch-none w-full h-4 cursor-pointer"
               value={[played]}
               max={1}
               step={0.0001}
               onValueChange={handleSeekChange}
               onValueCommit={handleSeekCommit}
             >
-              <Slider.Track className="bg-white/20 relative grow rounded-full h-1.5 overflow-hidden transition-all group-hover/slider:h-2">
-                <Slider.Range className="absolute h-full bg-primary shadow-[0_0_15px_var(--primary)]" />
+              <Slider.Track className="bg-white/20 relative grow h-[3px] overflow-hidden transition-all group-hover/slider:h-[5px] w-full">
+                <Slider.Range className="absolute h-full bg-teal-500" />
               </Slider.Track>
-              <Slider.Thumb className="block w-4 h-4 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)] opacity-0 group-hover/slider:opacity-100 transition-all scale-0 group-hover/slider:scale-100 focus:outline-none ring-2 ring-primary/50" />
+              <Slider.Thumb className="block w-3 h-3 bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.5)] opacity-0 group-hover/slider:opacity-100 transition-all scale-0 group-hover/slider:scale-100 focus:outline-none" />
             </Slider.Root>
-            <span className="text-xs font-medium text-white/80 w-12 tabular-nums font-mono">{formatTime(duration)}</span>
           </div>
 
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-4">
-              <button onClick={handlePlayPause} className="text-white/80 hover:text-white transition-all hover:scale-110">
-                {playing ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <button 
+                onClick={handlePlayPause} 
+                className="text-white hover:text-teal-400 transition-colors focus:outline-none"
+              >
+                {playing ? <Pause className="w-7 h-7 fill-current" /> : <Play className="w-7 h-7 fill-current" />}
               </button>
 
-              <div className="flex items-center gap-2">
-                <button onClick={handleRewind} className="text-white/80 hover:text-white transition-all hover:scale-110" title="Rewind 10s (J)">
-                  <RotateCcw className="w-5 h-5" />
+              <div className="flex items-center gap-2 group/vol">
+                <button 
+                  onClick={toggleMute} 
+                  className="text-white hover:text-teal-400 transition-colors focus:outline-none"
+                >
+                  {muted || volume === 0 ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
                 </button>
-                <button onClick={handleFastForward} className="text-white/80 hover:text-white transition-all hover:scale-110" title="Forward 10s (L)">
-                  <RotateCw className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <div className="flex items-center gap-3 group/vol">
-                <button onClick={toggleMute} className="text-white/80 hover:text-white transition-all hover:scale-110" title="Mute (M)">
-                  {muted || volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                </button>
-                <div className="w-24 transition-all duration-300 opacity-60 group-hover/vol:opacity-100">
+                <div className="w-0 overflow-hidden group-hover/vol:w-24 transition-all duration-300 ease-out">
                   <Slider.Root
-                    className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                    className="relative flex items-center select-none touch-none w-24 h-5 cursor-pointer ml-2"
                     value={[muted ? 0 : volume]}
                     max={1}
                     step={0.01}
                     onValueChange={handleVolumeChange}
                   >
-                    <Slider.Track className="bg-white/20 relative grow rounded-full h-1.5 overflow-hidden">
-                      <Slider.Range className="absolute h-full bg-white" />
+                    <Slider.Track className="bg-white/20 relative grow h-1 overflow-hidden">
+                      <Slider.Range className="absolute h-full bg-white group-hover/vol:bg-teal-500 transition-colors" />
                     </Slider.Track>
-                    <Slider.Thumb className="block w-3 h-3 bg-white rounded-full opacity-0 group-hover/vol:opacity-100 transition-opacity" />
+                    <Slider.Thumb className="block w-2.5 h-2.5 bg-white group-hover/vol:bg-teal-500 transition-colors focus:outline-none" />
                   </Slider.Root>
                 </div>
               </div>
+
+              <div className="flex items-center gap-1 font-mono text-sm tracking-tight text-white/90">
+                <span className="tabular-nums w-[44px] text-right">{formatTime(currentTime)}</span>
+                <span className="text-white/40">/</span>
+                <span className="tabular-nums w-[44px]">{formatTime(duration)}</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <div className="relative">
                 <button 
                   onClick={() => setShowSpeedMenu(!showSpeedMenu)} 
-                  className="flex items-center gap-1 text-white/80 hover:text-white transition-all hover:scale-110"
-                  title="Playback Speed"
+                  className={cn(
+                    "flex items-center gap-1 text-sm font-medium hover:text-teal-400 transition-colors focus:outline-none",
+                    showSpeedMenu ? "text-teal-400" : "text-white"
+                  )}
                 >
-                  <span className="text-sm font-bold w-8 text-center bg-white/10 rounded px-1">{playbackRate}x</span>
+                  <Settings className="w-5 h-5 mr-1" />
+                  <span>{playbackRate}x</span>
                 </button>
+                
                 {showSpeedMenu && (
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-black/90 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden py-1 flex flex-col items-center min-w-[60px] shadow-xl z-50">
+                  <div className="absolute bottom-full right-0 mb-4 bg-black/95 backdrop-blur-md border border-white/10 overflow-hidden flex flex-col min-w-[80px] shadow-2xl z-50">
                     {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => (
                       <button
                         key={rate}
                         onClick={() => handlePlaybackRateChange(rate)}
                         className={cn(
-                          "w-full px-3 py-1.5 text-xs font-medium hover:bg-white/20 transition-colors",
-                          playbackRate === rate ? "text-primary bg-white/10" : "text-white/80"
+                          "w-full px-4 py-2 text-sm font-medium hover:bg-teal-500/20 hover:text-teal-400 transition-colors text-left font-mono",
+                          playbackRate === rate ? "text-teal-400 bg-teal-500/10" : "text-white/70"
                         )}
                       >
                         {rate}x
@@ -443,8 +438,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
                 <button 
                   onClick={toggleTheater}
                   className={cn(
-                    "text-white/80 hover:text-white transition-all hover:scale-110",
-                    theaterMode && "text-primary"
+                    "hover:text-teal-400 transition-colors focus:outline-none",
+                    theaterMode ? "text-teal-500" : "text-white"
                   )}
                   title="Theater Mode"
                 >
@@ -452,7 +447,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
                 </button>
               )}
 
-              <button onClick={toggleFullscreen} className="text-white/80 hover:text-white transition-all hover:scale-110" title="Fullscreen (F)">
+              <button 
+                onClick={toggleFullscreen} 
+                className="text-white hover:text-teal-400 transition-colors focus:outline-none" 
+                title="Fullscreen (F)"
+              >
                 {fullscreen ? <Minimize className="w-6 h-6" /> : <Maximize className="w-6 h-6" />}
               </button>
             </div>
@@ -462,76 +461,70 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
 
       {showShortcuts && (
         <div 
-          className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md"
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           onClick={() => setShowShortcuts(false)}
         >
           <div 
-            className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl"
+            className="bg-zinc-900 border border-zinc-800 p-8 max-w-2xl w-full mx-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Keyboard Shortcuts</h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-medium text-white tracking-tight">Keyboard Shortcuts</h2>
               <button
                 onClick={() => setShowShortcuts(false)}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-zinc-500 hover:text-white transition-colors"
               >
-                <span className="text-sm">Press ? or ESC to close</span>
+                <span className="font-mono text-xs uppercase tracking-widest">Close [ESC]</span>
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">Playback</h3>
-                <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              <div className="space-y-4">
+                <h3 className="text-xs font-mono font-medium text-teal-500 uppercase tracking-widest mb-4">Playback</h3>
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Play/Pause</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">Space</kbd>
+                    <span className="text-zinc-400 text-sm">Play/Pause</span>
+                    <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">SPACE</kbd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Play/Pause</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">K</kbd>
+                    <span className="text-zinc-400 text-sm">Rewind 10s</span>
+                    <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">J</kbd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Rewind 10s</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">J</kbd>
+                    <span className="text-zinc-400 text-sm">Forward 10s</span>
+                    <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">L</kbd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Forward 10s</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">L</kbd>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/80">Seek backward 5s</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">←</kbd>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/80">Seek forward 5s</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">→</kbd>
+                    <span className="text-zinc-400 text-sm">Seek 5s</span>
+                    <div className="flex gap-1">
+                      <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">←</kbd>
+                      <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">→</kbd>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">Audio & Display</h3>
-                <div className="space-y-2">
+              <div className="space-y-4">
+                <h3 className="text-xs font-mono font-medium text-teal-500 uppercase tracking-widest mb-4">Audio & View</h3>
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Volume up</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">↑</kbd>
+                    <span className="text-zinc-400 text-sm">Volume</span>
+                    <div className="flex gap-1">
+                      <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">↑</kbd>
+                      <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">↓</kbd>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Volume down</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">↓</kbd>
+                    <span className="text-zinc-400 text-sm">Mute</span>
+                    <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">M</kbd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Mute/Unmute</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">M</kbd>
+                    <span className="text-zinc-400 text-sm">Fullscreen</span>
+                    <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">F</kbd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80">Fullscreen</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">F</kbd>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/80">Show shortcuts</span>
-                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">?</kbd>
+                    <span className="text-zinc-400 text-sm">Shortcuts</span>
+                    <kbd className="px-2 py-1 bg-white/5 border border-white/10 text-white font-mono text-xs min-w-[32px] text-center">?</kbd>
                   </div>
                 </div>
               </div>

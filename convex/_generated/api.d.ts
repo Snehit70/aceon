@@ -10,6 +10,9 @@
 
 import type * as bookmarks from "../bookmarks.js";
 import type * as courses from "../courses.js";
+import type * as debug from "../debug.js";
+import type * as debug_content from "../debug_content.js";
+import type * as debug_orphans from "../debug_orphans.js";
 import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
@@ -24,6 +27,9 @@ import type {
 declare const fullApi: ApiFromModules<{
   bookmarks: typeof bookmarks;
   courses: typeof courses;
+  debug: typeof debug;
+  debug_content: typeof debug_content;
+  debug_orphans: typeof debug_orphans;
   progress: typeof progress;
   seed: typeof seed;
   users: typeof users;

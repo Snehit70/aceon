@@ -31,53 +31,53 @@ export default function LecturesPage() {
   if (courses === undefined) {
     return (
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-8">
-         <div className="space-y-2">
-            <Skeleton className="h-10 w-48 rounded-lg" />
-            <Skeleton className="h-4 w-96 rounded-lg" />
-         </div>
-         <div className="flex flex-col md:flex-row gap-4 justify-between">
-            <Skeleton className="h-10 w-full md:w-96 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <div className="flex flex-col md:flex-row gap-4 justify-between">
+            <Skeleton className="h-10 w-full md:w-96" />
             <div className="flex gap-2">
-                <Skeleton className="h-9 w-20 rounded-full" />
-                <Skeleton className="h-9 w-24 rounded-full" />
-                <Skeleton className="h-9 w-20 rounded-full" />
-                <Skeleton className="h-9 w-20 rounded-full" />
+                <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-24" />
+                <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-20" />
             </div>
-         </div>
-         <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+          </div>
+          <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="h-[260px] rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden"
+                  className="h-[260px] border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden"
                 >
                   <div className="p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex gap-2">
-                        <Skeleton className="h-5 w-16 rounded-sm" />
-                        <Skeleton className="h-5 w-12 rounded-sm" />
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-5 w-12" />
                       </div>
-                      <Skeleton className="h-5 w-20 rounded-full" />
+                      <Skeleton className="h-5 w-20" />
                     </div>
-                    <Skeleton className="h-6 w-full rounded-lg" />
-                    <Skeleton className="h-6 w-3/4 rounded-lg" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-6 w-3/4" />
                   </div>
                   <div className="px-4 py-3 space-y-2">
-                    <Skeleton className="h-4 w-24 rounded-lg" />
-                    <Skeleton className="h-1.5 w-full rounded-full" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-1.5 w-full" />
                   </div>
                   <div className="px-4 py-3 flex items-center justify-between border-t border-border/50">
-                    <Skeleton className="h-4 w-20 rounded-lg" />
-                    <Skeleton className="h-4 w-16 rounded-lg" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-16" />
                   </div>
                   <div className="h-9 border-t border-border/50 flex items-center justify-center">
-                    <Skeleton className="h-4 w-28 rounded-lg" />
+                    <Skeleton className="h-4 w-28" />
                   </div>
                 </motion.div>
             ))}
-         </div>
+          </div>
       </div>
     );
   }
@@ -131,7 +131,7 @@ export default function LecturesPage() {
                   >
                     <Link 
                       href={`/lectures/${item.courseId}`}
-                      className="flex-none w-[280px] snap-start group relative rounded-xl overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+                      className="flex-none w-[280px] snap-start group relative overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
                     >
                     {/* Thumbnail Area */}
                     <div className="relative h-36 bg-muted/30 overflow-hidden">
@@ -150,7 +150,7 @@ export default function LecturesPage() {
                       
                       {/* Play Overlay */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
-                         <div className="bg-primary/90 text-primary-foreground rounded-full p-3 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                         <div className="bg-primary/90 text-primary-foreground p-3 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
                             <Play className="h-6 w-6 fill-current pl-1" />
                          </div>
                       </div>
@@ -166,7 +166,7 @@ export default function LecturesPage() {
 
                     <div className="p-4 space-y-2">
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <Badge variant="secondary" className="font-mono text-[10px] uppercase h-5 px-1.5 rounded-sm">
+                        <Badge variant="secondary" className="font-mono text-[10px] uppercase h-5 px-1.5">
                           {item.course.code}
                         </Badge>
                         <span className="flex items-center gap-1">
@@ -197,7 +197,7 @@ export default function LecturesPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search courses..."
-            className="pl-10 h-11 sm:h-10 bg-background/50 border-border/60 focus:border-primary/50 transition-all rounded-full text-base sm:text-sm"
+            className="pl-10 h-11 sm:h-10 bg-background/50 border-border/60 focus:border-primary/50 transition-all text-base sm:text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search courses"
@@ -211,7 +211,7 @@ export default function LecturesPage() {
               size="sm"
               onClick={() => setLevelFilter(filter)}
               className={cn(
-                  "capitalize rounded-full px-4 sm:px-4 shadow-none transition-all whitespace-nowrap min-h-[44px] sm:min-h-[36px]",
+                  "capitalize px-4 sm:px-4 shadow-none transition-all whitespace-nowrap min-h-[44px] sm:min-h-[36px]",
                   levelFilter === filter ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:border-primary/50 hover:text-primary"
               )}
             >
@@ -245,8 +245,8 @@ export default function LecturesPage() {
         ))}
 
         {filteredCourses.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-border/50 rounded-3xl bg-muted/5">
-            <div className="bg-muted/50 p-4 rounded-full mb-4">
+          <div className="col-span-full flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-border/50 bg-muted/5">
+            <div className="bg-muted/50 p-4 mb-4">
                 <BookOpen className="h-10 w-10 text-muted-foreground" />
             </div>
             <h3 className="text-xl font-bold">No Courses Found</h3>

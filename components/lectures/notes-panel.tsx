@@ -101,7 +101,7 @@ export function NotesPanel({
 
       <div className="p-4 border-b border-white/10 space-y-3 bg-black/20">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded">
+          <span className="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 ">
             @ {formatTime(currentTime)}
           </span>
           <Button 
@@ -139,7 +139,7 @@ export function NotesPanel({
       <ScrollArea className="flex-1 p-4">
         {!notes ? (
           <div className="flex flex-col items-center justify-center h-40 space-y-2 text-white/30 animate-pulse">
-            <div className="w-4 h-4 rounded-full bg-white/10" />
+            <div className="w-4 h-4  bg-white/10" />
             <p className="text-sm">Loading notes...</p>
           </div>
         ) : notes.length === 0 ? (
@@ -155,12 +155,12 @@ export function NotesPanel({
             {notes.map((note: Doc<"videoNotes">) => (
               <div 
                 key={note._id} 
-                className="group relative flex flex-col gap-2 rounded-lg border border-white/5 bg-white/5 p-3 transition-colors hover:bg-white/10 hover:border-white/10"
+                className="group relative flex flex-col gap-2  border border-white/5 bg-white/5 p-3 transition-colors hover:bg-white/10 hover:border-white/10"
               >
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => onSeek(note.timestamp)}
-                    className="flex items-center gap-1.5 rounded-md bg-indigo-500/10 px-2 py-1 text-xs font-mono font-medium text-indigo-300 transition-colors hover:bg-indigo-500/20"
+                    className="flex items-center gap-1.5  bg-indigo-500/10 px-2 py-1 text-xs font-mono font-medium text-indigo-300 transition-colors hover:bg-indigo-500/20"
                   >
                     <Clock className="w-3 h-3" />
                     {formatTime(note.timestamp)}

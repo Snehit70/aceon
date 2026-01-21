@@ -104,42 +104,9 @@ async function main() {
     const courseCodes = [
         // Foundation Level (8 courses - 32 credits)
         'ma1001', // Mathematics for Data Science I
-        'ma1002', // Statistics for Data Science I
-        'cs1001', // Computational Thinking
-        'hs1001', // English I
-        'ma1003', // Mathematics for Data Science II
-        'ma1004', // Statistics for Data Science II
-        'cs1002', // Programming in Python
-        'hs1002', // English II
-
-        // Diploma Level - Programming Track (8 courses)
-        'cs2001', // Database Management Systems
-        'cs2002', // Programming, Data Structures and Algorithms using Python
-        'cs2003', // Modern Application Development I
-        'cs2003p', // Modern Application Development I - Project
-        'cs2005', // Programming Concepts using Java
-        'cs2006', // Modern Application Development II
-        'cs2006p', // Modern Application Development II - Project
-        'se2001', // System Commands
-        
-        // Diploma Level - Data Science Track (6 courses)
-        'cs2004', // Machine Learning Foundations
-        'ms2001', // Business Data Management
-        'ms2001p', // Business Data Management - Project
-        'cs2007', // Machine Learning Techniques
-        'cs2008', // Machine Learning Practice
-        'cs2009', // Tools in Data Science
-
-        // Degree Level (Sample)
-        'cs3001', // Software Engineering
-        'cs3002', // AI Search Methods
-        'cs3003', // Deep Learning
-        'cs3004', // Big Data
-        'cs3005', // Speech Technology
-        'cs3006', // Strategies for Professional Growth
     ];
 
-    console.log(`\n🔍 Brute-forcing ${courseCodes.length} known course codes for Term 24t3...`);
+    console.log(`\n🔍 Scraping targeted course: MA1001...`);
 
     const validCourses: { code: string; id: string; title: string }[] = [];
 

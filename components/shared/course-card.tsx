@@ -43,14 +43,14 @@ export function CourseCard({
         <CardHeader className="space-y-3 pb-2 flex-none">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Badge variant="outline" className="font-mono text-[10px] h-5 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all duration-200 hover:scale-105 rounded-sm">
+              <Badge variant="outline" className="font-mono text-[10px] h-5 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all duration-200 hover:scale-105 ">
                 {code}
               </Badge>
-              <Badge variant="outline" className="font-mono text-[10px] h-5 text-muted-foreground/80 hover:bg-muted/50 transition-all duration-200 hover:scale-105 rounded-sm">
+              <Badge variant="outline" className="font-mono text-[10px] h-5 text-muted-foreground/80 hover:bg-muted/50 transition-all duration-200 hover:scale-105 ">
                 {term}
               </Badge>
             </div>
-            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/20 transition-all duration-200 group-hover/card:bg-primary/20">
+            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5  border bg-primary/10 text-primary border-primary/20 transition-all duration-200 group-hover/card:bg-primary/20">
               {level.replace(" Level", "")}
             </span>
           </div>
