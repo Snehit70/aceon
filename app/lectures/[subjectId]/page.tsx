@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -171,9 +171,12 @@ export default function LecturePlayerPage() {
   const [currentTime, setCurrentTime] = useState(0);
   const [theaterMode, setTheaterMode] = useState(false);
   const [activeTab, setActiveTab] = useState("bookmarks");
+  const [showAutoplayCountdown, setShowAutoplayCountdown] = useState(false);
+  const [autoplayCountdown, setAutoplayCountdown] = useState(10);
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const lastProgressUpdate = useRef<number>(0);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Determine which video to show (selected or default)
   let activeVideoId = selectedVideoId;
@@ -195,6 +198,65 @@ export default function LecturePlayerPage() {
   };
 
   const currentVideo = findVideo(activeVideoId);
+
+  const findNextVideo = useCallback(() => {
+    if (!content || !activeVideoId) return null;
+    
+    let foundCurrent = false;
+    for (const week of content) {
+      for (let i = 0; i < week.videos.length; i++) {
+        if (foundCurrent) {
+          return week.videos[i]._id;
+        }
+        if (week.videos[i]._id === activeVideoId) {
+          foundCurrent = true;
+          if (i < week.videos.length - 1) {
+            return week.videos[i + 1]._id;
+          }
+        }
+      }
+    }
+    return null;
+  }, [content, activeVideoId]);
+
+  const handleVideoEnd = useCallback(() => {
+    const nextVideoId = findNextVideo();
+    if (nextVideoId) {
+      setShowAutoplayCountdown(true);
+      setAutoplayCountdown(10);
+      
+      countdownIntervalRef.current = setInterval(() => {
+        setAutoplayCountdown((prev) => {
+          if (prev <= 1) {
+            if (countdownIntervalRef.current) {
+              clearInterval(countdownIntervalRef.current);
+            }
+            setShowAutoplayCountdown(false);
+            setSelectedVideoId(nextVideoId);
+            return 10;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+  }, [findNextVideo]);
+
+  const cancelAutoplay = useCallback(() => {
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    setShowAutoplayCountdown(false);
+    setAutoplayCountdown(10);
+  }, []);
+
+  const playNextNow = useCallback(() => {
+    const nextVideoId = findNextVideo();
+    if (nextVideoId) {
+      cancelAutoplay();
+      setSelectedVideoId(nextVideoId);
+    }
+  }, [findNextVideo, cancelAutoplay]);
 
   const handleSeek = (timestamp: number) => {
     if (playerRef.current) {
@@ -224,6 +286,7 @@ export default function LecturePlayerPage() {
   }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
 
   const handleVideoSelect = (id: string) => {
+    cancelAutoplay();
     setSelectedVideoId(id);
     const savedProgress = progressData?.find((p: Doc<"videoProgress">) => p.videoId === id);
     if (savedProgress && savedProgress.lastPosition > 0) {
@@ -234,6 +297,14 @@ export default function LecturePlayerPage() {
       }, 500);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+    };
+  }, []);
 
   if (course === undefined || content === undefined) {
     return (
@@ -316,14 +387,81 @@ export default function LecturePlayerPage() {
           {currentVideo ? (
             <div className={cn("grid gap-6 transition-all", theaterMode ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3")}>
               <div className={cn("space-y-4", theaterMode ? "col-span-1" : "lg:col-span-2")}>
-                <VideoPlayer 
-                  ref={playerRef}
-                  videoId={currentVideo.youtubeId}
-                  title={currentVideo.title}
-                  onProgressUpdate={handleProgressUpdate}
-                  theaterMode={theaterMode}
-                  onTheaterModeChange={setTheaterMode}
-                />
+                <div className="relative">
+                  <VideoPlayer 
+                    ref={playerRef}
+                    videoId={currentVideo.youtubeId}
+                    title={currentVideo.title}
+                    onProgressUpdate={handleProgressUpdate}
+                    onEnded={handleVideoEnd}
+                    theaterMode={theaterMode}
+                    onTheaterModeChange={setTheaterMode}
+                  />
+
+                  {showAutoplayCountdown && findNextVideo() && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-xl">
+                      <div className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+                        <div className="text-center space-y-6">
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-bold text-white">Next Lecture</h3>
+                            <p className="text-white/60 text-sm">Playing in {autoplayCountdown} seconds</p>
+                          </div>
+
+                          <div className="relative w-24 h-24 mx-auto">
+                            <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
+                              <circle
+                                cx="48"
+                                cy="48"
+                                r="42"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                className="text-white/20"
+                              />
+                              <circle
+                                cx="48"
+                                cy="48"
+                                r="42"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                strokeLinecap="round"
+                                className="text-primary transition-all duration-1000"
+                                strokeDasharray={`${2 * Math.PI * 42}`}
+                                strokeDashoffset={`${2 * Math.PI * 42 * (1 - autoplayCountdown / 10)}`}
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-3xl font-bold text-white">{autoplayCountdown}</span>
+                            </div>
+                          </div>
+
+                          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                            <p className="text-white/80 text-sm font-medium line-clamp-2">
+                              {findVideo(findNextVideo())?.title}
+                            </p>
+                          </div>
+
+                          <div className="flex gap-3">
+                            <Button
+                              onClick={cancelAutoplay}
+                              variant="outline"
+                              className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={playNextNow}
+                              className="flex-1 bg-primary hover:bg-primary/90"
+                            >
+                              Play Now
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className="space-y-4">
                   <div>
