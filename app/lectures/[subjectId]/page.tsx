@@ -266,7 +266,10 @@ export default function LecturePlayerPage() {
   };
 
   const handleProgressUpdate = useCallback((progress: { played: number; playedSeconds: number }) => {
-    setCurrentTime(progress.playedSeconds);
+    const played = typeof progress.played === 'number' && !isNaN(progress.played) ? progress.played : 0;
+    const playedSeconds = typeof progress.playedSeconds === 'number' && !isNaN(progress.playedSeconds) ? progress.playedSeconds : 0;
+
+    setCurrentTime(playedSeconds);
     
     if (!user || !activeVideoId || !currentVideo) return;
 
@@ -278,9 +281,9 @@ export default function LecturePlayerPage() {
         clerkId: user.id,
         videoId: activeVideoId as Id<"videos">,
         courseId: subjectId,
-        progress: progress.played,
-        watchedSeconds: Math.floor(progress.playedSeconds),
-        lastPosition: progress.playedSeconds
+        progress: played,
+        watchedSeconds: Math.floor(playedSeconds),
+        lastPosition: playedSeconds
       }).catch(console.error);
     }
   }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
