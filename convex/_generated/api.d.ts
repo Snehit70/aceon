@@ -8,12 +8,12 @@
  * @module
  */
 
-import type * as calculator from "../calculator.js";
+import type * as bookmarks from "../bookmarks.js";
 import type * as courses from "../courses.js";
-import type * as notes from "../notes.js";
-import type * as quizzes from "../quizzes.js";
+import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
+import type * as videoNotes from "../videoNotes.js";
 
 import type {
   ApiFromModules,
@@ -22,12 +22,12 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  calculator: typeof calculator;
+  bookmarks: typeof bookmarks;
   courses: typeof courses;
-  notes: typeof notes;
-  quizzes: typeof quizzes;
+  progress: typeof progress;
   seed: typeof seed;
   users: typeof users;
+  videoNotes: typeof videoNotes;
 }>;
 
 /**
