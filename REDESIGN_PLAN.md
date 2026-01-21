@@ -238,6 +238,17 @@
 15. [ ] Video transcript search (if available)
 16. [ ] Heatmap on seek bar (most replayed sections)
 
+## Completion Status
+**All Phase 1-3 tasks are complete.** The UI has been fully transformed to the **Lyra Cinema** theme.
+- **Theme**: Zinc/Teal OKLCH colors, JetBrains Mono font, 0px border radius.
+- **Player**: Cinema-style full-width controls, teal scrubber, sharp edges.
+- **Sidebar**: Polished with sharp progress bars and teal accents.
+- **Security**: `/lectures/*` routes are protected by Clerk middleware.
+
+**Known Data Issues:**
+- `MA1001` has incomplete/merged weeks (requires re-scrape with valid token).
+- Other 22 courses appear correct.
+
 ---
 
 ## Technical Notes
