@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Bookmark, StickyNote, GraduationCap, CheckCircle2 } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 
 export default function LandingPage() {
   const { isSignedIn } = useUser();
@@ -38,11 +38,20 @@ export default function LandingPage() {
                 Start Watching <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
-              <Link href={isSignedIn ? "/lectures" : "/sign-up"}>
-                {isSignedIn ? "My Lectures" : "Sign Up Free"}
-              </Link>
-            </Button>
+            
+            {isSignedIn ? (
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5">
+                <Link href="/lectures">
+                  My Lectures
+                </Link>
+              </Button>
+            ) : (
+              <SignUpButton mode="modal">
+                <Button variant="outline" size="lg" className="h-14 px-8 text-lg border-2 hover:bg-secondary/50 transition-all hover:-translate-y-0.5 cursor-pointer">
+                  Sign Up Free
+                </Button>
+              </SignUpButton>
+            )}
           </div>
 
           <div className="pt-8 flex items-center justify-center gap-8 text-muted-foreground grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
