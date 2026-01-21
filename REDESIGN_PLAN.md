@@ -234,7 +234,7 @@
 13. [x] Mobile responsiveness improvements
 
 ### Phase 4: Advanced
-14. [ ] Auto-play next video with countdown
+14. [x] Auto-play next video with countdown
 15. [ ] Video transcript search (if available)
 16. [ ] Heatmap on seek bar (most replayed sections)
 
