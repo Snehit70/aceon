@@ -93,9 +93,9 @@ export default function LecturesPage() {
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-10 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">Your Courses</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl">
+      <div className="space-y-3 sm:space-y-4">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">Your Courses</h1>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl">
           Continue where you left off or start a new subject.
         </p>
       </div>
@@ -192,18 +192,18 @@ export default function LecturesPage() {
       )}
 
       {/* Filter Bar */}
-      <div className="sticky top-16 z-30 -mx-4 px-4 py-4 bg-background/80 backdrop-blur-xl border-y border-white/5 space-y-4 md:space-y-0 md:flex md:items-center md:justify-between transition-all">
+      <div className="sticky top-16 z-30 -mx-4 px-4 py-3 sm:py-4 bg-background/80 backdrop-blur-xl border-y border-white/5 space-y-3 sm:space-y-4 md:space-y-0 md:flex md:items-center md:justify-between transition-all">
         <div className="relative w-full md:w-96 group">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search courses..."
-            className="pl-10 h-10 bg-background/50 border-border/60 focus:border-primary/50 transition-all rounded-full"
+            className="pl-10 h-11 sm:h-10 bg-background/50 border-border/60 focus:border-primary/50 transition-all rounded-full text-base sm:text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search courses"
           />
         </div>
-        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none' }}>
           {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
             <Button
               key={filter}
@@ -211,7 +211,7 @@ export default function LecturesPage() {
               size="sm"
               onClick={() => setLevelFilter(filter)}
               className={cn(
-                  "capitalize rounded-full px-4 shadow-none transition-all",
+                  "capitalize rounded-full px-4 sm:px-4 shadow-none transition-all whitespace-nowrap min-h-[44px] sm:min-h-[36px]",
                   levelFilter === filter ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:border-primary/50 hover:text-primary"
               )}
             >
@@ -222,7 +222,7 @@ export default function LecturesPage() {
       </div>
 
       {/* Course Grid */}
-      <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
         {filteredCourses.map((course, index) => (
           <motion.div
             key={course._id}
