@@ -194,3 +194,72 @@
 
 **All tasks complete and verified. UI is polished and production-ready.**
 
+---
+
+## Phase 2: Player Experience (4/4 Complete) ✅
+
+### ✅ Task 6: Keyboard Shortcut Overlay
+**Status**: COMPLETE  
+**Priority**: High  
+**Files Modified**: `components/shared/video-player.tsx`  
+**Changes**:
+- Added `showShortcuts` state to control overlay visibility
+- Added `?` key handler (Shift+Slash) to toggle shortcuts overlay
+- Added ESC key handler to close overlay
+- Created beautiful overlay UI with glassmorphism design
+- Organized shortcuts into two columns: "Playback" and "Audio & Display"
+- Displays all keyboard shortcuts with styled kbd elements
+- Click outside overlay to close
+
+**Result**: Professional keyboard shortcuts overlay accessible via `?` key
+
+---
+
+### ✅ Task 7: Enhanced Ambient Mode Glow
+**Status**: COMPLETE  
+**Priority**: High  
+**Files Modified**: `components/shared/video-player.tsx`  
+**Changes**:
+- Enhanced ambient glow with three layered blur effects
+- Outer layer: gradient blur (80px) with primary/accent colors
+- Middle layer: primary blur (60px) at 40% opacity
+- Inner layer: primary blur (40px) with hover effect
+- Added smooth transitions (700ms duration)
+- Hover increases inner glow opacity from 25% to 40%
+
+**Result**: Rich, multi-layered ambient glow effect around video player
+
+---
+
+### ✅ Task 8: Sidebar Progress Indicators
+**Status**: COMPLETE  
+**Priority**: Medium  
+**Files Modified**: `app/lectures/[subjectId]/page.tsx`  
+**Changes**:
+- Added calculation for total videos and completed videos
+- Added overall progress percentage calculation
+- Created circular progress ring using SVG (64x64 viewBox)
+- Progress ring animates with 700ms transition
+- Added progress stats text: "X of Y completed"
+- Enhanced sidebar header layout with flex design
+- Progress ring shows percentage in center
+
+**Result**: Visual course progress indicator in sidebar header
+
+---
+
+### ✅ Task 9: Video Controls Polish
+**Status**: COMPLETE (No changes needed)  
+**Priority**: Low  
+**Description**: Video controls are already highly polished with glassmorphism, smooth animations, and excellent UX  
+**Existing Features**:
+- Glassmorphism control bar with backdrop blur
+- Smooth hover transitions and scale effects
+- Speed selector dropdown with visual feedback
+- Theater mode toggle
+- Volume slider with smooth animations
+- Seek bar with glow effect
+- All controls are touch-friendly and accessible
+
+**Result**: Controls already meet professional standards
+

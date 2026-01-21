@@ -222,10 +222,10 @@
 5. [x] Add hover effects to all interactive elements
 
 ### Phase 2: Player Experience
-6. [ ] Implement Ambient Mode glow
-7. [ ] Redesign video controls
-8. [ ] Add keyboard shortcut overlay (`?`)
-9. [ ] Improve sidebar with progress indicators
+6. [x] Implement Ambient Mode glow
+7. [x] Redesign video controls
+8. [x] Add keyboard shortcut overlay (`?`)
+9. [x] Improve sidebar with progress indicators
 
 ### Phase 3: Polish
 10. [x] Add Framer Motion animations

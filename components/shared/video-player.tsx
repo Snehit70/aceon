@@ -73,6 +73,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const playerRef = useRef<PlayerRef | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -219,12 +220,24 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           e.preventDefault();
           toggleFullscreen();
           break;
+        case "Slash":
+          if (e.shiftKey) {
+            e.preventDefault();
+            setShowShortcuts((prev) => !prev);
+          }
+          break;
+        case "Escape":
+          if (showShortcuts) {
+            e.preventDefault();
+            setShowShortcuts(false);
+          }
+          break;
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handlePlayPause, seekRelative, toggleFullscreen, toggleMute]);
+  }, [handlePlayPause, seekRelative, toggleFullscreen, toggleMute, showShortcuts]);
 
   useEffect(() => {
     const handleFSChange = () => setFullscreen(!!document.fullscreenElement);
@@ -246,7 +259,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
         theaterMode ? "z-50 scale-[1.02]" : "z-0"
       )}
     >
-      <div className="absolute -inset-4 bg-primary/40 blur-3xl opacity-20 pointer-events-none animate-pulse" />
+      <div className="absolute -inset-8 bg-gradient-to-r from-primary/30 via-accent/20 to-primary/30 blur-[80px] opacity-30 pointer-events-none animate-pulse" />
+      <div className="absolute -inset-6 bg-primary/20 blur-[60px] opacity-40 pointer-events-none" />
+      <div className="absolute -inset-4 bg-primary/30 blur-[40px] opacity-25 pointer-events-none group-hover:opacity-40 transition-opacity duration-700" />
       
       <div className="absolute inset-0 z-10" onClick={handlePlayPause}>
         <ReactPlayer
@@ -444,6 +459,86 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           </div>
         </div>
       </div>
+
+      {showShortcuts && (
+        <div 
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md"
+          onClick={() => setShowShortcuts(false)}
+        >
+          <div 
+            className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Keyboard Shortcuts</h2>
+              <button
+                onClick={() => setShowShortcuts(false)}
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <span className="text-sm">Press ? or ESC to close</span>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">Playback</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Play/Pause</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">Space</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Play/Pause</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">K</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Rewind 10s</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">J</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Forward 10s</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">L</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Seek backward 5s</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">←</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Seek forward 5s</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">→</kbd>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">Audio & Display</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Volume up</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">↑</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Volume down</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">↓</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Mute/Unmute</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">M</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Fullscreen</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">F</kbd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Show shortcuts</span>
+                    <kbd className="px-3 py-1.5 bg-white/10 border border-white/20 rounded-md text-white font-mono text-sm">?</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 });

@@ -38,18 +38,56 @@ interface SidebarProps {
 
 // Extracted Sidebar Component
 function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentVideoId, onVideoSelect, progressData }: SidebarProps) {
-  // Find the week containing the current video to open it by default
   const activeWeekId = content.find(w => w.videos.some(v => v._id === currentVideoId))?._id;
   
   const getProgress = (videoId: string) => {
     return progressData?.find(p => p.videoId === videoId);
   };
 
+  const totalVideos = content.reduce((sum, week) => sum + week.videos.length, 0);
+  const completedVideos = progressData?.filter(p => p.completed).length || 0;
+  const overallProgress = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
-        <h2 className="font-semibold text-lg">{courseTitle}</h2>
-        <p className="text-sm text-muted-foreground">{courseCode} • {courseTerm}</p>
+        <div className="flex items-center gap-4">
+          <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
+            <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                className="text-muted/20"
+              />
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                className="text-primary transition-all duration-700"
+                strokeDasharray={`${2 * Math.PI * 28}`}
+                strokeDashoffset={`${2 * Math.PI * 28 * (1 - overallProgress / 100)}`}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-sm font-bold text-foreground">{overallProgress}%</span>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-lg truncate">{courseTitle}</h2>
+            <p className="text-sm text-muted-foreground">{courseCode} • {courseTerm}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {completedVideos} of {totalVideos} completed
+            </p>
+          </div>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
