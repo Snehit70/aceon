@@ -30,22 +30,52 @@ export default function LecturesPage() {
 
   if (courses === undefined) {
     return (
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-8 animate-pulse">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-8">
          <div className="space-y-2">
-            <Skeleton className="h-10 w-48" />
-            <Skeleton className="h-4 w-96" />
+            <Skeleton className="h-10 w-48 rounded-lg" />
+            <Skeleton className="h-4 w-96 rounded-lg" />
          </div>
          <div className="flex flex-col md:flex-row gap-4 justify-between">
-            <Skeleton className="h-10 w-full md:w-96" />
+            <Skeleton className="h-10 w-full md:w-96 rounded-full" />
             <div className="flex gap-2">
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-20 rounded-full" />
+                <Skeleton className="h-9 w-24 rounded-full" />
+                <Skeleton className="h-9 w-20 rounded-full" />
+                <Skeleton className="h-9 w-20 rounded-full" />
             </div>
          </div>
-         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="h-64 w-full rounded-xl" />
+         <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="h-[260px] rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden"
+                >
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-2">
+                        <Skeleton className="h-5 w-16 rounded-sm" />
+                        <Skeleton className="h-5 w-12 rounded-sm" />
+                      </div>
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                    </div>
+                    <Skeleton className="h-6 w-full rounded-lg" />
+                    <Skeleton className="h-6 w-3/4 rounded-lg" />
+                  </div>
+                  <div className="px-4 py-3 space-y-2">
+                    <Skeleton className="h-4 w-24 rounded-lg" />
+                    <Skeleton className="h-1.5 w-full rounded-full" />
+                  </div>
+                  <div className="px-4 py-3 flex items-center justify-between border-t border-border/50">
+                    <Skeleton className="h-4 w-20 rounded-lg" />
+                    <Skeleton className="h-4 w-16 rounded-lg" />
+                  </div>
+                  <div className="h-9 border-t border-border/50 flex items-center justify-center">
+                    <Skeleton className="h-4 w-28 rounded-lg" />
+                  </div>
+                </motion.div>
             ))}
          </div>
       </div>
