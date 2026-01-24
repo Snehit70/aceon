@@ -11,6 +11,11 @@ export const updateProgress = mutation({
     lastPosition: v.number(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      throw new Error("Unauthorized");
+    }
+
     const existing = await ctx.db
       .query("videoProgress")
       .withIndex("by_user_video", (q) =>
@@ -51,6 +56,12 @@ export const getProgress = query({
     videoId: v.id("videos"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      // Return null instead of throwing for queries to prevent UI crashes
+      return null;
+    }
+
     return await ctx.db
       .query("videoProgress")
       .withIndex("by_user_video", (q) =>
@@ -66,6 +77,11 @@ export const getCourseProgress = query({
     courseId: v.id("courses"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      return [];
+    }
+
     return await ctx.db
       .query("videoProgress")
       .withIndex("by_user_course", (q) =>
@@ -82,6 +98,11 @@ export const markComplete = mutation({
     courseId: v.id("courses"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      throw new Error("Unauthorized");
+    }
+
     const existing = await ctx.db
       .query("videoProgress")
       .withIndex("by_user_video", (q) =>
@@ -120,6 +141,11 @@ export const markWeekComplete = mutation({
     weekId: v.id("weeks"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      throw new Error("Unauthorized");
+    }
+
     const videos = await ctx.db
       .query("videos")
       .withIndex("by_week", (q) => q.eq("weekId", args.weekId))
@@ -161,12 +187,17 @@ export const markWeekComplete = mutation({
   },
 });
 
-export const markCourseComplete = mutation({
+  export const markCourseComplete = mutation({
   args: {
     clerkId: v.string(),
     courseId: v.id("courses"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      throw new Error("Unauthorized");
+    }
+
     const videos = await ctx.db
       .query("videos")
       .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
@@ -214,6 +245,11 @@ export const getRecentlyWatched = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      return [];
+    }
+
     const limit = args.limit ?? 10;
     const progressRecords = await ctx.db
       .query("videoProgress")
@@ -242,12 +278,17 @@ export const getRecentlyWatched = query({
   },
 });
 
-export const getContinueWatching = query({
+  export const getContinueWatching = query({
   args: {
     clerkId: v.string(),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      return [];
+    }
+
     const limit = args.limit ?? 5;
     const progressRecords = await ctx.db
       .query("videoProgress")
@@ -280,6 +321,11 @@ export const getAllCoursesProgress = query({
     clerkId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      return {};
+    }
+
     const allProgress = await ctx.db
       .query("videoProgress")
       .withIndex("by_user", (q) => q.eq("clerkId", args.clerkId))

@@ -9,8 +9,16 @@ export const addBookmark = mutation({
     label: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+    if (identity.subject !== args.clerkId) {
+      throw new Error("Unauthorized: Identity mismatch");
+    }
+
     return await ctx.db.insert("bookmarks", {
-      clerkId: args.clerkId,
+      clerkId: identity.subject,
       videoId: args.videoId,
       timestamp: args.timestamp,
       label: args.label,
@@ -24,6 +32,16 @@ export const removeBookmark = mutation({
     bookmarkId: v.id("bookmarks"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const bookmark = await ctx.db.get(args.bookmarkId);
+    if (!bookmark) return;
+
+    if (bookmark.clerkId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.delete(args.bookmarkId);
   },
 });
@@ -34,6 +52,16 @@ export const updateBookmark = mutation({
     label: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const bookmark = await ctx.db.get(args.bookmarkId);
+    if (!bookmark) throw new Error("Bookmark not found");
+
+    if (bookmark.clerkId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.patch(args.bookmarkId, {
       label: args.label,
     });
@@ -46,6 +74,15 @@ export const getBookmarksForVideo = query({
     videoId: v.id("videos"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    if (identity.subject !== args.clerkId) {
+      // In a real app, maybe allow reading others' bookmarks if public?
+      // For now, strict ownership.
+      return [];
+    }
+
     const bookmarks = await ctx.db
       .query("bookmarks")
       .withIndex("by_user_video", (q) =>
@@ -63,6 +100,13 @@ export const getAllBookmarks = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    if (identity.subject !== args.clerkId) {
+      return [];
+    }
+
     const limit = args.limit ?? 50;
     const bookmarks = await ctx.db
       .query("bookmarks")

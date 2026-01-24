@@ -9,6 +9,11 @@ export const addNote = mutation({
     content: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      throw new Error("Unauthorized");
+    }
+
     const now = Date.now();
     return await ctx.db.insert("videoNotes", {
       clerkId: args.clerkId,
@@ -27,6 +32,16 @@ export const updateNote = mutation({
     content: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const note = await ctx.db.get(args.noteId);
+    if (!note) throw new Error("Note not found");
+
+    if (note.clerkId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.patch(args.noteId, {
       content: args.content,
       updatedAt: Date.now(),
@@ -39,6 +54,16 @@ export const deleteNote = mutation({
     noteId: v.id("videoNotes"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const note = await ctx.db.get(args.noteId);
+    if (!note) return;
+
+    if (note.clerkId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.delete(args.noteId);
   },
 });
@@ -49,6 +74,11 @@ export const getNotesForVideo = query({
     videoId: v.id("videos"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      return [];
+    }
+
     const notes = await ctx.db
       .query("videoNotes")
       .withIndex("by_user_video", (q) =>
@@ -66,6 +96,11 @@ export const getAllNotes = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      return [];
+    }
+
     const limit = args.limit ?? 50;
     const notes = await ctx.db
       .query("videoNotes")
