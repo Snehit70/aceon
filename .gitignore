@@ -60,3 +60,4 @@ data_auth_info.json
 # Playwright
 /playwright-report/
 /test-results/
+secret_token.txt
