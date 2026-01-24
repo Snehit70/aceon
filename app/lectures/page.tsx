@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
@@ -13,7 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { CourseCard } from "@/components/shared/course-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { ProfileSheet } from "@/components/profile/profile-sheet";
+
+const ProfileSheet = dynamic(
+  () => import("@/components/profile/profile-sheet").then((mod) => mod.ProfileSheet),
+  { ssr: false }
+);
 
 export default function LecturesPage() {
   const { user } = useUser();
@@ -95,19 +100,25 @@ export default function LecturesPage() {
   }
 
   // Split courses into Enrolled and Others
-  const enrolledCourseIds = profile?.enrolledCourseIds || [];
+  const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
-  const enrolledCourses = courses.filter(c => enrolledCourseIds.includes(c._id));
-  const otherCourses = courses.filter(c => !enrolledCourseIds.includes(c._id));
+  const { enrolledCourses, otherCourses } = useMemo(() => {
+    if (!courses) return { enrolledCourses: [], otherCourses: [] };
+    const enrolled = courses.filter(c => enrolledCourseIds.includes(c._id));
+    const other = courses.filter(c => !enrolledCourseIds.includes(c._id));
+    return { enrolledCourses: enrolled, otherCourses: other };
+  }, [courses, enrolledCourseIds]);
 
   // Filter function for "Other Courses" (Course Library)
-  const filteredLibraryCourses = otherCourses.filter((course) => {
-    const matchesSearch =
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.code.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLevel = levelFilter === "all" || course.level === levelFilter;
-    return matchesSearch && matchesLevel;
-  });
+  const filteredLibraryCourses = useMemo(() => {
+    return otherCourses.filter((course) => {
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.code.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesLevel = levelFilter === "all" || course.level === levelFilter;
+      return matchesSearch && matchesLevel;
+    });
+  }, [otherCourses, searchQuery, levelFilter]);
 
   const getLevelOrder = (lvl: string) => {
     if (lvl === "foundation") return 1;
