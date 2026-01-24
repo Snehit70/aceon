@@ -1,6 +1,6 @@
 import * as React from "react"
 import Link from "next/link"
-import { Clock, BookOpen, ArrowRight } from "lucide-react"
+import { Clock, BookOpen, ArrowRight, PlayCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -40,62 +40,80 @@ export function CourseCard({
   const isCompleted = progress >= 100
   
   return (
-    <Link href={href} className={cn("block group/card outline-none", className)}>
-      <Card className="h-[260px] transition-all duration-300 hover:scale-[1.02] hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm flex flex-col group-hover/card:shadow-[0_0_20px_-5px_rgba(20,184,166,0.3)]">
-        <CardHeader className="space-y-3 pb-2 flex-none">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              <Badge variant="outline" className="font-mono text-[10px] h-5 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all duration-200 hover:scale-105 ">
-                {code}
-              </Badge>
-              <Badge variant="outline" className="font-mono text-[10px] h-5 text-muted-foreground/80 hover:bg-muted/50 transition-all duration-200 hover:scale-105 ">
-                {term}
-              </Badge>
-            </div>
-            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5  border bg-primary/10 text-primary border-primary/20 transition-all duration-200 group-hover/card:bg-primary/20">
-              {level.replace(" Level", "")}
-            </span>
-          </div>
+    <Link href={href} className={cn("block group/card outline-none h-full", className)}>
+      <div className="relative h-full transition-all duration-500 hover:translate-y-[-4px]">
+        {/* Glow effect behind card */}
+        <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-2xl blur opacity-0 group-hover/card:opacity-100 transition duration-500" />
+        
+        <Card className="relative h-full overflow-hidden border-white/5 bg-black/40 backdrop-blur-xl flex flex-col transition-all duration-300 group-hover/card:border-white/10">
           
-          <CardTitle className="text-base font-bold leading-tight group-hover/card:text-primary transition-colors duration-200 line-clamp-2 min-h-[2.5rem] flex items-center">
-            {title}
-          </CardTitle>
-        </CardHeader>
+          {/* Top accent bar */}
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
 
-        <CardContent className="space-y-3 pb-3 flex-grow flex flex-col justify-end">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className={cn(
-                "font-medium transition-colors duration-200",
-                isCompleted ? "text-primary" : "text-muted-foreground group-hover/card:text-foreground"
-              )}>
-                {isCompleted ? "Completed" : isStarted ? `${Math.round(progress)}% Complete` : "Not Started"}
+          <CardHeader className="space-y-4 pb-2 flex-none">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2">
+                <Badge variant="outline" className="font-mono text-[10px] h-5 border-white/10 bg-white/5 text-muted-foreground group-hover/card:text-primary group-hover/card:border-primary/30 transition-colors">
+                  {code}
+                </Badge>
+                <Badge variant="outline" className="font-mono text-[10px] h-5 border-white/10 text-muted-foreground/60">
+                  {term}
+                </Badge>
+              </div>
+              <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-muted-foreground/70 border border-white/5">
+                {level.replace(" Level", "")}
               </span>
             </div>
-            <Progress 
-              value={progress} 
-              className="h-1.5 bg-muted/80 [&>[data-slot=progress-indicator]]:bg-primary [&>[data-slot=progress-indicator]]:transition-all [&>[data-slot=progress-indicator]]:duration-500"
-            />
-          </div>
+            
+            <CardTitle className="text-lg font-bold leading-tight bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent group-hover/card:to-white transition-all duration-300 min-h-[3.5rem] flex items-start">
+              {title}
+            </CardTitle>
+          </CardHeader>
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border/50 group-hover/card:text-foreground/80 transition-colors duration-200">
-            <div className="flex items-center gap-1.5">
-              <BookOpen className="size-3.5 transition-transform duration-200 group-hover/card:scale-110" />
-              <span>{lectureCount} lectures</span>
+          <CardContent className="space-y-4 pb-4 flex-grow flex flex-col justify-end">
+            {/* Progress Section */}
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className={cn(
+                  "font-medium transition-colors duration-200",
+                  isCompleted ? "text-emerald-400" : "text-muted-foreground group-hover/card:text-primary"
+                )}>
+                  {isCompleted ? "Completed" : isStarted ? `${Math.round(progress)}% Complete` : "Not Started"}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div 
+                  className={cn(
+                    "h-full transition-all duration-1000 ease-out rounded-full",
+                    isCompleted ? "bg-emerald-500" : "bg-gradient-to-r from-primary to-purple-500"
+                  )}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="size-3.5 transition-transform duration-200 group-hover/card:scale-110" />
-              <span>{totalDuration}</span>
+
+            <div className="flex items-center justify-between text-xs text-muted-foreground/60 pt-4 border-t border-white/5 group-hover/card:text-muted-foreground transition-colors">
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>{lectureCount} lectures</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{totalDuration}</span>
+              </div>
+            </div>
+          </CardContent>
+
+          {/* Hover Action Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          
+          <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 group-hover/card:translate-y-0 group-hover/card:opacity-100 transition-all duration-300 ease-out">
+            <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 flex items-center justify-center">
+              <ArrowRight className="w-5 h-5" />
             </div>
           </div>
-        </CardContent>
-
-        <div className="relative overflow-hidden h-9 flex items-center justify-center border-t border-border/50 bg-muted/20 group-hover/card:bg-primary group-hover/card:text-primary-foreground transition-all duration-300">
-           <span className="font-medium text-xs flex items-center gap-2 transition-transform duration-200 group-hover/card:translate-x-1">
-             {isStarted ? "Continue" : isCompleted ? "Review" : "Start Learning"} <ArrowRight className="size-3.5 transition-transform duration-200 group-hover/card:translate-x-1" />
-           </span>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </Link>
   )
 }
