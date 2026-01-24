@@ -42,9 +42,6 @@ export function CourseCard({
   return (
     <Link href={href} className={cn("block group/card outline-none h-full", className)}>
       <div className="relative h-full transition-all duration-500 hover:translate-y-[-4px]">
-        {/* Glow effect behind card */}
-        <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-2xl blur opacity-0 group-hover/card:opacity-100 transition duration-500" />
-        
         <Card className="relative h-full overflow-hidden border-white/5 bg-black/40 backdrop-blur-xl flex flex-col transition-all duration-300 group-hover/card:border-white/10">
           
           {/* Top accent bar */}
