@@ -14,7 +14,6 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Circle, GraduationCap, BookOpen, Sprout } from "lucide-react";
@@ -71,7 +70,8 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
   // Load initial data
   useEffect(() => {
     if (profile) {
-      setLevel(profile.level as any);
+      const profileLevel = profile.level as "foundation" | "diploma" | "degree";
+      setLevel(profileLevel);
       setSelectedCourses(profile.enrolledCourseIds);
     }
   }, [profile]);
@@ -148,160 +148,66 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
                       {level === lvl.id && (
                         <div className={cn("absolute inset-0 bg-gradient-to-br opacity-20", lvl.color)} />
                       )}
-                      
-                      <lvl.icon className={cn(
-                        "w-8 h-8 mb-3 transition-transform duration-300 group-hover:scale-110",
-                        level === lvl.id ? lvl.iconColor : "text-muted-foreground group-hover:text-foreground"
-                      )} />
-                      
-                      <span className={cn(
-                        "text-sm font-medium transition-colors",
-                        level === lvl.id ? "text-foreground" : "text-muted-foreground"
-                      )}>
-                        {lvl.label}
-                      </span>
-                      
-                      {level === lvl.id && (
-                        <motion.div
-                          layoutId="active-check"
-                          className="absolute top-2 right-2 text-primary"
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                        </motion.div>
-                      )}
+                      <lvl.icon className={cn("w-6 h-6 mb-2 relative z-10", lvl.iconColor)} />
+                      <span className="text-xs font-medium relative z-10">{lvl.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Enrolled Courses */}
+              {/* Course Selection */}
               <div className="space-y-4">
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium text-foreground/90">Enrolled Courses</h3>
-                    <Badge variant="secondary" className="bg-white/10 hover:bg-white/20">
-                      {selectedCourses.length} selected
-                    </Badge>
-                  </div>
-                  
-                  <label className="flex items-center space-x-3 p-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
-                    <div className="relative flex items-center justify-center w-5 h-5">
-                      <input
-                        type="checkbox"
-                        checked={showAllLevels}
-                        onChange={(e) => setShowAllLevels(e.target.checked)}
-                        className="peer appearance-none w-4 h-4 rounded border border-muted-foreground/50 checked:border-primary checked:bg-primary transition-all"
-                      />
-                      <CheckCircle2 className="w-3.5 h-3.5 text-primary-foreground absolute opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
-                    </div>
-                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                      Show courses from all levels
-                    </span>
-                  </label>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-foreground/90">Enrolled Courses</h3>
+                  <button
+                    onClick={() => setShowAllLevels(!showAllLevels)}
+                    className="text-xs text-primary/70 hover:text-primary transition-colors"
+                  >
+                    {showAllLevels ? "Show Level Only" : "Show All"}
+                  </button>
                 </div>
-                
-                <div className="grid gap-2">
-                  <AnimatePresence mode="popLayout">
-                    {filteredCourses?.length === 0 ? (
-                      <motion.div 
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }}
-                        className="flex flex-col items-center justify-center py-12 px-4 rounded-xl border border-dashed border-white/10 bg-white/5 text-center"
+
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <AnimatePresence>
+                    {filteredCourses?.map((course) => (
+                      <motion.button
+                        key={course._id}
+                        onClick={() => toggleCourse(course._id)}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className={cn(
+                          "w-full flex items-start gap-3 p-3 rounded-lg border transition-all text-left",
+                          selectedCourses.includes(course._id)
+                            ? "border-primary/50 bg-primary/5"
+                            : "border-white/5 bg-white/5 hover:bg-white/10"
+                        )}
                       >
-                        <BookOpen className="w-10 h-10 text-muted-foreground/30 mb-3" />
-                        <p className="text-sm text-muted-foreground">No courses found for this level.</p>
-                      </motion.div>
-                    ) : (
-                      filteredCourses?.map((course, i) => {
-                        const isSelected = selectedCourses.includes(course._id);
-                        return (
-                          <motion.div
-                            key={course._id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ delay: i * 0.03 }}
-                            onClick={() => toggleCourse(course._id)}
-                            className={cn(
-                              "relative flex items-start gap-4 p-3 rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden group",
-                              isSelected 
-                                ? "bg-primary/10 border-primary/30 shadow-[0_0_20px_-10px_rgba(var(--primary),0.3)]" 
-                                : "bg-card/30 border-white/5 hover:bg-white/5 hover:border-white/10"
-                            )}
-                          >
-                            <div className={cn(
-                              "mt-1 rounded-full p-0.5 transition-colors",
-                              isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                            )}>
-                              {isSelected ? (
-                                <CheckCircle2 className="w-5 h-5 fill-current" />
-                              ) : (
-                                <Circle className="w-5 h-5" />
-                              )}
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <p className={cn(
-                                  "font-medium text-sm transition-colors",
-                                  isSelected ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
-                                )}>
-                                  {course.title}
-                                </p>
-                                {isSelected && (
-                                  <Badge variant="outline" className="bg-primary/20 text-primary border-primary/20 text-[10px] h-5 px-1.5">
-                                    Enrolled
-                                  </Badge>
-                                )}
-                              </div>
-                              
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
-                                <span className="font-mono text-xs bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
-                                  {course.code}
-                                </span>
-                                <span>•</span>
-                                <span className="capitalize">{course.level}</span>
-                              </div>
-                            </div>
-                            
-                            {/* Interactive glow effect on hover */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-1000 pointer-events-none" />
-                          </motion.div>
-                        );
-                      })
-                    )}
+                        {selectedCourses.includes(course._id) ? (
+                          <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-muted-foreground/50 flex-shrink-0 mt-0.5" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{course.code}</p>
+                          <p className="text-xs text-muted-foreground/70 truncate">{course.title}</p>
+                        </div>
+                      </motion.button>
+                    ))}
                   </AnimatePresence>
                 </div>
               </div>
             </div>
           </ScrollArea>
 
-          <SheetFooter className="p-6 border-t border-white/5 bg-white/5 mt-auto">
-            <div className="flex w-full gap-3">
-              {!forceOpen && (
-                <Button 
-                  variant="outline" 
-                  onClick={() => onOpenChange(false)}
-                  className="flex-1 border-white/10 hover:bg-white/5"
-                >
-                  Cancel
-                </Button>
-              )}
-              <Button 
-                onClick={handleSave} 
-                disabled={isSaving}
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-              >
-                {isSaving ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    Saving...
-                  </span>
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
-            </div>
+          <SheetFooter className="px-6 py-4 border-t border-white/5 bg-white/5">
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+            >
+              {isSaving ? "Saving..." : "Save Profile"}
+            </Button>
           </SheetFooter>
         </div>
       </SheetContent>

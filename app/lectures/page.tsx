@@ -60,11 +60,20 @@ export default function LecturesPage() {
   }, [otherCourses, searchQuery, levelFilter]);
 
   // Force open profile sheet if no profile exists
+  // Force open profile sheet if no profile exists
   useEffect(() => {
     if (user && profile === null) {
-      setShowProfileSheet(true);
+      const timer = setTimeout(() => {
+        setShowProfileSheet(true);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [user, profile]);
+
+
+
+
+
 
   if (courses === undefined) {
     return (
