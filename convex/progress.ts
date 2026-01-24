@@ -113,6 +113,101 @@ export const markComplete = mutation({
   },
 });
 
+export const markWeekComplete = mutation({
+  args: {
+    clerkId: v.string(),
+    courseId: v.id("courses"),
+    weekId: v.id("weeks"),
+  },
+  handler: async (ctx, args) => {
+    const videos = await ctx.db
+      .query("videos")
+      .withIndex("by_week", (q) => q.eq("weekId", args.weekId))
+      .collect();
+
+    const now = Date.now();
+
+    for (const video of videos) {
+      const existing = await ctx.db
+        .query("videoProgress")
+        .withIndex("by_user_video", (q) =>
+          q.eq("clerkId", args.clerkId).eq("videoId", video._id)
+        )
+        .first();
+
+      if (existing) {
+        if (!existing.completed) {
+          await ctx.db.patch(existing._id, {
+            completed: true,
+            progress: 1,
+            lastWatchedAt: now,
+          });
+        }
+      } else {
+        await ctx.db.insert("videoProgress", {
+          clerkId: args.clerkId,
+          videoId: video._id,
+          courseId: args.courseId,
+          progress: 1,
+          watchedSeconds: 0,
+          completed: true,
+          lastPosition: 0,
+          lastWatchedAt: now,
+        });
+      }
+    }
+
+    return { markedCount: videos.length };
+  },
+});
+
+export const markCourseComplete = mutation({
+  args: {
+    clerkId: v.string(),
+    courseId: v.id("courses"),
+  },
+  handler: async (ctx, args) => {
+    const videos = await ctx.db
+      .query("videos")
+      .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
+      .collect();
+
+    const now = Date.now();
+
+    for (const video of videos) {
+      const existing = await ctx.db
+        .query("videoProgress")
+        .withIndex("by_user_video", (q) =>
+          q.eq("clerkId", args.clerkId).eq("videoId", video._id)
+        )
+        .first();
+
+      if (existing) {
+        if (!existing.completed) {
+          await ctx.db.patch(existing._id, {
+            completed: true,
+            progress: 1,
+            lastWatchedAt: now,
+          });
+        }
+      } else {
+        await ctx.db.insert("videoProgress", {
+          clerkId: args.clerkId,
+          videoId: video._id,
+          courseId: args.courseId,
+          progress: 1,
+          watchedSeconds: 0,
+          completed: true,
+          lastPosition: 0,
+          lastWatchedAt: now,
+        });
+      }
+    }
+
+    return { markedCount: videos.length };
+  },
+});
+
 export const getRecentlyWatched = query({
   args: {
     clerkId: v.string(),

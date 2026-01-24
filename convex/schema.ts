@@ -93,4 +93,14 @@ export default defineSchema({
     theaterMode: v.boolean(),
     volume: v.number(),         // 0-1
   }).index("by_user", ["clerkId"]),
+
+  // ============================================
+  // STUDENT PROFILE
+  // ============================================
+  studentProfile: defineTable({
+    clerkId: v.string(),
+    level: v.union(v.literal("foundation"), v.literal("diploma"), v.literal("degree")),
+    currentTerm: v.optional(v.string()), // e.g., "Jan 2024"
+    enrolledCourseIds: v.array(v.id("courses")),
+  }).index("by_user", ["clerkId"]),
 });

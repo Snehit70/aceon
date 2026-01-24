@@ -15,6 +15,7 @@ import type * as debug_content from "../debug_content.js";
 import type * as debug_orphans from "../debug_orphans.js";
 import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
+import type * as studentProfile from "../studentProfile.js";
 import type * as users from "../users.js";
 import type * as videoNotes from "../videoNotes.js";
 
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   debug_orphans: typeof debug_orphans;
   progress: typeof progress;
   seed: typeof seed;
+  studentProfile: typeof studentProfile;
   users: typeof users;
   videoNotes: typeof videoNotes;
 }>;
