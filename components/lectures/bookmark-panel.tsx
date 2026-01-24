@@ -15,7 +15,9 @@ interface BookmarkPanelProps {
   clerkId: string;
   currentTime: number;
   onSeek: (timestamp: number) => void;
+  onCountChange?: (count: number) => void;
   className?: string;
+  compact?: boolean;
 }
 
 const formatTimestamp = (seconds: number) => {
@@ -34,12 +36,20 @@ export function BookmarkPanel({
   clerkId,
   currentTime,
   onSeek,
+  onCountChange,
   className,
+  compact = false,
 }: BookmarkPanelProps) {
   const bookmarks = useQuery(api.bookmarks.getBookmarksForVideo, {
     videoId,
     clerkId,
   });
+  
+  useEffect(() => {
+    if (bookmarks && onCountChange) {
+      onCountChange(bookmarks.length);
+    }
+  }, [bookmarks, onCountChange]);
 
   const addBookmark = useMutation(api.bookmarks.addBookmark);
   const removeBookmark = useMutation(api.bookmarks.removeBookmark);
@@ -88,31 +98,37 @@ export function BookmarkPanel({
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-white/5 backdrop-blur-xl border border-white/10  overflow-hidden transition-all duration-300",
+      "flex flex-col overflow-hidden transition-all duration-300",
+      !compact && "h-full bg-white/5 backdrop-blur-xl border border-white/10",
       className
     )}>
-      <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <div className="flex items-center gap-2 text-indigo-100">
-          <Bookmark className="w-4 h-4 text-indigo-400" />
-          <h3 className="font-serif font-medium tracking-tight">Bookmarks</h3>
+      {!compact && (
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
+          <div className="flex items-center gap-2 text-indigo-100">
+            <Bookmark className="w-4 h-4 text-indigo-400" />
+            <h3 className="font-serif font-medium tracking-tight">Bookmarks</h3>
+          </div>
+          {!isAdding && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setIsAdding(true)}
+              className="h-8 w-8 p-0 text-white/70 hover:text-indigo-300 hover:bg-white/5"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="sr-only">Add bookmark</span>
+            </Button>
+          )}
         </div>
-        {!isAdding && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setIsAdding(true)}
-            className="h-8 w-8 p-0 text-white/70 hover:text-indigo-300 hover:bg-white/5 "
-          >
-            <Plus className="w-4 h-4" />
-            <span className="sr-only">Add bookmark</span>
-          </Button>
-        )}
-      </div>
+      )}
 
       {isAdding && (
-        <div className="p-4 bg-indigo-500/10 border-b border-indigo-500/20 animate-in slide-in-from-top-2 duration-200">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs text-indigo-300 mb-1">
+        <div className={cn(
+          "p-3 bg-primary/5 border-b border-primary/20 animate-in slide-in-from-top-2 duration-200",
+          compact && "p-2"
+        )}>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {formatTimestamp(currentTime)}
@@ -125,21 +141,21 @@ export function BookmarkPanel({
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Note (optional)..."
-              className="bg-black/20 border-white/10 text-sm text-white placeholder:text-white/30 focus:border-indigo-400/50 focus:ring-indigo-400/20 h-8"
+              className="h-8 text-sm"
             />
             <div className="flex gap-2 justify-end">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => setIsAdding(false)}
-                className="h-7 text-xs text-white/50 hover:text-white hover:bg-white/5"
+                className="h-7 text-xs"
               >
                 Cancel
               </Button>
               <Button
                 size="sm"
                 onClick={handleAdd}
-                className="h-7 text-xs bg-indigo-600 hover:bg-indigo-500 text-white border-0 shadow-lg shadow-indigo-900/20"
+                className="h-7 text-xs"
               >
                 Save
               </Button>
@@ -148,24 +164,29 @@ export function BookmarkPanel({
         </div>
       )}
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className={cn("flex-1", compact && "max-h-[250px]")}>
         <div className="p-2 space-y-1">
           {bookmarks === undefined ? (
-            <div className="p-8 text-center space-y-2">
-              <div className="w-full h-8 bg-white/5  animate-pulse" />
-              <div className="w-2/3 h-8 bg-white/5  animate-pulse mx-auto" />
+            <div className={cn("text-center space-y-2", compact ? "p-4" : "p-8")}>
+              <div className="w-full h-8 bg-muted/20 animate-pulse rounded" />
+              <div className="w-2/3 h-8 bg-muted/20 animate-pulse mx-auto rounded" />
             </div>
           ) : bookmarks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-white/30">
-              <Bookmark className="w-8 h-8 mb-3 opacity-20" />
+            <div className={cn(
+              "flex flex-col items-center justify-center text-center text-muted-foreground",
+              compact ? "py-6 px-3" : "py-12 px-4"
+            )}>
+              <Bookmark className={cn("mb-2 opacity-30", compact ? "w-6 h-6" : "w-8 h-8")} />
               <p className="text-sm font-medium">No bookmarks yet</p>
-              <p className="text-xs mt-1 max-w-[150px]">
-                Save important moments to return to them later.
-              </p>
+              {!compact && (
+                <p className="text-xs mt-1 max-w-[150px]">
+                  Save important moments to return to them later.
+                </p>
+              )}
               <Button 
                 variant="link" 
                 onClick={() => setIsAdding(true)}
-                className="mt-2 text-indigo-400 hover:text-indigo-300 h-auto p-0 text-xs"
+                className="mt-2 text-primary h-auto p-0 text-xs"
               >
                 Add one now
               </Button>
@@ -174,17 +195,17 @@ export function BookmarkPanel({
             bookmarks.map((bookmark: Doc<"bookmarks">) => (
               <div
                 key={bookmark._id}
-                className="group flex items-center gap-3 p-2  hover:bg-white/5 transition-colors duration-200 cursor-pointer border border-transparent hover:border-white/5"
+                className="group flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer"
                 onClick={() => onSeek(bookmark.timestamp)}
               >
-                <div className="shrink-0 flex items-center justify-center w-12 py-1 bg-black/20  text-xs font-mono text-indigo-300 group-hover:text-indigo-200 border border-white/5 group-hover:border-indigo-500/30 transition-colors">
+                <div className="shrink-0 flex items-center justify-center px-2 py-0.5 bg-primary/10 rounded text-xs font-mono text-primary">
                   {formatTimestamp(bookmark.timestamp)}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <p className={cn(
-                    "text-sm truncate transition-colors",
-                    bookmark.label ? "text-white/90" : "text-white/40 italic"
+                    "text-sm truncate",
+                    bookmark.label ? "text-foreground" : "text-muted-foreground italic"
                   )}>
                     {bookmark.label || "No description"}
                   </p>
@@ -197,9 +218,9 @@ export function BookmarkPanel({
                     e.stopPropagation();
                     handleRemove(bookmark._id);
                   }}
-                  className="shrink-0 h-7 w-7 opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-all "
+                  className="shrink-0 h-6 w-6 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3 h-3" />
                   <span className="sr-only">Delete</span>
                 </Button>
               </div>

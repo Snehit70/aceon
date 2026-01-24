@@ -5,9 +5,8 @@ import { api } from "@/convex/_generated/api";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle } from "lucide-react";
+import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle, Bookmark, StickyNote, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -15,9 +14,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useUser } from "@clerk/nextjs";
 import { BookmarkPanel } from "@/components/lectures/bookmark-panel";
 import { NotesPanel } from "@/components/lectures/notes-panel";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TimelineMarkers } from "@/components/lectures/timeline-markers";
 
-// Define types for props
 interface SidebarProps {
   courseTitle: string;
   courseCode: string;
@@ -34,19 +32,26 @@ interface SidebarProps {
   currentVideoId: string | null;
   onVideoSelect: (id: string) => void;
   progressData?: Doc<"videoProgress">[];
+  onMarkWeekComplete?: (weekId: string) => void;
+  onMarkCourseComplete?: () => void;
 }
 
-// Extracted Sidebar Component
-function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentVideoId, onVideoSelect, progressData }: SidebarProps) {
+function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentVideoId, onVideoSelect, progressData, onMarkWeekComplete, onMarkCourseComplete }: SidebarProps) {
   const activeWeekId = content.find(w => w.videos.some(v => v._id === currentVideoId))?._id;
   
   const getProgress = (videoId: string) => {
     return progressData?.find(p => p.videoId === videoId);
   };
+  
+  const isWeekComplete = (week: { videos: Array<{ _id: string }> }) => {
+    if (week.videos.length === 0) return true;
+    return week.videos.every(v => progressData?.find(p => p.videoId === v._id)?.completed);
+  };
 
   const totalVideos = content.reduce((sum, week) => sum + week.videos.length, 0);
   const completedVideos = progressData?.filter(p => p.completed).length || 0;
   const overallProgress = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
+  const isCourseComplete = totalVideos > 0 && completedVideos === totalVideos;
 
   return (
     <div className="flex flex-col h-full">
@@ -86,17 +91,49 @@ function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentV
             <p className="text-xs text-muted-foreground mt-0.5">
               {completedVideos} of {totalVideos} completed
             </p>
+            {onMarkCourseComplete && !isCourseComplete && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onMarkCourseComplete}
+                className="h-6 px-2 text-xs mt-1 text-muted-foreground hover:text-foreground"
+              >
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                Mark All Done
+              </Button>
+            )}
           </div>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
           <Accordion type="single" collapsible defaultValue={activeWeekId} className="space-y-2">
-            {content.map((week) => (
+            {content.map((week) => {
+              const weekComplete = isWeekComplete(week);
+              return (
               <AccordionItem key={week._id} value={week._id} className="border-none">
-                <AccordionTrigger className="px-2 py-2 hover:no-underline hover:bg-muted/50 rounded-md text-sm font-medium">
-                  <span className="text-left">{week.title}</span>
-                </AccordionTrigger>
+                <div className="flex items-center gap-1">
+                  <AccordionTrigger className="flex-1 px-2 py-2 hover:no-underline hover:bg-muted/50 rounded-md text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                      {weekComplete && <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />}
+                      <span className="text-left">{week.title}</span>
+                    </div>
+                  </AccordionTrigger>
+                  {onMarkWeekComplete && !weekComplete && week.videos.length > 0 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMarkWeekComplete(week._id);
+                      }}
+                      className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground shrink-0"
+                      title="Mark week as done"
+                    >
+                      <CheckCircle2 className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
                 <AccordionContent className="pt-1 pb-2">
                   <div className="space-y-1 ml-1 pl-2 border-l">
                     {week.videos.length === 0 ? (
@@ -142,7 +179,8 @@ function LectureSidebar({ courseTitle, courseCode, courseTerm, content, currentV
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            ))}
+            );
+            })}
           </Accordion>
         </div>
       </div>
@@ -164,28 +202,138 @@ export default function LecturePlayerPage() {
   );
 
   const updateProgress = useMutation(api.progress.updateProgress);
+  
+  const [videoDuration, setVideoDuration] = useState(0);
 
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const [currentTime, setCurrentTime] = useState(0);
   const [theaterMode, setTheaterMode] = useState(false);
-  const [activeTab, setActiveTab] = useState("bookmarks");
   const [showAutoplayCountdown, setShowAutoplayCountdown] = useState(false);
   const [autoplayCountdown, setAutoplayCountdown] = useState(10);
+  
+  const [bookmarksExpanded, setBookmarksExpanded] = useState(true);
+  const [notesExpanded, setNotesExpanded] = useState(true);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [notesCount, setNotesCount] = useState(0);
+  const [showQuickNote, setShowQuickNote] = useState(false);
+  const [quickNoteContent, setQuickNoteContent] = useState("");
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const lastProgressUpdate = useRef<number>(0);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const addBookmark = useMutation(api.bookmarks.addBookmark);
+  const addNote = useMutation(api.videoNotes.addNote);
+  const markComplete = useMutation(api.progress.markComplete);
+  const markWeekComplete = useMutation(api.progress.markWeekComplete);
+  const markCourseComplete = useMutation(api.progress.markCourseComplete);
+  
+  const formatTimestamp = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) {
+      return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    }
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+  
+  const handleQuickAddBookmark = async () => {
+    if (!user || !activeVideoId) return;
+    try {
+      await addBookmark({
+        videoId: activeVideoId as Id<"videos">,
+        clerkId: user.id,
+        timestamp: currentTime,
+      });
+    } catch (error) {
+      console.error("Failed to add bookmark", error);
+    }
+  };
+  
+  const handleQuickAddNote = async () => {
+    if (!user || !activeVideoId || !quickNoteContent.trim()) return;
+    try {
+      await addNote({
+        videoId: activeVideoId as Id<"videos">,
+        clerkId: user.id,
+        timestamp: Math.floor(currentTime),
+        content: quickNoteContent.trim(),
+      });
+      setQuickNoteContent("");
+      setShowQuickNote(false);
+    } catch (error) {
+      console.error("Failed to add note", error);
+    }
+  };
+  
+  const handleMarkComplete = async () => {
+    if (!user || !activeVideoId) return;
+    try {
+      await markComplete({
+        videoId: activeVideoId as Id<"videos">,
+        clerkId: user.id,
+        courseId: subjectId,
+      });
+    } catch (error) {
+      console.error("Failed to mark complete", error);
+    }
+  };
+  
+  const handleMarkWeekComplete = async (weekId: string) => {
+    if (!user) return;
+    try {
+      await markWeekComplete({
+        clerkId: user.id,
+        courseId: subjectId,
+        weekId: weekId as Id<"weeks">,
+      });
+    } catch (error) {
+      console.error("Failed to mark week complete", error);
+    }
+  };
+  
+  const handleMarkCourseComplete = async () => {
+    if (!user) return;
+    try {
+      await markCourseComplete({
+        clerkId: user.id,
+        courseId: subjectId,
+      });
+    } catch (error) {
+      console.error("Failed to mark course complete", error);
+    }
+  };
 
-  // Determine which video to show (selected or default)
+  // Determine which video to show (selected or first incomplete, or first video)
   let activeVideoId = selectedVideoId;
   if (!activeVideoId && content && content.length > 0) {
-    const firstWeekWithVideos = content.find(w => w.videos.length > 0);
-    if (firstWeekWithVideos && firstWeekWithVideos.videos.length > 0) {
-      activeVideoId = firstWeekWithVideos.videos[0]._id;
+    // Find first incomplete video
+    let firstIncompleteId: string | null = null;
+    let firstVideoId: string | null = null;
+    
+    for (const week of content) {
+      for (const video of week.videos) {
+        if (!firstVideoId) {
+          firstVideoId = video._id;
+        }
+        const progress = progressData?.find(p => p.videoId === video._id);
+        if (!progress?.completed && !firstIncompleteId) {
+          firstIncompleteId = video._id;
+          break;
+        }
+      }
+      if (firstIncompleteId) break;
     }
+    
+    activeVideoId = firstIncompleteId || firstVideoId;
   }
+  
+  const isCurrentVideoCompleted = progressData?.find(
+    (p) => p.videoId === activeVideoId
+  )?.completed;
 
   // Helper to find video in content structure
   const findVideo = (id: string | null) => {
@@ -343,6 +491,8 @@ export default function LecturePlayerPage() {
             currentVideoId={activeVideoId}
             onVideoSelect={handleVideoSelect}
             progressData={progressData}
+            onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
+            onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
           />
         </aside>
       )}
@@ -380,143 +530,230 @@ export default function LecturePlayerPage() {
                 currentVideoId={activeVideoId}
                 onVideoSelect={handleVideoSelect}
                 progressData={progressData}
+                onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
+                onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
               />
             </SheetContent>
           </Sheet>
           <span className="font-semibold truncate">{currentVideo?.title || course.title}</span>
         </div>
 
-        <div className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full space-y-6">
+        <div className="flex-1 p-4 md:p-6 max-w-5xl mx-auto w-full space-y-4">
           {currentVideo ? (
-            <div className={cn("grid gap-6 transition-all", theaterMode ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3")}>
-              <div className={cn("space-y-4", theaterMode ? "col-span-1" : "lg:col-span-2")}>
-                <div className="relative">
-                  <VideoPlayer 
-                    ref={playerRef}
-                    videoId={currentVideo.youtubeId}
-                    title={currentVideo.title}
-                    onProgressUpdate={handleProgressUpdate}
-                    onEnded={handleVideoEnd}
-                    theaterMode={theaterMode}
-                    onTheaterModeChange={setTheaterMode}
-                  />
+            <div className="space-y-4">
+              <div className="relative">
+                <VideoPlayer 
+                  ref={playerRef}
+                  videoId={currentVideo.youtubeId}
+                  title={currentVideo.title}
+                  onProgressUpdate={handleProgressUpdate}
+                  onEnded={handleVideoEnd}
+                  theaterMode={theaterMode}
+                  onTheaterModeChange={setTheaterMode}
+                />
 
-                  {showAutoplayCountdown && findNextVideo() && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-xl">
-                      <div className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-                        <div className="text-center space-y-6">
-                          <div className="space-y-2">
-                            <h3 className="text-xl font-bold text-white">Next Lecture</h3>
-                            <p className="text-white/60 text-sm">Playing in {autoplayCountdown} seconds</p>
-                          </div>
+                {showAutoplayCountdown && findNextVideo() && (
+                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-xl">
+                    <div className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold text-white">Next Lecture</h3>
+                          <p className="text-white/60 text-sm">Playing in {autoplayCountdown} seconds</p>
+                        </div>
 
-                          <div className="relative w-24 h-24 mx-auto">
-                            <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
-                              <circle
-                                cx="48"
-                                cy="48"
-                                r="42"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                                className="text-white/20"
-                              />
-                              <circle
-                                cx="48"
-                                cy="48"
-                                r="42"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                                strokeLinecap="round"
-                                className="text-primary transition-all duration-1000"
-                                strokeDasharray={`${2 * Math.PI * 42}`}
-                                strokeDashoffset={`${2 * Math.PI * 42 * (1 - autoplayCountdown / 10)}`}
-                              />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <span className="text-3xl font-bold text-white">{autoplayCountdown}</span>
-                            </div>
-                          </div>
-
-                          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                            <p className="text-white/80 text-sm font-medium line-clamp-2">
-                              {findVideo(findNextVideo())?.title}
-                            </p>
-                          </div>
-
-                          <div className="flex gap-3">
-                            <Button
-                              onClick={cancelAutoplay}
-                              variant="outline"
-                              className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              onClick={playNextNow}
-                              className="flex-1 bg-primary hover:bg-primary/90"
-                            >
-                              Play Now
-                            </Button>
+                        <div className="relative w-24 h-24 mx-auto">
+                          <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
+                            <circle
+                              cx="48"
+                              cy="48"
+                              r="42"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              className="text-white/20"
+                            />
+                            <circle
+                              cx="48"
+                              cy="48"
+                              r="42"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              strokeLinecap="round"
+                              className="text-primary transition-all duration-1000"
+                              strokeDasharray={`${2 * Math.PI * 42}`}
+                              strokeDashoffset={`${2 * Math.PI * 42 * (1 - autoplayCountdown / 10)}`}
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-3xl font-bold text-white">{autoplayCountdown}</span>
                           </div>
                         </div>
+
+                        <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                          <p className="text-white/80 text-sm font-medium line-clamp-2">
+                            {findVideo(findNextVideo())?.title}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={cancelAutoplay}
+                            variant="outline"
+                            className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={playNextNow}
+                            className="flex-1 bg-primary hover:bg-primary/90"
+                          >
+                            Play Now
+                          </Button>
+                        </div>
                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {user && currentVideo.duration > 0 && (
+                <TimelineMarkers
+                  videoId={currentVideo._id as Id<"videos">}
+                  clerkId={user.id}
+                  duration={currentVideo.duration}
+                  currentTime={currentTime}
+                  onSeek={handleSeek}
+                />
+              )}
+
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl font-bold truncate">{currentVideo.title}</h1>
+                  <p className="text-sm text-muted-foreground">
+                    {currentVideo.weekTitle} • {Math.floor(currentVideo.duration / 60)} min
+                  </p>
+                </div>
+                
+                {user && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleQuickAddBookmark()}
+                      className="gap-1.5 text-xs"
+                    >
+                      <Bookmark className="h-3.5 w-3.5" />
+                      Bookmark
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowQuickNote(!showQuickNote)}
+                      className="gap-1.5 text-xs"
+                    >
+                      <StickyNote className="h-3.5 w-3.5" />
+                      Note
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={isCurrentVideoCompleted ? "secondary" : "outline"}
+                      onClick={handleMarkComplete}
+                      disabled={isCurrentVideoCompleted}
+                      className="gap-1.5 text-xs"
+                    >
+                      <CheckCircle2 className={cn("h-3.5 w-3.5", isCurrentVideoCompleted && "text-green-500")} />
+                      {isCurrentVideoCompleted ? "Completed" : "Mark Done"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {showQuickNote && user && (
+                <div className="p-3 rounded-lg border bg-muted/30 space-y-2 animate-in slide-in-from-top-2 duration-200">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Note at {formatTimestamp(currentTime)}</span>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setShowQuickNote(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                  <textarea
+                    value={quickNoteContent}
+                    onChange={(e) => setQuickNoteContent(e.target.value)}
+                    placeholder="Type your note..."
+                    className="w-full min-h-[60px] p-2 text-sm bg-background border rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                    autoFocus
+                  />
+                  <div className="flex justify-end">
+                    <Button size="sm" onClick={handleQuickAddNote} disabled={!quickNoteContent.trim()}>
+                      Save Note
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-lg border bg-background/50 backdrop-blur-sm overflow-hidden">
+                  <button
+                    onClick={() => setBookmarksExpanded(!bookmarksExpanded)}
+                    className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Bookmark className="h-4 w-4 text-primary" />
+                      <span className="font-medium text-sm">Bookmarks</span>
+                      <span className="text-xs text-muted-foreground">({bookmarkCount})</span>
+                    </div>
+                    {bookmarksExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </button>
+                  {bookmarksExpanded && (
+                    <div className="border-t">
+                      <BookmarkPanel
+                        videoId={currentVideo._id as Id<"videos">}
+                        clerkId={user?.id || ""}
+                        currentTime={currentTime}
+                        onSeek={handleSeek}
+                        onCountChange={setBookmarkCount}
+                        className="border-0 bg-transparent max-h-[300px]"
+                        compact
+                      />
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h1 className="text-2xl font-bold">{currentVideo.title}</h1>
-                    <p className="text-muted-foreground mt-1">
-                      {currentVideo.weekTitle}
-                    </p>
-                  </div>
-
-                  <Separator />
-
-                  <div className="prose dark:prose-invert max-w-none">
-                    <h3 className="text-lg font-semibold">About this lecture</h3>
-                    <p className="text-muted-foreground">
-                      Duration: {Math.floor(currentVideo.duration / 60)} minutes
-                    </p>
-                  </div>
+                <div className="rounded-lg border bg-background/50 backdrop-blur-sm overflow-hidden">
+                  <button
+                    onClick={() => setNotesExpanded(!notesExpanded)}
+                    className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <StickyNote className="h-4 w-4 text-primary" />
+                      <span className="font-medium text-sm">Notes</span>
+                      <span className="text-xs text-muted-foreground">({notesCount})</span>
+                    </div>
+                    {notesExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </button>
+                  {notesExpanded && (
+                    <div className="border-t">
+                      <NotesPanel
+                        videoId={currentVideo._id as Id<"videos">}
+                        clerkId={user?.id || ""}
+                        currentTime={currentTime}
+                        onSeek={handleSeek}
+                        onCountChange={setNotesCount}
+                        className="border-0 bg-transparent max-h-[300px] w-full"
+                        compact
+                      />
+                    </div>
+                  )}
                 </div>
-              </div>
-
-              <div className={cn("flex flex-col h-[600px] lg:h-auto", theaterMode ? "hidden" : "block")}>
-                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-2">
-                    <TabsTrigger value="bookmarks">Bookmarks</TabsTrigger>
-                    <TabsTrigger value="notes">Notes</TabsTrigger>
-                  </TabsList>
-                  
-                  <div className="flex-1 min-h-0 relative rounded-xl overflow-hidden border bg-background/50 backdrop-blur-sm">
-                    <TabsContent value="bookmarks" className="absolute inset-0 m-0 h-full w-full">
-                      {user && (
-                        <BookmarkPanel
-                          videoId={currentVideo._id as Id<"videos">}
-                          clerkId={user.id}
-                          currentTime={currentTime}
-                          onSeek={handleSeek}
-                          className="h-full border-0 bg-transparent"
-                        />
-                      )}
-                    </TabsContent>
-                    <TabsContent value="notes" className="absolute inset-0 m-0 h-full w-full">
-                      {user && (
-                        <NotesPanel
-                          videoId={currentVideo._id as Id<"videos">}
-                          clerkId={user.id}
-                          currentTime={currentTime}
-                          onSeek={handleSeek}
-                          className="h-full border-0 bg-transparent w-full"
-                        />
-                      )}
-                    </TabsContent>
-                  </div>
-                </Tabs>
               </div>
             </div>
           ) : (

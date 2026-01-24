@@ -21,10 +21,14 @@ const routes = [
 
 export function Navbar() {
   const pathname = usePathname();
+  
+  // Check if we're in the lectures section (hide Home nav item)
+  const isInLectures = pathname.startsWith("/lectures");
+  const visibleRoutes = isInLectures ? routes.filter(r => r.path !== "/") : routes;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center px-4 md:px-6">
+      <div className="container flex h-14 items-center px-4 md:px-6">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-8 flex items-center space-x-2 transition-transform hover:scale-105">
              <div className="p-1 bg-primary/10 ">
@@ -32,22 +36,24 @@ export function Navbar() {
              </div>
             <span className="hidden font-bold sm:inline-block tracking-tight text-lg">Aceon</span>
           </Link>
-          <nav className="flex items-center space-x-8 text-sm font-medium">
-            {routes.map((route) => (
-              <Link
-                key={route.path}
-                href={route.path}
-                className={cn(
-                  "transition-all hover:text-primary relative py-1",
-                  pathname === route.path 
-                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {route.name}
-              </Link>
-            ))}
-          </nav>
+          {visibleRoutes.length > 0 && (
+            <nav className="flex items-center space-x-8 text-sm font-medium">
+              {visibleRoutes.map((route) => (
+                <Link
+                  key={route.path}
+                  href={route.path}
+                  className={cn(
+                    "transition-all hover:text-primary relative py-1",
+                    pathname === route.path 
+                      ? "text-primary font-semibold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {route.name}
+                </Link>
+              ))}
+            </nav>
+          )}
         </div>
 
         {/* Mobile Menu */}

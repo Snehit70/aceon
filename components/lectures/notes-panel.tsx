@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { Id, Doc } from "@/convex/_generated/dataModel"
@@ -15,7 +15,9 @@ interface NotesPanelProps {
   clerkId: string
   currentTime: number
   onSeek: (timestamp: number) => void
+  onCountChange?: (count: number) => void
   className?: string
+  compact?: boolean
 }
 
 export function NotesPanel({
@@ -23,7 +25,9 @@ export function NotesPanel({
   clerkId,
   currentTime,
   onSeek,
-  className
+  onCountChange,
+  className,
+  compact = false
 }: NotesPanelProps) {
   const [newNoteContent, setNewNoteContent] = useState("")
   const [editingId, setEditingId] = useState<Id<"videoNotes"> | null>(null)
@@ -31,6 +35,12 @@ export function NotesPanel({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const notes = useQuery(api.videoNotes.getNotesForVideo, { clerkId, videoId })
+  
+  useEffect(() => {
+    if (notes && onCountChange) {
+      onCountChange(notes.length)
+    }
+  }, [notes, onCountChange])
   const addNote = useMutation(api.videoNotes.addNote)
   const updateNote = useMutation(api.videoNotes.updateNote)
   const deleteNote = useMutation(api.videoNotes.deleteNote)
@@ -88,79 +98,88 @@ export function NotesPanel({
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-white/5 backdrop-blur-xl border-l border-white/10 w-full md:w-80 lg:w-96",
+      "flex flex-col overflow-hidden transition-all duration-300",
+      !compact && "h-full bg-white/5 backdrop-blur-xl border-l border-white/10 w-full md:w-80 lg:w-96",
       className
     )}>
-      <div className="p-4 border-b border-white/10 flex items-center gap-2">
-        <StickyNote className="w-5 h-5 text-indigo-400" />
-        <h2 className="font-semibold text-white">My Notes</h2>
-        <span className="ml-auto text-xs text-white/50 font-mono">
-          {notes ? notes.length : 0} notes
-        </span>
-      </div>
-
-      <div className="p-4 border-b border-white/10 space-y-3 bg-black/20">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 ">
-            @ {formatTime(currentTime)}
-          </span>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            className="h-6 text-xs text-white/70 hover:text-white"
-            onClick={() => setNewNoteContent("")}
-          >
-            Clear
-          </Button>
-        </div>
-        <Textarea
-          value={newNoteContent}
-          onChange={(e) => setNewNoteContent(e.target.value)}
-          placeholder="Type a note at current time..."
-          className="min-h-[80px] bg-white/5 border-white/10 text-white placeholder:text-white/30 resize-none focus:ring-indigo-500/50"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault()
-              handleAddNote()
-            }
-          }}
-        />
-        <Button 
-          onClick={handleAddNote} 
-          disabled={!newNoteContent.trim() || isSubmitting}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-          size="sm"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Note
-        </Button>
-      </div>
-
-      <ScrollArea className="flex-1 p-4">
-        {!notes ? (
-          <div className="flex flex-col items-center justify-center h-40 space-y-2 text-white/30 animate-pulse">
-            <div className="w-4 h-4  bg-white/10" />
-            <p className="text-sm">Loading notes...</p>
+      {!compact && (
+        <>
+          <div className="p-4 border-b border-white/10 flex items-center gap-2">
+            <StickyNote className="w-5 h-5 text-primary" />
+            <h2 className="font-semibold">My Notes</h2>
+            <span className="ml-auto text-xs text-muted-foreground font-mono">
+              {notes ? notes.length : 0} notes
+            </span>
           </div>
-        ) : notes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 space-y-3 text-white/30 text-center">
-            <StickyNote className="w-10 h-10 opacity-20" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium">No notes yet</p>
-              <p className="text-xs">Add a note to remember key points</p>
+
+          <div className="p-4 border-b border-white/10 space-y-3 bg-muted/20">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded">
+                @ {formatTime(currentTime)}
+              </span>
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                className="h-6 text-xs"
+                onClick={() => setNewNoteContent("")}
+              >
+                Clear
+              </Button>
             </div>
+            <Textarea
+              value={newNoteContent}
+              onChange={(e) => setNewNoteContent(e.target.value)}
+              placeholder="Type a note at current time..."
+              className="min-h-[80px] resize-none"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  handleAddNote()
+                }
+              }}
+            />
+            <Button 
+              onClick={handleAddNote} 
+              disabled={!newNoteContent.trim() || isSubmitting}
+              className="w-full"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Note
+            </Button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {notes.map((note: Doc<"videoNotes">) => (
+        </>
+      )}
+
+      <ScrollArea className={cn("flex-1", compact && "max-h-[250px]")}>
+        <div className={cn("space-y-2", compact ? "p-2" : "p-4")}>
+          {!notes ? (
+            <div className={cn(
+              "flex flex-col items-center justify-center space-y-2 text-muted-foreground animate-pulse",
+              compact ? "h-20" : "h-40"
+            )}>
+              <div className="w-4 h-4 bg-muted/20 rounded" />
+              <p className="text-sm">Loading notes...</p>
+            </div>
+          ) : notes.length === 0 ? (
+            <div className={cn(
+              "flex flex-col items-center justify-center text-center text-muted-foreground",
+              compact ? "py-6" : "h-40"
+            )}>
+              <StickyNote className={cn("opacity-30 mb-2", compact ? "w-6 h-6" : "w-10 h-10")} />
+              <p className="text-sm font-medium">No notes yet</p>
+              {!compact && <p className="text-xs mt-1">Add a note to remember key points</p>}
+            </div>
+          ) : (
+            notes.map((note: Doc<"videoNotes">) => (
               <div 
                 key={note._id} 
-                className="group relative flex flex-col gap-2  border border-white/5 bg-white/5 p-3 transition-colors hover:bg-white/10 hover:border-white/10"
+                className="group relative flex flex-col gap-2 rounded-md border bg-muted/30 p-2 transition-colors hover:bg-muted/50"
               >
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => onSeek(note.timestamp)}
-                    className="flex items-center gap-1.5  bg-indigo-500/10 px-2 py-1 text-xs font-mono font-medium text-indigo-300 transition-colors hover:bg-indigo-500/20"
+                    className="flex items-center gap-1.5 bg-primary/10 px-2 py-0.5 rounded text-xs font-mono font-medium text-primary transition-colors hover:bg-primary/20"
                   >
                     <Clock className="w-3 h-3" />
                     {formatTime(note.timestamp)}
@@ -172,7 +191,7 @@ export function NotesPanel({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-6 w-6 text-green-400 hover:text-green-300 hover:bg-green-400/10"
+                          className="h-6 w-6 text-green-500 hover:text-green-400"
                           onClick={() => handleSaveEdit(note._id)}
                         >
                           <Check className="w-3.5 h-3.5" />
@@ -180,7 +199,7 @@ export function NotesPanel({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-6 w-6 text-white/50 hover:text-white hover:bg-white/10"
+                          className="h-6 w-6"
                           onClick={() => setEditingId(null)}
                         >
                           <X className="w-3.5 h-3.5" />
@@ -191,7 +210,7 @@ export function NotesPanel({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-6 w-6 text-white/50 hover:text-white hover:bg-white/10"
+                          className="h-6 w-6"
                           onClick={() => handleStartEdit(note)}
                         >
                           <Pencil className="w-3.5 h-3.5" />
@@ -199,7 +218,7 @@ export function NotesPanel({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                          className="h-6 w-6 text-destructive hover:text-destructive"
                           onClick={() => handleDelete(note._id)}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -213,18 +232,21 @@ export function NotesPanel({
                   <Textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="min-h-[60px] bg-black/20 border-white/10 text-sm text-white focus:ring-indigo-500/50"
+                    className="min-h-[60px] text-sm"
                     autoFocus
                   />
                 ) : (
-                  <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
+                  <p className={cn(
+                    "text-sm whitespace-pre-wrap leading-relaxed",
+                    compact ? "line-clamp-2" : ""
+                  )}>
                     {note.content}
                   </p>
                 )}
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </ScrollArea>
     </div>
   )
