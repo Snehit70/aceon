@@ -1,7 +1,33 @@
-import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
+import { useEffect, useState, useRef, forwardRef, useImperativeHandle, ComponentType } from "react";
 import ReactPlayer from "react-player";
 import { cn } from "@/lib/utils";
 
+// 1. Define the ReactPlayer instance interface
+interface ReactPlayerInstance {
+  seekTo(amount: number, type: "seconds" | "fraction"): void;
+  getCurrentTime(): number;
+}
+
+// 2. Define ReactPlayer component props (minimal set we use)
+interface ReactPlayerProps {
+  ref?: React.Ref<ReactPlayerInstance>;
+  src: string;
+  width: string | number;
+  height: string | number;
+  style?: React.CSSProperties;
+  controls?: boolean;
+  onProgress?: (progress: { played: number; playedSeconds: number }) => void;
+  onDuration?: (duration: number) => void;
+  onReady?: () => void;
+  onEnded?: () => void;
+  config?: {
+    youtube?: {
+      playerVars?: Record<string, number>;
+    };
+  };
+}
+
+// 3. Your public API (what consumers of this component can call)
 export interface VideoPlayerRef {
   seekTo: (seconds: number) => void;
   getCurrentTime: () => number;
@@ -26,10 +52,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
   theaterMode = false,
 }, ref) => {
   const [mounted, setMounted] = useState(false);
-  const [duration, setDuration] = useState(0);
   const [seeking] = useState(false);
 
-  const playerRef = useRef<any>(null);
+  // 4. Type the ref with your custom interface
+  const playerRef = useRef<ReactPlayerInstance>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -47,8 +73,13 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     seeking
   });
 
+  // 5. Hydration: Set mounted flag after first render to prevent SSR mismatch
+  // This is a necessary pattern for client-side hydration
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -59,7 +90,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     return <div className="w-full aspect-video bg-black animate-pulse" />;
   }
 
-  const Player = ReactPlayer as any;
+  // 6. Cast ReactPlayer with proper props interface
+  const Player = ReactPlayer as unknown as ComponentType<ReactPlayerProps>;
 
   return (
     <div 
@@ -71,7 +103,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     >
       <div className="absolute inset-0 z-10">
         <Player
-          ref={(player: any) => {
+          ref={(player: ReactPlayerInstance | null) => {
             if (player) {
               playerRef.current = player;
             }
@@ -80,7 +112,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           width="100%"
           height="100%"
           style={{ width: "100%", height: "100%" }}
-          onProgress={(progress: any) => {
+          onProgress={(progress: { played: number; playedSeconds: number }) => {
             if (!stateRef.current.seeking) {
               if (onProgressUpdate) {
                 onProgressUpdate({
@@ -90,8 +122,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
               }
             }
           }}
-          onDuration={(d: number) => {
-            setDuration(d);
+          onDuration={() => {
+            // Duration is tracked by react-player internally
           }}
           onReady={() => {
             if (initialPosition > 0 && playerRef.current) {
