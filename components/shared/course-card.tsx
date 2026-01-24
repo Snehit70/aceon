@@ -53,9 +53,6 @@ export function CourseCard({
                 <Badge variant="outline" className="font-mono text-[10px] h-5 border-white/10 bg-white/5 text-muted-foreground group-hover/card:text-primary group-hover/card:border-primary/30 transition-colors">
                   {code}
                 </Badge>
-                <Badge variant="outline" className="font-mono text-[10px] h-5 border-white/10 text-muted-foreground/60">
-                  {term}
-                </Badge>
               </div>
               <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-muted-foreground/70 border border-white/5">
                 {level.replace(" Level", "")}

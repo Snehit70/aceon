@@ -87,7 +87,7 @@ export function LectureSidebar({
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-lg truncate">{courseTitle}</h2>
-            <p className="text-sm text-muted-foreground">{courseCode} • {courseTerm}</p>
+            <p className="text-sm text-muted-foreground">{courseCode}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {completedVideos} of {totalVideos} completed
             </p>

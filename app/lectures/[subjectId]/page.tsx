@@ -315,7 +315,7 @@ export default function LecturePlayerPage() {
             <PanelLeftClose className="h-4 w-4" />
           </Button>
           <LectureSidebar
-            courseTitle={course.title}
+            courseTitle={course.title.replace(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+\d{4}\s*-\s*/i, "")}
             courseCode={course.code}
             courseTerm={course.term}
             content={content}
@@ -366,7 +366,7 @@ export default function LecturePlayerPage() {
               />
             </SheetContent>
           </Sheet>
-          <span className="font-semibold truncate">{currentVideo?.title || course.title}</span>
+          <span className="font-semibold truncate">{currentVideo?.title || course.title.replace(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+\d{4}\s*-\s*/i, "")}</span>
         </div>
 
         <div className="flex-1 p-4 md:p-6 max-w-5xl mx-auto w-full space-y-4">

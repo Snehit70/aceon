@@ -186,7 +186,7 @@ export default function LecturesPage() {
                   href={`/lectures/${course._id}`}
                   code={course.code}
                   term={course.term}
-                  title={course.title}
+                  title={course.title.replace(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+\d{4}\s*-\s*/i, "")}
                   level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
                   lectureCount={course.stats.lectureCount}
                   totalDuration={course.stats.totalDurationFormatted}
