@@ -104,6 +104,11 @@ async function main() {
     const courseCodes = [
         // Foundation Level (8 courses - 32 credits)
         'ma1001', // Mathematics for Data Science I
+        'bsse2002',
+        'bsms2002', 
+        'bsda2001',
+        'bscs3001',
+        'bsgn3001'
     ];
 
     console.log(`\n🔍 Scraping targeted course: MA1001...`);
