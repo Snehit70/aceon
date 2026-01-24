@@ -56,3 +56,7 @@ data_auth_info.json
 
 # Tooling
 .brv/
+
+# Playwright
+/playwright-report/
+/test-results/
