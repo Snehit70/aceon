@@ -38,6 +38,27 @@ export default function LecturesPage() {
   const [levelFilter, setLevelFilter] = useState<"all" | "foundation" | "diploma" | "degree">("all");
   const [showProfileSheet, setShowProfileSheet] = useState(false);
 
+  // Split courses into Enrolled and Others
+  const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
+  
+  const { enrolledCourses, otherCourses } = useMemo(() => {
+    if (!courses) return { enrolledCourses: [], otherCourses: [] };
+    const enrolled = courses.filter(c => enrolledCourseIds.includes(c._id));
+    const other = courses.filter(c => !enrolledCourseIds.includes(c._id));
+    return { enrolledCourses: enrolled, otherCourses: other };
+  }, [courses, enrolledCourseIds]);
+
+  // Filter function for "Other Courses" (Course Library)
+  const filteredLibraryCourses = useMemo(() => {
+    return otherCourses.filter((course) => {
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.code.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesLevel = levelFilter === "all" || course.level === levelFilter;
+      return matchesSearch && matchesLevel;
+    });
+  }, [otherCourses, searchQuery, levelFilter]);
+
   // Force open profile sheet if no profile exists
   useEffect(() => {
     if (user && profile === null) {
@@ -98,27 +119,6 @@ export default function LecturesPage() {
       </div>
     );
   }
-
-  // Split courses into Enrolled and Others
-  const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
-  
-  const { enrolledCourses, otherCourses } = useMemo(() => {
-    if (!courses) return { enrolledCourses: [], otherCourses: [] };
-    const enrolled = courses.filter(c => enrolledCourseIds.includes(c._id));
-    const other = courses.filter(c => !enrolledCourseIds.includes(c._id));
-    return { enrolledCourses: enrolled, otherCourses: other };
-  }, [courses, enrolledCourseIds]);
-
-  // Filter function for "Other Courses" (Course Library)
-  const filteredLibraryCourses = useMemo(() => {
-    return otherCourses.filter((course) => {
-      const matchesSearch =
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.code.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesLevel = levelFilter === "all" || course.level === levelFilter;
-      return matchesSearch && matchesLevel;
-    });
-  }, [otherCourses, searchQuery, levelFilter]);
 
   const getLevelOrder = (lvl: string) => {
     if (lvl === "foundation") return 1;
