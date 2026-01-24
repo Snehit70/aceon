@@ -22,6 +22,7 @@ export interface CourseCardProps {
   totalDuration: string
   progress?: number
   href: string
+  className?: string
 }
 
 export function CourseCard({
@@ -33,12 +34,13 @@ export function CourseCard({
   totalDuration,
   progress = 0,
   href,
+  className,
 }: CourseCardProps) {
   const isStarted = progress > 0
   const isCompleted = progress >= 100
   
   return (
-    <Link href={href} className="block group/card outline-none">
+    <Link href={href} className={cn("block group/card outline-none", className)}>
       <Card className="h-[260px] transition-all duration-300 hover:scale-[1.02] hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm flex flex-col group-hover/card:shadow-[0_0_20px_-5px_rgba(20,184,166,0.3)]">
         <CardHeader className="space-y-3 pb-2 flex-none">
           <div className="flex items-center justify-between">

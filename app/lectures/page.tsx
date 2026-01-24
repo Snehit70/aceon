@@ -1,22 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Search, Play, Clock, ArrowRight, BookOpen } from "lucide-react";
+import { Search, Play, Clock, ArrowRight, BookOpen, Settings2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CourseCard } from "@/components/shared/course-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { ProfileSheet } from "@/components/profile/profile-sheet";
 
 export default function LecturesPage() {
   const { user } = useUser();
   const courses = useQuery(api.courses.listWithStats);
+  const profile = useQuery(api.studentProfile.getProfile, user?.id ? { clerkId: user.id } : "skip");
+  
   const continueWatching = useQuery(
     api.progress.getContinueWatching,
     user?.id ? { clerkId: user.id, limit: 10 } : "skip"
@@ -25,8 +28,17 @@ export default function LecturesPage() {
     api.progress.getAllCoursesProgress,
     user?.id ? { clerkId: user.id } : "skip"
   );
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<"all" | "foundation" | "diploma" | "degree">("all");
+  const [showProfileSheet, setShowProfileSheet] = useState(false);
+
+  // Force open profile sheet if no profile exists
+  useEffect(() => {
+    if (user && profile === null) {
+      setShowProfileSheet(true);
+    }
+  }, [user, profile]);
 
   if (courses === undefined) {
     return (
@@ -82,7 +94,14 @@ export default function LecturesPage() {
     );
   }
 
-  const filteredCourses = courses.filter((course) => {
+  // Split courses into Enrolled and Others
+  const enrolledCourseIds = profile?.enrolledCourseIds || [];
+  
+  const enrolledCourses = courses.filter(c => enrolledCourseIds.includes(c._id));
+  const otherCourses = courses.filter(c => !enrolledCourseIds.includes(c._id));
+
+  // Filter function for "Other Courses" (Course Library)
+  const filteredLibraryCourses = otherCourses.filter((course) => {
     const matchesSearch =
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.code.toLowerCase().includes(searchQuery.toLowerCase());
@@ -90,15 +109,74 @@ export default function LecturesPage() {
     return matchesSearch && matchesLevel;
   });
 
+  const getLevelOrder = (lvl: string) => {
+    if (lvl === "foundation") return 1;
+    if (lvl === "diploma") return 2;
+    if (lvl === "degree") return 3;
+    return 0;
+  };
+
+  const userLevelOrder = profile?.level ? getLevelOrder(profile.level) : 0;
+
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-10 animate-in fade-in duration-500">
+      
+      <ProfileSheet 
+        open={showProfileSheet} 
+        onOpenChange={setShowProfileSheet} 
+        forceOpen={!!(user && profile === null)} 
+      />
+
       {/* Header */}
-      <div className="space-y-3 sm:space-y-4">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">Your Courses</h1>
-        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl">
-          Continue where you left off or start a new subject.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-3 sm:space-y-4">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">Your Courses</h1>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl">
+            {profile?.level ? (
+              <span className="capitalize">{profile.level} Level Student • {profile.currentTerm || "Current Term"}</span>
+            ) : (
+              "Continue where you left off or start a new subject."
+            )}
+          </p>
+        </div>
+        {user && (
+          <Button variant="outline" onClick={() => setShowProfileSheet(true)} className="gap-2">
+            <Settings2 className="h-4 w-4" />
+            Customize Profile
+          </Button>
+        )}
       </div>
+
+      {/* Enrolled Courses Section */}
+      {user && enrolledCourses.length > 0 && (
+        <section className="space-y-6">
+          <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-primary" /> My Enrolled Courses
+          </h2>
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {enrolledCourses.map((course, index) => (
+              <motion.div
+                key={course._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <CourseCard
+                  id={course._id}
+                  href={`/lectures/${course._id}`}
+                  code={course.code}
+                  term={course.term}
+                  title={course.title}
+                  level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                  lectureCount={course.stats.lectureCount}
+                  totalDuration={course.stats.totalDurationFormatted}
+                  progress={coursesProgress?.[course._id] || 0}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Continue Watching - Horizontal Scroll */}
       {user && continueWatching && continueWatching.length > 0 && (
@@ -191,73 +269,82 @@ export default function LecturesPage() {
         </motion.div>
       )}
 
-      {/* Filter Bar */}
-      <div className="sticky top-16 z-30 -mx-4 px-4 py-3 sm:py-4 bg-background/80 backdrop-blur-xl border-y border-white/5 space-y-3 sm:space-y-4 md:space-y-0 md:flex md:items-center md:justify-between transition-all">
-        <div className="relative w-full md:w-96 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input
-            placeholder="Search courses..."
-            className="pl-10 h-11 sm:h-10 bg-background/50 border-border/60 focus:border-primary/50 transition-all text-base sm:text-sm"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Search courses"
-          />
-        </div>
-        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none' }}>
-          {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
-            <Button
-              key={filter}
-              variant={levelFilter === filter ? "default" : "outline"}
-              size="sm"
-              onClick={() => setLevelFilter(filter)}
-              className={cn(
-                  "capitalize px-4 sm:px-4 shadow-none transition-all whitespace-nowrap min-h-[44px] sm:min-h-[36px]",
-                  levelFilter === filter ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:border-primary/50 hover:text-primary"
-              )}
-            >
-              {filter}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Course Grid */}
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
-        {filteredCourses.map((course, index) => (
-          <motion.div
-            key={course._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
-          >
-            <CourseCard
-              id={course._id}
-              href={`/lectures/${course._id}`}
-              code={course.code}
-              term={course.term}
-              title={course.title}
-              level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-              lectureCount={course.stats.lectureCount}
-              totalDuration={course.stats.totalDurationFormatted}
-              progress={coursesProgress?.[course._id] || 0}
-            />
-          </motion.div>
-        ))}
-
-        {filteredCourses.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-border/50 bg-muted/5">
-            <div className="bg-muted/50 p-4 mb-4">
-                <BookOpen className="h-10 w-10 text-muted-foreground" />
+      {/* Course Library Section */}
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h2 className="text-2xl font-semibold tracking-tight">Course Library</h2>
+          
+          {/* Filter Bar */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search library..."
+                className="pl-9 h-9"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-            <h3 className="text-xl font-bold">No Courses Found</h3>
-            <p className="text-muted-foreground mt-2">
-              We couldn&apos;t find any courses matching &quot;{searchQuery}&quot;
-            </p>
-            <Button variant="link" onClick={() => setSearchQuery("")} className="mt-4 text-primary">
-                Clear Search
-            </Button>
+            <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+              {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
+                <Button
+                  key={filter}
+                  variant={levelFilter === filter ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setLevelFilter(filter)}
+                  className="capitalize whitespace-nowrap"
+                >
+                  {filter}
+                </Button>
+              ))}
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Course Grid */}
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredLibraryCourses.map((course, index) => {
+            const courseLevelOrder = getLevelOrder(course.level);
+            const isPriorLevel = userLevelOrder > courseLevelOrder;
+            
+            return (
+            <motion.div
+              key={course._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+            >
+              <CourseCard
+                id={course._id}
+                href={`/lectures/${course._id}`}
+                code={course.code}
+                term={course.term}
+                title={course.title}
+                level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                lectureCount={course.stats.lectureCount}
+                totalDuration={course.stats.totalDurationFormatted}
+                progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
+                className={cn(
+                  "hover:opacity-100 transition-opacity",
+                  isPriorLevel ? "opacity-60 grayscale-[0.5]" : "opacity-80"
+                )}
+              />
+            </motion.div>
+          )})}
+
+          {filteredLibraryCourses.length === 0 && (
+            <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border/50 bg-muted/5 rounded-lg">
+              <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
+              <h3 className="text-xl font-bold">No Courses Found</h3>
+              <p className="text-muted-foreground mt-2">
+                Try adjusting your search or filters.
+              </p>
+              <Button variant="link" onClick={() => { setSearchQuery(""); setLevelFilter("all"); }} className="mt-4 text-primary">
+                  Clear Filters
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
