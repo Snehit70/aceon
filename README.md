@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aceon 🎓
 
-## Getting Started
+> The ultimate academic companion for IITM BS Degree students.
 
-First, run the development server:
+Aceon is a modern, high-performance learning platform designed to streamline the study experience for IIT Madras BS Degree students. It replaces scattered resources with a unified "Royal Indigo" interface for lectures, progress tracking, bookmarks, and notes.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Status](https://img.shields.io/badge/status-active-success.svg)
+![Stack](https://img.shields.io/badge/stack-Next.js_16_|_Convex_|_Clerk-indigo)
+
+## 🚀 Tech Stack
+
+- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
+- **Backend**: [Convex](https://convex.dev/) (Real-time Database & Functions)
+- **Auth**: [Clerk](https://clerk.com/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+- **Animation**: [Framer Motion](https://www.framer.com/motion/)
+- **Testing**: [Playwright](https://playwright.dev/)
+- **Package Manager**: [Bun](https://bun.sh/)
+
+## 🏗️ Architecture
+
+### High-Level Overview
+
+```mermaid
+graph TD
+    User((User))
+    
+    subgraph Client ["Client (Next.js 16)"]
+        UI[App Router UI]
+        Auth[Clerk Auth]
+        Store[Local State]
+    end
+    
+    subgraph Backend ["Backend (Convex)"]
+        API[Public API]
+        Funcs[Query/Mutation Functions]
+        DB[(Real-time DB)]
+        Scheduler[Cron Jobs]
+    end
+    
+    subgraph Data ["Data Pipeline"]
+        Scraper[Scraper Scripts]
+        Seeds[JSON Data]
+    end
+
+    User -->|Interacts| UI
+    UI -->|Auth Check| Auth
+    UI -->|Real-time Sync| API
+    API --> Funcs
+    Funcs --> DB
+    Scraper -->|Generates| Seeds
+    Seeds -->|Seeding| DB
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Data Flow
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1.  **Ingestion**: Course data is scraped and stored in `data/*.json`.
+2.  **Seeding**: `scripts/seed-database.ts` pushes JSON data to Convex.
+3.  **Consumption**: Next.js client subscribes to Convex queries (`useQuery`).
+4.  **Interaction**: User actions (bookmarks, notes) trigger Convex mutations (`useMutation`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Project Structure
 
-## Learn More
+```bash
+aceon/
+├── app/                  # Next.js App Router
+│   ├── lectures/         # Lecture viewer & course listing
+│   └── page.tsx          # Landing page
+├── components/
+│   ├── ui/               # Shadcn primitives
+│   └── shared/           # App-specific components (CourseCard, VideoPlayer)
+├── convex/               # Backend logic
+│   ├── schema.ts         # Database schema definition
+│   ├── courses.ts        # Course queries
+│   └── users.ts          # User management
+├── data/                 # Raw scraped data (JSON)
+├── scripts/              # Data seeding & maintenance scripts
+└── public/               # Static assets
+```
 
-To learn more about Next.js, take a look at the following resources:
+## ⚡ Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
+- Node.js 18+ or Bun 1.0+
+- Convex Account
+- Clerk Account
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
 
-## Deploy on Vercel
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/aceon.git
+    cd aceon
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2.  **Install dependencies**
+    ```bash
+    bun install
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3.  **Environment Setup**
+    Create a `.env.local` file:
+    ```bash
+    # Convex
+    CONVEX_DEPLOYMENT=your_deployment_name
+    NEXT_PUBLIC_CONVEX_URL=your_convex_url
+
+    # Clerk
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+    CLERK_SECRET_KEY=your_clerk_secret
+    ```
+
+4.  **Run Development Server**
+    ```bash
+    bun run dev
+    ```
+    Opens `http://localhost:3000` (Frontend) and Convex Dashboard.
+
+## 🛠️ Key Commands
+
+| Command | Description |
+| :--- | :--- |
+| `bun run dev` | Start dev server (Next.js + Convex) |
+| `bun run build` | Build for production |
+| `bun x convex dev` | Run standalone Convex dev server |
+| `bun x playwright test` | Run E2E tests |
+| `bun run lint` | Run ESLint |
+
+## 🤝 Contributing
+
+1.  Create a feature branch (`feat/amazing-feature`).
+2.  Commit your changes (Conventional Commits).
+3.  Open a Pull Request.
+
+## 📄 License
+
+MIT © Aceon Team
