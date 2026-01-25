@@ -11,6 +11,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-mono selection:bg-accent selection:text-accent-foreground overflow-x-hidden">
       
+      {/* Hero Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center space-y-10 py-32 md:py-40 lg:py-48 overflow-hidden">
         
         <div className="absolute inset-0 -z-10 pointer-events-none">
@@ -29,12 +30,13 @@ export default function LandingPage() {
           </div>
           
           
-          <h1 className="font-display font-black tracking-tighter text-7xl md:text-9xl lg:text-[10rem] leading-[0.8] uppercase flex flex-col items-center relative group">
+          {/* Main Title */}
+          <h1 className="font-display font-black tracking-tighter text-7xl md:text-9xl lg:text-[11rem] leading-[0.8] uppercase flex flex-col items-center relative group">
             <span className="relative z-10 text-transparent bg-clip-text bg-[url('/images/chainsaw-text-bg.webp')] bg-cover bg-center bg-no-repeat drop-shadow-[0_0_2px_rgba(255,255,255,0.5)] [-webkit-text-stroke:2px_rgba(255,255,255,0.1)] hover:scale-105 transition-transform duration-300 select-none animate-pulse-custom">
-              Your Lecture
+              Your Academic
             </span>
             <span className="relative z-10 text-transparent bg-clip-text bg-[url('/images/chainsaw-text-bg.webp')] bg-cover bg-[center_bottom] bg-no-repeat drop-shadow-[0_0_2px_rgba(230,46,45,0.5)] [-webkit-text-stroke:2px_rgba(230,46,45,0.8)] hover:scale-105 transition-transform duration-300 delay-75 select-none">
-              Companion
+              Weapon
             </span>
              
             <span className="absolute -z-10 text-[20rem] opacity-5 text-white/10 font-glitch top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">X</span>
@@ -42,21 +44,21 @@ export default function LandingPage() {
           
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 font-mono uppercase tracking-widest border-l-4 border-accent pl-6 text-left">
             // Mission: Ace IITM BS Degree.<br/>
-            // Targets: Video Tracking, Timestamped Notes, Smart Bookmarks.<br/>
+            // Targets: Video Surveillance, Field Logs, Vital Points.<br/>
             // Status: <span className="text-accent font-bold animate-pulse">Online</span>
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto pt-8">
             <Button asChild size="lg" className="h-16 px-10 text-xl font-display font-bold uppercase tracking-widest border-2 border-accent bg-accent text-black hover:bg-black hover:text-accent hover:border-accent shadow-[6px_6px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#E62E2D] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all clip-corner rounded-none">
               <Link href="/lectures">
-                Start_Mission <ArrowRight className="ml-3 h-6 w-6" />
+                Start_Hunt <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
             </Button>
             
             {isSignedIn ? (
               <Button asChild variant="outline" size="lg" className="h-16 px-10 text-xl font-display font-bold uppercase tracking-widest border-2 border-white/20 bg-transparent text-white hover:bg-white hover:text-black hover:border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all clip-corner rounded-none">
                 <Link href="/lectures">
-                  My_Lectures
+                  My_Missions
                 </Link>
               </Button>
             ) : (
@@ -86,6 +88,7 @@ export default function LandingPage() {
       </section>
 
       
+      {/* Feature Grid */}
       <section className="container px-4 md:px-6 py-24 space-y-16 relative z-10">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <h2 className="text-5xl md:text-7xl font-display font-black tracking-tighter uppercase text-white">
@@ -98,45 +101,48 @@ export default function LandingPage() {
 
         <div className="grid gap-8 md:grid-cols-3">
           
+          {/* Card 1 */}
           <div className="group relative border-2 border-border bg-black/50 p-8 hover:border-accent transition-all duration-200 clip-corner">
             <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full space-y-4">
               <div className="p-4 border-2 border-accent/20 bg-accent/5 mb-2 group-hover:bg-accent group-hover:text-black transition-colors duration-200">
                 <Play className="h-8 w-8 text-accent group-hover:text-black" />
               </div>
-              <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-white group-hover:text-accent">Progress Tracking</h3>
+              <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-white group-hover:text-accent">Elimination Status</h3>
               <p className="text-muted-foreground font-mono text-sm leading-relaxed border-l-2 border-white/10 pl-4">
-                Auto-save progress. Resume mission instantly. Sync across all devices.
+                Track completion rates. Resume hunt instantly. Sync data across all terminals.
               </p>
             </div>
             <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity font-display text-4xl text-white/5 pointer-events-none select-none">01</div>
           </div>
 
           
+          {/* Card 2 */}
           <div className="group relative border-2 border-border bg-black/50 p-8 hover:border-primary transition-all duration-200 clip-corner">
              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full space-y-4">
               <div className="p-4 border-2 border-primary/20 bg-primary/5 mb-2 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                 <Bookmark className="h-8 w-8 text-primary group-hover:text-white" />
               </div>
-              <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-white group-hover:text-primary">Smart Bookmarks</h3>
+              <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-white group-hover:text-primary">Vital Points</h3>
               <p className="text-muted-foreground font-mono text-sm leading-relaxed border-l-2 border-white/10 pl-4">
-                Tag critical intel. Jump to key moments. Efficient revision protocol.
+                Mark critical weaknesses. Jump to key intel. Efficient revision protocol.
               </p>
             </div>
             <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity font-display text-4xl text-white/5 pointer-events-none select-none">02</div>
           </div>
 
           
+          {/* Card 3 */}
           <div className="group relative border-2 border-border bg-black/50 p-8 hover:border-white transition-all duration-200 clip-corner">
              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex flex-col items-start h-full space-y-4">
               <div className="p-4 border-2 border-white/20 bg-white/5 mb-2 group-hover:bg-white group-hover:text-black transition-colors duration-200">
                 <StickyNote className="h-8 w-8 text-white group-hover:text-black" />
               </div>
-              <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-white group-hover:text-white">Timestamped Notes</h3>
+              <h3 className="text-3xl font-display font-bold uppercase tracking-tight text-white group-hover:text-white">Field Logs</h3>
               <p className="text-muted-foreground font-mono text-sm leading-relaxed border-l-2 border-white/10 pl-4">
-                Contextual data entry. Link notes to video frames. Precision recall.
+                Record contextual data. Link logs to video frames. Precision recall.
               </p>
             </div>
             <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity font-display text-4xl text-white/5 pointer-events-none select-none">03</div>

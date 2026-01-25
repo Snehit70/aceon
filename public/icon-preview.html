@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aceon Identity</title>
+    <!-- Import fonts used in the app -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('/noise.png');
+        }
+
+        .showcase {
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        /* The App Icon Container */
+        .app-icon {
+            width: 180px;
+            height: 180px;
+            background: #000;
+            border: 4px solid #2BFF00; /* Acid Green Border */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(43, 255, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* The 'A' Symbol */
+        .symbol {
+            font-family: 'Rubik Glitch', sans-serif;
+            font-size: 140px;
+            color: #E62E2D; /* Blood Red */
+            position: relative;
+            line-height: 1;
+            z-index: 10;
+        }
+
+        /* Glitch Layers */
+        .symbol::before,
+        .symbol::after {
+            content: "A";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .symbol::before {
+            color: #0ff; /* Cyan Shift */
+            transform: translate(-3px, -2px);
+            z-index: -1;
+            mix-blend-mode: screen;
+        }
+
+        .symbol::after {
+            color: #2BFF00; /* Green Shift */
+            transform: translate(3px, 2px);
+            z-index: -2;
+            mix-blend-mode: screen;
+        }
+
+        /* Diagonal Stripe Texture Overlay */
+        .texture {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.05) 10px,
+                rgba(255, 255, 255, 0.05) 20px
+            );
+            pointer-events: none;
+        }
+
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #666;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="showcase">
+        <div>
+            <div class="app-icon">
+                <div class="texture"></div>
+                <div class="symbol">A</div>
+            </div>
+            <center><h2>The Glitch Mark</h2></center>
+        </div>
+    </div>
+
+</body>
+</html>

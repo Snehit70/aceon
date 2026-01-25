@@ -151,12 +151,19 @@ export default function LecturesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-3 sm:space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">Your Courses</h1>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl">
+          <h1 className="text-5xl sm:text-6xl font-black tracking-tighter text-white uppercase font-display drop-shadow-[0_2px_0_rgba(0,0,0,1)]">
+            Active <span className="text-accent">Missions</span>
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl font-mono uppercase tracking-widest border-l-4 border-accent pl-4 mt-4">
             {profile?.level ? (
-              <span className="capitalize">{profile.level} Level Student • {profile.currentTerm || "Current Term"}</span>
+              <span className="flex items-center gap-2">
+                <span className="text-accent">///</span> 
+                {profile.level} Threat Level 
+                <span className="text-accent">///</span>
+                Status: Active Duty
+              </span>
             ) : (
-              "Continue where you left off or start a new subject."
+              "Resume patrol or accept a new contract."
             )}
           </p>
         </div>
@@ -170,14 +177,20 @@ export default function LecturesPage() {
 
       {/* Tabs Layout */}
       <Tabs defaultValue="enrolled" className="space-y-8">
-        <TabsList className="bg-muted/20 p-1">
-          <TabsTrigger value="enrolled" className="gap-2">
-            <BookOpen className="h-4 w-4" />
-            My Courses
+        <TabsList className="bg-transparent border-b-2 border-border p-0 w-full justify-start rounded-none h-auto gap-8">
+          <TabsTrigger 
+            value="enrolled" 
+            className="gap-2 font-display uppercase tracking-widest text-xl data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-accent rounded-none px-0 py-4 transition-all hover:text-white"
+          >
+            <BookOpen className="h-5 w-5" />
+            Assigned_Missions
           </TabsTrigger>
-          <TabsTrigger value="library" className="gap-2">
-            <Search className="h-4 w-4" />
-            Course Library
+          <TabsTrigger 
+            value="library" 
+            className="gap-2 font-display uppercase tracking-widest text-xl data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-primary rounded-none px-0 py-4 transition-all hover:text-white"
+          >
+            <Search className="h-5 w-5" />
+            Mission_Archives
           </TabsTrigger>
         </TabsList>
 
@@ -227,8 +240,8 @@ export default function LecturesPage() {
               transition={{ duration: 0.5 }}
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
-                  <Play className="h-5 w-5 fill-current text-primary" /> Continue Watching
+                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2 font-display uppercase">
+                  <Play className="h-5 w-5 fill-current text-primary" /> Resume Patrol
                 </h2>
               </div>
               

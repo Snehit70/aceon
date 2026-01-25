@@ -15,8 +15,8 @@ import {
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const routes = [
-  { name: "Home", path: "/", icon: HomeIcon },
-  { name: "Lectures", path: "/lectures", icon: BookOpenIcon },
+  { name: "HQ", path: "/", icon: HomeIcon },
+  { name: "Missions", path: "/lectures", icon: BookOpenIcon },
 ];
 
 export function Navbar() {
