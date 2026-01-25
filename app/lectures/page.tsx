@@ -11,7 +11,7 @@ import Link from "next/link";
 import { Search, Play, Clock, ArrowRight, BookOpen, Settings2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { CourseCard } from "@/components/shared/course-card";
+import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -193,7 +193,7 @@ export default function LecturesPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
                   >
-                    <CourseCard
+                    <ChainsawCard
                       id={course._id}
                       href={`/lectures/${course._id}`}
                       code={course.code}
@@ -353,7 +353,7 @@ export default function LecturesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
-                  <CourseCard
+                  <ChainsawCard
                     id={course._id}
                     href={`/lectures/${course._id}`}
                     code={course.code}

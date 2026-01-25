@@ -41,6 +41,17 @@ const config: Config = {
           DEFAULT: 'var(--destructive)',
           foreground: 'var(--destructive-foreground)'
         },
+        acid: {
+          DEFAULT: '#2BFF00',
+          foreground: '#000000',
+        },
+        blood: {
+          DEFAULT: '#E62E2D',
+          foreground: '#FFFFFF',
+        },
+        void: {
+          DEFAULT: '#050505',
+        },
         border: 'var(--border)',
         input: 'var(--input)',
         ring: 'var(--ring)',
@@ -62,11 +73,11 @@ const config: Config = {
           ring: 'var(--sidebar-ring)'
         }
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)'
-      }
+      fontFamily: {
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular"],
+        display: ["var(--font-display)", "var(--font-sans)"],
+      },
     }
   },
   plugins: [tailwindAnimate],

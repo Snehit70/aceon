@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Oswald, Anton, Rubik_Glitch } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,18 @@ const jetbrainsMono = JetBrains_Mono({
 const jetbrainsMonoMono = JetBrains_Mono({ 
   subsets: ["latin"], 
   variable: "--font-mono",
+});
+
+const anton = Anton({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const rubikGlitch = Rubik_Glitch({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-glitch",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +42,9 @@ export default function RootLayout({
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased", 
         jetbrainsMono.variable, 
-        jetbrainsMonoMono.variable
+        jetbrainsMonoMono.variable,
+        anton.variable,
+        rubikGlitch.variable
       )}>
         <Providers>
           <div className="relative flex min-h-screen flex-col">
