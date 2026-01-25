@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Oswald, Anton, Rubik_Glitch } from "next/font/google";
+import { Inter, Oswald, Anton, Rubik_Glitch, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/shared/navbar";
 
-const jetbrainsMono = JetBrains_Mono({ 
+const inter = Inter({ 
   subsets: ["latin"], 
   variable: "--font-sans",
 });
 
-const jetbrainsMonoMono = JetBrains_Mono({ 
+const jetbrainsMono = JetBrains_Mono({ 
   subsets: ["latin"], 
   variable: "--font-mono",
 });
@@ -28,8 +28,8 @@ const rubikGlitch = Rubik_Glitch({
 });
 
 export const metadata: Metadata = {
-  title: "Aceon - Ace Your IITM BS Degree",
-  description: "The ultimate companion for notes, GPA calculation, and exam prep.",
+  title: "Aceon - Public Safety Bureau Edition",
+  description: "The ultimate companion for lecture notes, GPA calculation, and course conquest.",
 };
 
 export default function RootLayout({
@@ -38,11 +38,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="dark">
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased", 
-        jetbrainsMono.variable, 
-        jetbrainsMonoMono.variable,
+        inter.variable, 
+        jetbrainsMono.variable,
         anton.variable,
         rubikGlitch.variable
       )}>

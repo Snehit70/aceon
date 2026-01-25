@@ -106,12 +106,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased font-mono;
-    background-image: url('/images/chainsaw-bg.jpg');
-    background-blend-mode: overlay;
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+    @apply bg-background text-foreground antialiased font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-wide uppercase;
