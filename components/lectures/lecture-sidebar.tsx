@@ -2,7 +2,7 @@
 
 import { CheckCircle2, PlayCircle, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, cleanCourseTitle } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Doc } from "@/convex/_generated/dataModel";
 
@@ -86,7 +86,7 @@ export function LectureSidebar({
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-lg truncate">{courseTitle}</h2>
+            <h2 className="font-semibold text-lg truncate">{cleanCourseTitle(courseTitle)}</h2>
             <p className="text-sm text-muted-foreground">{courseCode}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {completedVideos} of {totalVideos} completed

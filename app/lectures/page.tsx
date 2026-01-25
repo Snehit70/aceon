@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { CourseCard } from "@/components/shared/course-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ProfileSheet = dynamic(
   () => import("@/components/profile/profile-sheet").then((mod) => mod.ProfileSheet),
@@ -167,205 +168,225 @@ export default function LecturesPage() {
         )}
       </div>
 
-      {/* Enrolled Courses Section */}
-      {user && enrolledCourses.length > 0 && (
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" /> My Enrolled Courses
-          </h2>
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {enrolledCourses.map((course, index) => (
-              <motion.div
-                key={course._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-              >
-                <CourseCard
-                  id={course._id}
-                  href={`/lectures/${course._id}`}
-                  code={course.code}
-                  term={course.term}
-                  title={course.title.replace(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+\d{4}\s*-\s*/i, "")}
-                  level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                  lectureCount={course.stats.lectureCount}
-                  totalDuration={course.stats.totalDurationFormatted}
-                  progress={coursesProgress?.[course._id] || 0}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Tabs Layout */}
+      <Tabs defaultValue="enrolled" className="space-y-8">
+        <TabsList className="bg-muted/20 p-1">
+          <TabsTrigger value="enrolled" className="gap-2">
+            <BookOpen className="h-4 w-4" />
+            My Courses
+          </TabsTrigger>
+          <TabsTrigger value="library" className="gap-2">
+            <Search className="h-4 w-4" />
+            Course Library
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Continue Watching - Horizontal Scroll */}
-      {user && continueWatching && continueWatching.length > 0 && (
-        <motion.div 
-          className="space-y-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-              <Play className="h-5 w-5 fill-current text-primary" /> Continue Watching
-            </h2>
-          </div>
-          
-          <div className="relative -mx-4 px-4 overflow-hidden">
-            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {continueWatching.map((item: NonNullable<typeof continueWatching>[number], index) => {
-                if (!item.video || !item.course) return null;
-                const progressPercent = Math.round(item.progress * 100);
-                const remainingSecs = Math.max(0, item.video.duration - item.lastPosition);
-                const remainingMins = Math.floor(remainingSecs / 60);
-                
-                return (
+        <TabsContent value="enrolled" className="space-y-10 focus-visible:outline-none focus-visible:ring-0">
+          {/* Enrolled Courses Section */}
+          {user && enrolledCourses.length > 0 ? (
+            <section className="space-y-6">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {enrolledCourses.map((course, index) => (
                   <motion.div
-                    key={item._id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    key={course._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
                   >
-                    <Link 
-                      href={`/lectures/${item.courseId}`}
-                      className="flex-none w-[280px] snap-start group relative overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
-                    >
-                    {/* Thumbnail Area */}
-                    <div className="relative h-36 bg-muted/30 overflow-hidden">
-                      {item.video.youtubeId ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img 
-                          src={`https://img.youtube.com/vi/${item.video.youtubeId}/mqdefault.jpg`} 
-                          alt={item.video.title}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted/10">
-                           <Play className="h-10 w-10 text-muted-foreground/50" />
-                        </div>
-                      )}
-                      
-                      {/* Play Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
-                         <div className="bg-primary/90 text-primary-foreground p-3 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
-                            <Play className="h-6 w-6 fill-current pl-1" />
-                         </div>
-                      </div>
-                      
-                      {/* Progress Bar at bottom of image */}
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/50">
-                        <div 
-                          className="h-full bg-primary transition-all duration-500" 
-                          style={{ width: `${progressPercent}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="p-4 space-y-2">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <Badge variant="secondary" className="font-mono text-[10px] uppercase h-5 px-1.5">
-                          {item.course.code}
-                        </Badge>
-                        <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> {remainingMins}m left
-                        </span>
-                      </div>
-                      
-                      <h3 className="font-bold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">
-                        {item.video.title}
-                      </h3>
-                      
-                       <div className="pt-2 flex items-center text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                         Resume Lecture <ArrowRight className="ml-1 h-3 w-3" />
-                       </div>
-                     </div>
-                   </Link>
-                 </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Course Library Section */}
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h2 className="text-2xl font-semibold tracking-tight">Course Library</h2>
-          
-          {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search library..."
-                className="pl-9 h-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
-              {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
-                <Button
-                  key={filter}
-                  variant={levelFilter === filter ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => setLevelFilter(filter)}
-                  className="capitalize whitespace-nowrap"
-                >
-                  {filter}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Course Grid */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredLibraryCourses.map((course, index) => {
-            const courseLevelOrder = getLevelOrder(course.level);
-            const isPriorLevel = userLevelOrder > courseLevelOrder;
-            
-            return (
-            <motion.div
-              key={course._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-            >
-              <CourseCard
-                id={course._id}
-                href={`/lectures/${course._id}`}
-                code={course.code}
-                term={course.term}
-                title={course.title}
-                level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                lectureCount={course.stats.lectureCount}
-                totalDuration={course.stats.totalDurationFormatted}
-                progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
-                className={cn(
-                  "hover:opacity-100 transition-opacity",
-                  isPriorLevel ? "opacity-60 grayscale-[0.5]" : "opacity-80"
-                )}
-              />
-            </motion.div>
-          )})}
-
-          {filteredLibraryCourses.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border/50 bg-muted/5 rounded-lg">
-              <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-bold">No Courses Found</h3>
-              <p className="text-muted-foreground mt-2">
-                Try adjusting your search or filters.
-              </p>
-              <Button variant="link" onClick={() => { setSearchQuery(""); setLevelFilter("all"); }} className="mt-4 text-primary">
-                  Clear Filters
-              </Button>
+                    <CourseCard
+                      id={course._id}
+                      href={`/lectures/${course._id}`}
+                      code={course.code}
+                      term={course.term}
+                      title={course.title}
+                      level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                      lectureCount={course.stats.lectureCount}
+                      totalDuration={course.stats.totalDurationFormatted}
+                      progress={coursesProgress?.[course._id] || 0}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border/50 bg-muted/5 rounded-lg">
+               <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
+               <h3 className="text-xl font-bold">No Enrolled Courses</h3>
+               <p className="text-muted-foreground mt-2 max-w-sm">
+                 You haven&apos;t enrolled in any courses yet. Visit the Course Library to get started.
+               </p>
             </div>
           )}
-        </div>
-      </div>
+
+          {/* Continue Watching - Horizontal Scroll */}
+          {user && continueWatching && continueWatching.length > 0 && (
+            <motion.div 
+              className="space-y-4 pt-4 border-t border-border/40"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                  <Play className="h-5 w-5 fill-current text-primary" /> Continue Watching
+                </h2>
+              </div>
+              
+              <div className="relative -mx-4 px-4 overflow-hidden">
+                <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  {continueWatching.map((item: NonNullable<typeof continueWatching>[number], index) => {
+                    if (!item.video || !item.course) return null;
+                    const progressPercent = Math.round(item.progress * 100);
+                    const remainingSecs = Math.max(0, item.video.duration - item.lastPosition);
+                    const remainingMins = Math.floor(remainingSecs / 60);
+                    
+                    return (
+                      <motion.div
+                        key={item._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                      >
+                        <Link 
+                          href={`/lectures/${item.courseId}`}
+                          className="flex-none w-[280px] snap-start group relative overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+                        >
+                        {/* Thumbnail Area */}
+                        <div className="relative h-36 bg-muted/30 overflow-hidden">
+                          {item.video.youtubeId ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img 
+                              src={`https://img.youtube.com/vi/${item.video.youtubeId}/mqdefault.jpg`} 
+                              alt={item.video.title}
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-muted/10">
+                               <Play className="h-10 w-10 text-muted-foreground/50" />
+                            </div>
+                          )}
+                          
+                          {/* Play Overlay */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
+                             <div className="bg-primary/90 text-primary-foreground p-3 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                <Play className="h-6 w-6 fill-current pl-1" />
+                             </div>
+                          </div>
+                          
+                          {/* Progress Bar at bottom of image */}
+                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/50">
+                            <div 
+                              className="h-full bg-primary transition-all duration-500" 
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-4 space-y-2">
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <Badge variant="secondary" className="font-mono text-[10px] uppercase h-5 px-1.5">
+                              {item.course.code}
+                            </Badge>
+                            <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" /> {remainingMins}m left
+                            </span>
+                          </div>
+                          
+                          <h3 className="font-bold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">
+                            {item.video.title}
+                          </h3>
+                          
+                           <div className="pt-2 flex items-center text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                             Resume Lecture <ArrowRight className="ml-1 h-3 w-3" />
+                           </div>
+                         </div>
+                       </Link>
+                     </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="library" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
+          {/* Course Library Section */}
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <div className="relative w-full sm:w-72">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search courses..."
+                    className="pl-9 h-9"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+                  {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
+                    <Button
+                      key={filter}
+                      variant={levelFilter === filter ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setLevelFilter(filter)}
+                      className="capitalize whitespace-nowrap"
+                    >
+                      {filter}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Course Grid */}
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredLibraryCourses.map((course, index) => {
+                const courseLevelOrder = getLevelOrder(course.level);
+                const isPriorLevel = userLevelOrder > courseLevelOrder;
+                
+                return (
+                <motion.div
+                  key={course._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                >
+                  <CourseCard
+                    id={course._id}
+                    href={`/lectures/${course._id}`}
+                    code={course.code}
+                    term={course.term}
+                    title={course.title}
+                    level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                    lectureCount={course.stats.lectureCount}
+                    totalDuration={course.stats.totalDurationFormatted}
+                    progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
+                    className={cn(
+                      "hover:opacity-100 transition-opacity",
+                      isPriorLevel ? "opacity-60 grayscale-[0.5]" : "opacity-80"
+                    )}
+                  />
+                </motion.div>
+              )})}
+
+              {filteredLibraryCourses.length === 0 && (
+                <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border/50 bg-muted/5 rounded-lg">
+                  <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-bold">No Courses Found</h3>
+                  <p className="text-muted-foreground mt-2">
+                    Try adjusting your search or filters.
+                  </p>
+                  <Button variant="link" onClick={() => { setSearchQuery(""); setLevelFilter("all"); }} className="mt-4 text-primary">
+                      Clear Filters
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

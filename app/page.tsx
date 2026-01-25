@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Bookmark, StickyNote, GraduationCap, CheckCircle2 } from "lucide-react";
-import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { useUser, SignUpButton } from "@clerk/nextjs";
 
 export default function LandingPage() {
   const { isSignedIn } = useUser();

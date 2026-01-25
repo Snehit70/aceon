@@ -2,7 +2,7 @@ import * as React from "react"
 import Link from "next/link"
 import { Clock, BookOpen, ArrowRight, PlayCircle } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, cleanCourseTitle } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -60,7 +60,7 @@ export function CourseCard({
             </div>
             
             <CardTitle className="text-lg font-bold leading-tight bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent group-hover/card:to-white transition-all duration-300 min-h-[3.5rem] flex items-start">
-              {title}
+              {cleanCourseTitle(title)}
             </CardTitle>
           </CardHeader>
 

@@ -9,7 +9,7 @@ import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2,
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { cn, cleanCourseTitle } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useUser } from "@clerk/nextjs";
 import { BookmarkPanel } from "@/components/lectures/bookmark-panel";
@@ -315,7 +315,7 @@ export default function LecturePlayerPage() {
             <PanelLeftClose className="h-4 w-4" />
           </Button>
           <LectureSidebar
-            courseTitle={course.title.replace(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+\d{4}\s*-\s*/i, "")}
+            courseTitle={course.title}
             courseCode={course.code}
             courseTerm={course.term}
             content={content}
@@ -366,7 +366,7 @@ export default function LecturePlayerPage() {
               />
             </SheetContent>
           </Sheet>
-          <span className="font-semibold truncate">{currentVideo?.title || course.title.replace(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+\d{4}\s*-\s*/i, "")}</span>
+          <span className="font-semibold truncate">{currentVideo?.title || cleanCourseTitle(course.title)}</span>
         </div>
 
         <div className="flex-1 p-4 md:p-6 max-w-5xl mx-auto w-full space-y-4">
