@@ -77,6 +77,7 @@ const config: Config = {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular"],
         display: ["var(--font-display)", "var(--font-sans)"],
+        glitch: ["var(--font-glitch)", "cursive"],
       },
     }
   },
