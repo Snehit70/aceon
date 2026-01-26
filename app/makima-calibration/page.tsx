@@ -26,7 +26,7 @@ export default function MakimaCalibrationPage() {
               <div 
                 className="absolute inset-0 bg-cover opacity-100"
                 style={{ 
-                  backgroundImage: "url('/images/navbar-bg.jpg')",
+                  backgroundImage: "url('/images/texture-navbar.jpg')",
                   backgroundPosition: `center ${pct}%` 
                 }} 
               />

@@ -28,7 +28,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b-[3px] border-[#E62E2D] bg-black shadow-[0_4px_0_rgba(230,46,45,0.2)]">
-      <div className="absolute inset-0 bg-[url('/images/navbar-bg.jpg')] bg-[length:100%_auto] bg-[center_35%] opacity-100 mix-blend-normal pointer-events-none" />
+      <div className="absolute inset-0 bg-[url('/images/texture-navbar.jpg')] bg-[length:100%_auto] bg-[center_35%] opacity-100 mix-blend-normal pointer-events-none" />
       <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       <div className="flex h-16 w-full items-center px-6 relative z-10">
         <div className="mr-4 hidden md:flex">

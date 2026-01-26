@@ -15,7 +15,7 @@ export function Hero() {
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
       <div className="absolute inset-0 z-0 select-none bg-black">
         <div 
-            className="absolute inset-0 bg-[url('/images/chainsaw-bg.jpg')] bg-cover bg-center opacity-50 mix-blend-luminosity grayscale contrast-125" 
+            className="absolute inset-0 bg-[url('/images/hero-bg-chainsaw.jpg')] bg-cover bg-center opacity-50 mix-blend-luminosity grayscale contrast-125" 
         />
         <div className="absolute inset-0 bg-[url('/images/noise.svg')] opacity-40 mix-blend-overlay" />
         <div className="absolute inset-0 bg-[#E62E2D]/10 mix-blend-overlay" />
@@ -43,10 +43,10 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex flex-col items-center justify-center font-display uppercase font-black tracking-tighter leading-[0.85]"
           >
-            <span className="text-6xl md:text-8xl lg:text-[10rem] text-transparent bg-clip-text bg-[url('/images/aki.jpg')] bg-cover bg-center drop-shadow-[0_0_10px_rgba(230,46,45,0.5)] [-webkit-text-stroke:2px_white]">
+            <span className="text-6xl md:text-8xl lg:text-[10rem] text-transparent bg-clip-text bg-[url('/images/hero-aki.jpg')] bg-cover bg-center drop-shadow-[0_0_10px_rgba(230,46,45,0.5)] [-webkit-text-stroke:2px_white] grayscale contrast-125">
               Academic
             </span>
-            <span className="text-7xl md:text-9xl lg:text-[12rem] text-transparent bg-clip-text bg-[url('/images/chainsaw-text-bg.webp')] bg-cover bg-center relative z-10 drop-shadow-[6px_6px_0_rgba(0,0,0,1)] [-webkit-text-stroke:2px_white]">
+            <span className="text-7xl md:text-9xl lg:text-[12rem] text-transparent bg-clip-text bg-[url('/images/hero-text-mask.webp')] bg-cover bg-center relative z-10 drop-shadow-[6px_6px_0_rgba(0,0,0,1)] [-webkit-text-stroke:2px_white]">
                Weapon
             </span>
           </motion.h1>
