@@ -149,7 +149,7 @@ export function LectureSidebar({
                             key={video._id}
                             variant={currentVideoId === video._id ? "secondary" : "ghost"}
                             className={cn(
-                              "w-full justify-start text-left h-auto py-2 px-3",
+                              "w-full justify-start text-left h-auto py-3 px-3",
                               currentVideoId === video._id && "bg-secondary"
                             )}
                             onClick={() => onVideoSelect(video._id)}

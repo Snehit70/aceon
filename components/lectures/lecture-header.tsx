@@ -40,7 +40,7 @@ export function LectureHeader({
             size="sm"
             variant="outline"
             onClick={onBookmark}
-            className="gap-1.5 text-xs"
+            className="gap-1.5 text-xs min-h-[44px]"
           >
             <Bookmark className="h-3.5 w-3.5" />
             Bookmark
@@ -49,7 +49,7 @@ export function LectureHeader({
             size="sm"
             variant="outline"
             onClick={onToggleNote}
-            className="gap-1.5 text-xs"
+            className="gap-1.5 text-xs min-h-[44px]"
           >
             <StickyNote className="h-3.5 w-3.5" />
             Note
@@ -59,7 +59,7 @@ export function LectureHeader({
             variant={isCompleted ? "secondary" : "outline"}
             onClick={onMarkComplete}
             disabled={isCompleted}
-            className="gap-1.5 text-xs"
+            className="gap-1.5 text-xs min-h-[44px]"
           >
             <CheckCircle2 className={cn("h-3.5 w-3.5", isCompleted && "text-green-500")} />
             {isCompleted ? "Completed" : "Mark Done"}
