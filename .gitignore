@@ -62,3 +62,6 @@ data_auth_info.json
 /test-results/
 secret_token.txt
 dev.log
+
+# Sisyphus work tracking
+.sisyphus/
