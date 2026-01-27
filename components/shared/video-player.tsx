@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle, ComponentType } from "react";
 import ReactPlayer from "react-player";
 import { cn } from "@/lib/utils";
+import LandscapeHint from "./landscape-hint";
 
 // 1. Define the ReactPlayer instance interface
 interface ReactPlayerInstance {
@@ -53,6 +54,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
 }, ref) => {
   const [mounted, setMounted] = useState(false);
   const [seeking] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   // 4. Type the ref with your custom interface
   const playerRef = useRef<ReactPlayerInstance>(null);
@@ -97,7 +99,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
     <div 
       ref={containerRef}
       className={cn(
-        "relative w-full aspect-video overflow-hidden bg-black transition-all duration-500",
+        "relative w-full aspect-video max-h-[50vh] sm:max-h-none overflow-hidden bg-black transition-all duration-500",
         theaterMode ? "z-50 scale-100" : "z-0"
       )}
     >
@@ -126,6 +128,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
             // Duration is tracked by react-player internally
           }}
           onReady={() => {
+            setIsVideoReady(true);
             if (initialPosition > 0 && playerRef.current) {
               playerRef.current.seekTo(initialPosition, "seconds");
             }
@@ -150,6 +153,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(({
           }}
         />
       </div>
+      <LandscapeHint isReady={isVideoReady} />
     </div>
   );
 });
