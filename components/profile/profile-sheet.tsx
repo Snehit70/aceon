@@ -110,7 +110,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
 
   return (
     <Sheet open={open} onOpenChange={forceOpen ? () => {} : onOpenChange}>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0 border-l border-white/10 bg-background/80 backdrop-blur-xl">
+      <SheetContent side="right" className="w-full max-w-[400px] sm:max-w-[540px] p-0 border-l border-white/10 bg-background/80 backdrop-blur-xl">
         <div className="h-full flex flex-col">
           <SheetHeader className="px-6 py-6 border-b border-white/5 bg-white/5">
             <SheetTitle className="text-2xl font-bold tracking-tight bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">
