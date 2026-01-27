@@ -17,8 +17,8 @@ mock.module("next/navigation", () => ({
 
 // Mock Clerk
 // Defining components outside to avoid potential parsing issues with JSX inside the mock factory
-const MockChildren = ({ children }) => React.createElement(React.Fragment, null, children);
-const MockButton = ({ children }) => React.createElement("div", null, children);
+const MockChildren = ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children);
+const MockButton = ({ children }: { children?: React.ReactNode }) => React.createElement("div", null, children);
 const MockUserButton = () => React.createElement("div", null, "UserButton");
 
 mock.module("@clerk/nextjs", () => ({
