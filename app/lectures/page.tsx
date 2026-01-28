@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -61,7 +60,6 @@ export default function LecturesPage() {
   }, [otherCourses, searchQuery, levelFilter]);
 
   // Force open profile sheet if no profile exists
-  // Force open profile sheet if no profile exists
   useEffect(() => {
     if (user && profile === null) {
       const timer = setTimeout(() => {
@@ -71,60 +69,21 @@ export default function LecturesPage() {
     }
   }, [user, profile]);
 
-
-
-
-
-
   if (courses === undefined) {
     return (
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-8">
-          <div className="space-y-2">
-            <Skeleton className="h-10 w-48" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-          <div className="flex flex-col md:flex-row gap-4 justify-between">
-            <Skeleton className="h-10 w-full md:w-96" />
-            <div className="flex gap-2">
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-9 w-24" />
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-9 w-20" />
+      <div className="min-h-screen bg-black text-white p-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/images/character-aki-kon.jpg')] bg-cover bg-center opacity-10 pointer-events-none" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-black pointer-events-none" aria-hidden="true" />
+          <div className="space-y-8 container mx-auto max-w-7xl relative z-10">
+            <div className="space-y-4">
+              <Skeleton className="h-20 w-96 bg-neutral-900" />
+              <Skeleton className="h-6 w-[500px] bg-neutral-900" />
             </div>
-          </div>
-          <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="h-[260px] border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden"
-                >
-                  <div className="p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-2">
-                        <Skeleton className="h-5 w-16" />
-                        <Skeleton className="h-5 w-12" />
-                      </div>
-                      <Skeleton className="h-5 w-20" />
-                    </div>
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-3/4" />
-                  </div>
-                  <div className="px-4 py-3 space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-1.5 w-full" />
-                  </div>
-                  <div className="px-4 py-3 flex items-center justify-between border-t border-border/50">
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                  <div className="h-9 border-t border-border/50 flex items-center justify-center">
-                    <Skeleton className="h-4 w-28" />
-                  </div>
-                </motion.div>
-            ))}
+            <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div key={i} className="h-[300px] border-4 border-neutral-800 bg-neutral-900/50" />
+              ))}
+            </div>
           </div>
       </div>
     );
@@ -140,82 +99,260 @@ export default function LecturesPage() {
   const userLevelOrder = profile?.level ? getLevelOrder(profile.level) : 0;
 
   return (
-    <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-10 animate-in fade-in duration-500">
+    <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
+      <div className="fixed inset-0 bg-[url('/images/halftone.svg')] opacity-5 pointer-events-none mix-blend-screen z-0" />
       
-      <ProfileSheet 
-        open={showProfileSheet} 
-        onOpenChange={setShowProfileSheet} 
-        forceOpen={!!(user && profile === null)} 
-      />
-
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <Button 
-            asChild 
-            variant="ghost" 
-            size="sm" 
-            className="gap-2 text-muted-foreground hover:text-white transition-colors"
-          >
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4" />
-              Back to HQ
-            </Link>
-          </Button>
-        </div>
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-16 relative z-10 animate-in fade-in duration-500">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-3 sm:space-y-4">
-            <h1 className="text-5xl sm:text-6xl font-black tracking-tighter text-white uppercase font-display drop-shadow-[0_2px_0_rgba(0,0,0,1)]">
-              Active <span className="text-accent">Missions</span>
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl font-mono uppercase tracking-widest border-l-4 border-accent pl-4 mt-4">
-              {profile?.level ? (
-                <span className="flex items-center gap-2">
-                  <span className="text-accent">///</span> 
-                  {profile.level} Threat Level 
-                  <span className="text-accent">///</span>
-                  Status: Active Duty
-                </span>
-              ) : (
-                "Resume patrol or accept a new contract."
-              )}
-            </p>
-          </div>
-          {user && (
-            <Button variant="outline" onClick={() => setShowProfileSheet(true)} className="gap-2">
-              <Settings2 className="h-4 w-4" />
-              Customize Profile
+        <ProfileSheet 
+          open={showProfileSheet} 
+          onOpenChange={setShowProfileSheet} 
+          forceOpen={!!(user && profile === null)} 
+        />
+
+        {/* Header */}
+        <div className="flex flex-col gap-8">
+          <div className="flex items-center gap-4">
+            <Button 
+              asChild 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2 text-neutral-400 hover:text-[#E62E2D] hover:bg-transparent transition-colors uppercase font-bold tracking-widest"
+            >
+              <Link href="/">
+                <ArrowLeft className="h-4 w-4" />
+                Back to HQ
+              </Link>
             </Button>
-          )}
+          </div>
+          
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
+            <div className="space-y-4">
+              <h1 className="text-6xl sm:text-7xl font-black tracking-tighter text-white uppercase font-display drop-shadow-[4px_4px_0_#E62E2D] -rotate-1 skew-x-[-5deg] leading-none">
+                Active <span className="text-white bg-[#E62E2D] px-2 transform skew-x-[10deg] inline-block border-2 border-black">Missions</span>
+              </h1>
+              <div className="bg-white/10 backdrop-blur-sm border-l-4 border-[#E62E2D] p-4 transform rotate-1">
+                <p className="text-base sm:text-lg text-neutral-200 font-mono uppercase tracking-widest">
+                  {profile?.level ? (
+                    <span className="flex items-center gap-2">
+                      <span className="text-[#E62E2D]">///</span> 
+                      {profile.level} Threat Level 
+                      <span className="text-[#E62E2D]">///</span>
+                      Status: Active Duty
+                    </span>
+                  ) : (
+                    "Resume patrol or accept a new contract."
+                  )}
+                </p>
+              </div>
+            </div>
+            {user && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowProfileSheet(true)} 
+                className="gap-2 border-4 border-white bg-black text-white hover:bg-[#E62E2D] hover:text-white hover:border-[#E62E2D] shadow-[4px_4px_0px_0px_#333] hover:shadow-[6px_6px_0px_0px_#E62E2D] hover:-translate-y-1 transition-all rounded-none font-bold uppercase tracking-widest h-12 px-6"
+              >
+                <Settings2 className="h-4 w-4" />
+                Customize Profile
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Tabs Layout */}
-      <Tabs defaultValue="enrolled" className="space-y-8">
-        <TabsList className="bg-transparent border-b-2 border-border p-0 w-full justify-start rounded-none h-auto gap-8">
-          <TabsTrigger 
-            value="enrolled" 
-            className="gap-2 font-display uppercase tracking-widest text-xl data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-accent rounded-none px-0 py-4 transition-all hover:text-white"
-          >
-            <BookOpen className="h-5 w-5" />
-            Assigned_Missions
-          </TabsTrigger>
-          <TabsTrigger 
-            value="library" 
-            className="gap-2 font-display uppercase tracking-widest text-xl data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-primary rounded-none px-0 py-4 transition-all hover:text-white"
-          >
-            <Search className="h-5 w-5" />
-            Mission_Archives
-          </TabsTrigger>
-        </TabsList>
+        {/* Tabs Layout */}
+        <Tabs defaultValue="enrolled" className="space-y-12">
+          <TabsList className="bg-transparent border-b-4 border-neutral-800 p-0 w-full justify-start rounded-none h-auto gap-8">
+            <TabsTrigger 
+              value="enrolled" 
+              className="group gap-2 font-display font-black uppercase tracking-widest text-2xl data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
+            >
+              Enrolled_Missions
+              <span className="ml-2 text-xs bg-neutral-800 text-white px-2 py-0.5 rounded-full group-data-[state=active]:bg-[#E62E2D]">
+                {enrolledCourses.length}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="library" 
+              className="gap-2 font-display font-black uppercase tracking-widest text-2xl data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
+            >
+              Mission_Archives
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="enrolled" className="space-y-10 focus-visible:outline-none focus-visible:ring-0">
-          {/* Enrolled Courses Section */}
-          {user && enrolledCourses.length > 0 ? (
-            <section className="space-y-6">
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {enrolledCourses.map((course, index) => (
+          <TabsContent value="enrolled" className="space-y-16 focus-visible:outline-none focus-visible:ring-0">
+            {/* Enrolled Courses Section */}
+            {user && enrolledCourses.length > 0 ? (
+              <section className="space-y-6">
+                <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {enrolledCourses.map((course, index) => (
+                    <motion.div
+                      key={course._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                    >
+                      <ChainsawCard
+                        id={course._id}
+                        href={`/lectures/${course._id}`}
+                        code={course.code}
+                        term={course.term}
+                        title={course.title}
+                        level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                        lectureCount={course.stats.lectureCount}
+                        totalDuration={course.stats.totalDurationFormatted}
+                        progress={coursesProgress?.[course._id] || 0}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            ) : (
+              <div className="relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
+                 <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-10 pointer-events-none" aria-hidden="true" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
+                 <BookOpen className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
+                 <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Enrolled Courses</h3>
+                 <p className="text-neutral-400 font-mono uppercase tracking-wide max-w-sm relative z-10">
+                   You haven&apos;t enrolled in any courses yet. Visit the Archives to get started.
+                 </p>
+              </div>
+            )}
+
+            {/* Continue Watching - Horizontal Scroll */}
+            {user && continueWatching && continueWatching.length > 0 && (
+              <motion.div 
+                className="space-y-6 pt-12 border-t-4 border-neutral-900"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl font-black tracking-tighter flex items-center gap-3 font-display uppercase drop-shadow-[2px_2px_0_#E62E2D] -rotate-1">
+                    <Play className="h-6 w-6 fill-current text-[#E62E2D]" /> Resume Patrol
+                  </h2>
+                </div>
+                
+                <div className="relative -mx-4 px-4 overflow-hidden">
+                  <div className="flex gap-6 overflow-x-auto pb-8 pt-4 snap-x snap-mandatory no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {continueWatching.map((item: NonNullable<typeof continueWatching>[number], index) => {
+                      if (!item.video || !item.course) return null;
+                      const progressPercent = Math.round(item.progress * 100);
+                      const remainingSecs = Math.max(0, item.video.duration - item.lastPosition);
+                      const remainingMins = Math.floor(remainingSecs / 60);
+                      
+                      return (
+                        <motion.div
+                          key={item._id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: index * 0.1 }}
+                        >
+                          <Link 
+                            href={`/lectures/${item.courseId}`}
+                            className="flex-none w-[320px] snap-start group relative block"
+                          >
+                            <div className="border-4 border-white bg-black hover:border-[#E62E2D] transition-colors duration-200 shadow-[8px_8px_0px_0px_#333] hover:shadow-[12px_12px_0px_0px_#E62E2D] hover:-translate-y-2 clip-corner overflow-hidden">
+                              {/* Thumbnail Area */}
+                              <div className="relative h-44 bg-neutral-900 overflow-hidden border-b-4 border-white group-hover:border-[#E62E2D] transition-colors">
+                                {item.video.youtubeId ? (
+                                  /* eslint-disable-next-line @next/next/no-img-element */
+                                  <img 
+                                    src={`https://img.youtube.com/vi/${item.video.youtubeId}/mqdefault.jpg`} 
+                                    alt={item.video.title}
+                                    className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-neutral-900">
+                                     <Play className="h-12 w-12 text-neutral-700" />
+                                  </div>
+                                )}
+                                
+                                {/* Play Overlay */}
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
+                                   <div className="bg-[#E62E2D] text-white p-3 border-2 border-black shadow-[4px_4px_0_0_black] transform rotate-3">
+                                      <Play className="h-6 w-6 fill-current" />
+                                   </div>
+                                </div>
+                                
+                                {/* Progress Bar at bottom of image */}
+                                <div className="absolute bottom-0 left-0 right-0 h-2 bg-black">
+                                  <div 
+                                    className="h-full bg-[#E62E2D]" 
+                                    style={{ width: `${progressPercent}%` }}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="p-4 space-y-3 bg-black">
+                                <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider">
+                                  <span className="bg-white text-black px-2 py-0.5 font-bold transform -skew-x-12">
+                                    {item.course.code}
+                                  </span>
+                                  <span className="flex items-center gap-1 text-[#E62E2D]">
+                                      <Clock className="w-3 h-3" /> {remainingMins}m
+                                  </span>
+                                </div>
+                                
+                                <h3 className="font-display font-bold text-lg leading-tight line-clamp-2 text-white group-hover:text-[#E62E2D] transition-colors">
+                                  {item.video.title}
+                                </h3>
+                                
+                                 <div className="pt-2 flex items-center text-xs font-bold uppercase tracking-widest text-[#E62E2D] opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                   Resume_Mission <ArrowRight className="ml-1 h-3 w-3" />
+                                 </div>
+                               </div>
+                             </div>
+                         </Link>
+                       </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="library" className="space-y-8 focus-visible:outline-none focus-visible:ring-0">
+            {/* Course Library Section */}
+            <div className="space-y-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                  <div className="relative w-full sm:w-80 group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 group-focus-within:text-[#E62E2D] transition-colors" />
+                    <Input
+                      placeholder="SEARCH_ARCHIVES..."
+                      className="pl-12 h-14 bg-black border-4 border-white rounded-none text-lg font-mono placeholder:text-neutral-600 focus-visible:ring-0 focus-visible:border-[#E62E2D] uppercase tracking-wider text-white transition-colors shadow-[4px_4px_0_0_#333]"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar items-center">
+                    {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
+                      <Button
+                        key={filter}
+                        variant="ghost"
+                        onClick={() => setLevelFilter(filter)}
+                        className={cn(
+                          "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
+                          levelFilter === filter 
+                            ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
+                            : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
+                        )}
+                      >
+                        {filter}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Course Grid */}
+              <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredLibraryCourses.map((course, index) => {
+                  const courseLevelOrder = getLevelOrder(course.level);
+                  const isPriorLevel = userLevelOrder > courseLevelOrder;
+                  
+                  return (
                   <motion.div
                     key={course._id}
                     initial={{ opacity: 0, y: 20 }}
@@ -231,191 +368,38 @@ export default function LecturesPage() {
                       level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
                       lectureCount={course.stats.lectureCount}
                       totalDuration={course.stats.totalDurationFormatted}
-                      progress={coursesProgress?.[course._id] || 0}
+                      progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
+                      className={cn(
+                        "hover:opacity-100 transition-opacity",
+                        isPriorLevel ? "opacity-60 grayscale" : "opacity-100"
+                      )}
                     />
                   </motion.div>
-                ))}
-              </div>
-            </section>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border/50 bg-muted/5 rounded-lg">
-               <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
-               <h3 className="text-xl font-bold">No Enrolled Courses</h3>
-               <p className="text-muted-foreground mt-2 max-w-sm">
-                 You haven&apos;t enrolled in any courses yet. Visit the Course Library to get started.
-               </p>
-            </div>
-          )}
+                )})}
 
-          {/* Continue Watching - Horizontal Scroll */}
-          {user && continueWatching && continueWatching.length > 0 && (
-            <motion.div 
-              className="space-y-4 pt-4 border-t border-border/40"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2 font-display uppercase">
-                  <Play className="h-5 w-5 fill-current text-primary" /> Resume Patrol
-                </h2>
-              </div>
-              
-              <div className="relative -mx-4 px-4 overflow-hidden">
-                <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {continueWatching.map((item: NonNullable<typeof continueWatching>[number], index) => {
-                    if (!item.video || !item.course) return null;
-                    const progressPercent = Math.round(item.progress * 100);
-                    const remainingSecs = Math.max(0, item.video.duration - item.lastPosition);
-                    const remainingMins = Math.floor(remainingSecs / 60);
-                    
-                    return (
-                      <motion.div
-                        key={item._id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 }}
-                      >
-                        <Link 
-                          href={`/lectures/${item.courseId}`}
-                          className="flex-none w-[280px] snap-start group relative overflow-hidden border border-border/50 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
-                        >
-                        {/* Thumbnail Area */}
-                        <div className="relative h-36 bg-muted/30 overflow-hidden">
-                          {item.video.youtubeId ? (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img 
-                              src={`https://img.youtube.com/vi/${item.video.youtubeId}/mqdefault.jpg`} 
-                              alt={item.video.title}
-                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-muted/10">
-                               <Play className="h-10 w-10 text-muted-foreground/50" />
-                            </div>
-                          )}
-                          
-                          {/* Play Overlay */}
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
-                             <div className="bg-primary/90 text-primary-foreground p-3 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
-                                <Play className="h-6 w-6 fill-current pl-1" />
-                             </div>
-                          </div>
-                          
-                          {/* Progress Bar at bottom of image */}
-                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/50">
-                            <div 
-                              className="h-full bg-primary transition-all duration-500" 
-                              style={{ width: `${progressPercent}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="p-4 space-y-2">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <Badge variant="secondary" className="font-mono text-[10px] uppercase h-5 px-1.5">
-                              {item.course.code}
-                            </Badge>
-                            <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> {remainingMins}m left
-                            </span>
-                          </div>
-                          
-                          <h3 className="font-bold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">
-                            {item.video.title}
-                          </h3>
-                          
-                           <div className="pt-2 flex items-center text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                             Resume Lecture <ArrowRight className="ml-1 h-3 w-3" />
-                           </div>
-                         </div>
-                       </Link>
-                     </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="library" className="space-y-6 focus-visible:outline-none focus-visible:ring-0">
-          {/* Course Library Section */}
-          <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex flex-col sm:flex-row gap-3 w-full">
-                <div className="relative w-full sm:w-72">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search courses..."
-                    className="pl-9 h-9"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
-                  {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
-                    <Button
-                      key={filter}
-                      variant={levelFilter === filter ? "secondary" : "ghost"}
-                      size="sm"
-                      onClick={() => setLevelFilter(filter)}
-                      className="capitalize whitespace-nowrap"
+                {filteredLibraryCourses.length === 0 && (
+                  <div className="col-span-full relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-10 pointer-events-none" aria-hidden="true" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
+                    <Search className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
+                    <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Archives Found</h3>
+                    <p className="text-neutral-400 font-mono uppercase tracking-wide max-w-sm relative z-10">
+                      Try adjusting your search or filters.
+                    </p>
+                    <Button 
+                      variant="link" 
+                      onClick={() => { setSearchQuery(""); setLevelFilter("all"); }} 
+                      className="mt-6 text-[#E62E2D] font-bold text-lg uppercase tracking-widest hover:text-white relative z-10"
                     >
-                      {filter}
+                        Clear Filters
                     </Button>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Course Grid */}
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredLibraryCourses.map((course, index) => {
-                const courseLevelOrder = getLevelOrder(course.level);
-                const isPriorLevel = userLevelOrder > courseLevelOrder;
-                
-                return (
-                <motion.div
-                  key={course._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                >
-                  <ChainsawCard
-                    id={course._id}
-                    href={`/lectures/${course._id}`}
-                    code={course.code}
-                    term={course.term}
-                    title={course.title}
-                    level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                    lectureCount={course.stats.lectureCount}
-                    totalDuration={course.stats.totalDurationFormatted}
-                    progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
-                    className={cn(
-                      "hover:opacity-100 transition-opacity",
-                      isPriorLevel ? "opacity-60 grayscale-[0.5]" : "opacity-80"
-                    )}
-                  />
-                </motion.div>
-              )})}
-
-              {filteredLibraryCourses.length === 0 && (
-                <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border/50 bg-muted/5 rounded-lg">
-                  <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-bold">No Courses Found</h3>
-                  <p className="text-muted-foreground mt-2">
-                    Try adjusting your search or filters.
-                  </p>
-                  <Button variant="link" onClick={() => { setSearchQuery(""); setLevelFilter("all"); }} className="mt-4 text-primary">
-                      Clear Filters
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
