@@ -72,7 +72,7 @@ export default function LecturesPage() {
   if (courses === undefined) {
     return (
       <div className="min-h-screen bg-black text-white p-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/character-aki-kon.jpg')] bg-cover bg-center opacity-10 pointer-events-none" aria-hidden="true" />
+          <div className="absolute inset-0 bg-[url('/images/character-aki-kon.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-black pointer-events-none" aria-hidden="true" />
           <div className="space-y-8 container mx-auto max-w-7xl relative z-10">
             <div className="space-y-4">
@@ -101,6 +101,8 @@ export default function LecturesPage() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
       <div className="fixed inset-0 bg-[url('/images/halftone.svg')] opacity-5 pointer-events-none mix-blend-screen z-0" />
+      <div className="fixed inset-0 bg-[url('/images/hero-bg-chainsaw.jpg')] bg-cover bg-center opacity-10 pointer-events-none z-0 mix-blend-luminosity" />
+      <div className="fixed inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-0" />
       
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-16 relative z-10 animate-in fade-in duration-500">
         
@@ -208,7 +210,7 @@ export default function LecturesPage() {
               </section>
             ) : (
               <div className="relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
-                 <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-10 pointer-events-none" aria-hidden="true" />
+                 <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
                  <BookOpen className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
                  <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Enrolled Courses</h3>
@@ -379,7 +381,7 @@ export default function LecturesPage() {
 
                 {filteredLibraryCourses.length === 0 && (
                   <div className="col-span-full relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
-                    <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-10 pointer-events-none" aria-hidden="true" />
+<div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
                     <Search className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
                     <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Archives Found</h3>

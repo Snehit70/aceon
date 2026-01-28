@@ -39,7 +39,7 @@ export function ChainsawCard({
       <div className="relative h-full transition-all duration-200 group-hover/card:translate-x-[-4px] group-hover/card:translate-y-[-4px]">
         <div className="absolute inset-0 bg-primary translate-x-2 translate-y-2 clip-corner opacity-0 group-hover/card:opacity-100 transition-opacity duration-200" />
         
-        <div className="relative h-full bg-void border-2 border-border group-hover/card:border-primary flex flex-col clip-corner transition-colors duration-200 overflow-hidden">
+        <div className="relative h-full bg-black border-2 border-border group-hover/card:border-primary flex flex-col clip-corner transition-colors duration-200 overflow-hidden">
           
           <div className="p-4 border-b-2 border-border group-hover/card:border-primary/50 bg-secondary/5 space-y-3">
             <div className="flex items-center justify-between">
@@ -53,7 +53,7 @@ export function ChainsawCard({
             </div>
             
             <div className="space-y-1">
-              <h3 className="font-display text-2xl font-bold leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-primary transition-colors">
+              <h3 className="font-display text-2xl font-bold leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-white transition-colors">
                 {cleanCourseTitle(title)}
               </h3>
               {subtitle && (

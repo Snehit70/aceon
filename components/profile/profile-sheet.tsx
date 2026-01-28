@@ -112,7 +112,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
     <Sheet open={open} onOpenChange={forceOpen ? () => {} : onOpenChange}>
       <SheetContent side="right" className="w-full max-w-[400px] sm:max-w-[540px] p-0 border-l border-white/10 bg-background/80 backdrop-blur-xl h-screen overflow-hidden">
         <div 
-          className="absolute inset-0 bg-[url('/images/character-makima.jpg')] bg-cover bg-center opacity-15 pointer-events-none"
+          className="absolute inset-0 bg-[url('/images/character-makima.jpg')] bg-cover bg-center opacity-30 pointer-events-none"
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40 pointer-events-none" aria-hidden="true" />
