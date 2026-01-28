@@ -44,7 +44,7 @@ export function LectureHeader({
               "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 transition-all",
               isCompleted 
                 ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-2 border-green-500/40" 
-                : "bg-[#ff1744] text-white hover:bg-[#f01440] shadow-xl shadow-red-500/60 border-2 border-red-400"
+                : "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/50"
             )}
           >
             <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
