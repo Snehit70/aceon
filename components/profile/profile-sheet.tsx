@@ -113,7 +113,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
 <SheetContent side="right" className="w-full max-w-[400px] sm:max-w-[540px] p-0 border-l border-white/10 bg-black h-screen overflow-hidden flex flex-col">
         <div className="relative h-64 shrink-0 w-full overflow-hidden">
           <div 
-            className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-[center_20%] opacity-80"
+            className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-[center_55%] opacity-100"
             aria-hidden="true"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
