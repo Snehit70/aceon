@@ -403,7 +403,7 @@ export default function LecturePlayerPage() {
 
           {currentVideo ? (
             <div className="space-y-4">
-              <div className="relative group">
+              <div className="relative">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30 rounded-t-lg overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-300 ease-out"
@@ -420,29 +420,6 @@ export default function LecturePlayerPage() {
                   theaterMode={theaterMode}
                   onTheaterModeChange={setTheaterMode}
                 />
-
-                {user && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className="shadow-lg backdrop-blur-sm bg-background/95 hover:bg-background border border-primary/20 hover:border-primary"
-                      onClick={handleQuickAddBookmark}
-                    >
-                      <Bookmark className="h-4 w-4 mr-1" />
-                      Bookmark
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className="shadow-lg backdrop-blur-sm bg-background/95 hover:bg-background border border-primary/20 hover:border-primary"
-                      onClick={() => setShowQuickNote(true)}
-                    >
-                      <StickyNote className="h-4 w-4 mr-1" />
-                      Note
-                    </Button>
-                  </div>
-                )}
 
                 {showAutoplayCountdown && findNextVideo() && (
                   <AutoplayOverlay 
