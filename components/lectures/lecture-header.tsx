@@ -37,15 +37,15 @@ export function LectureHeader({
       {showUserActions && (
         <div className="flex items-center gap-2 shrink-0">
           <Button
-            size="sm"
+            size="lg"
             variant={isCompleted ? "secondary" : "default"}
             onClick={onMarkComplete}
             disabled={isCompleted}
             className={cn(
-              "gap-2 text-xs font-bold uppercase tracking-wider min-h-[44px] px-5 transition-all shadow-lg",
+              "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 transition-all",
               isCompleted 
-                ? "bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20" 
-                : "bg-primary text-white hover:bg-primary/90 shadow-primary/50"
+                ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-2 border-green-500/40" 
+                : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/50 border-2 border-indigo-400/50"
             )}
           >
             <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
