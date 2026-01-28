@@ -60,12 +60,16 @@ export function LectureSidebar({
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-transparent pointer-events-none" />
       
       <div className="relative z-10 flex flex-col h-full">
-      <div className="p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+      <div className="relative p-4 border-b border-white/10 sticky top-0 z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_20%] opacity-30 pointer-events-none mix-blend-luminosity" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 pointer-events-none" />
+        
+        <div className="relative z-10">
         <Button 
           asChild 
           variant="ghost" 
           size="sm" 
-          className="gap-2 text-muted-foreground hover:text-foreground mb-3 -ml-2"
+          className="gap-2 text-muted-foreground hover:text-white mb-3 -ml-2"
         >
           <Link href="/lectures">
             <ArrowLeft className="h-4 w-4" />
@@ -118,6 +122,7 @@ export function LectureSidebar({
                 Mark All Done
               </Button>
             )}
+          </div>
           </div>
         </div>
       </div>
