@@ -29,7 +29,7 @@ export function LectureHeader({
     <div className="flex items-start justify-between gap-4">
       <div className="flex-1 min-w-0">
         <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-wide text-white drop-shadow-md truncate">{title}</h1>
-        <p className="text-sm font-mono text-muted-foreground uppercase tracking-widest mt-1">
+        <p className="text-sm font-mono text-white/80 uppercase tracking-widest mt-1">
           {weekTitle} <span className="text-primary mx-2">//</span> {Math.floor(duration / 60)} min
         </p>
       </div>
@@ -45,7 +45,7 @@ export function LectureHeader({
               "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 transition-all",
               isCompleted 
                 ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-2 border-green-500/40" 
-                : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/50 border-2 border-indigo-400/50"
+                : "!bg-[#ff1744] text-white hover:!bg-[#f01440] shadow-xl shadow-red-500/60 border-2 border-red-400"
             )}
           >
             <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
