@@ -330,20 +330,20 @@ export default function LecturePlayerPage() {
 
       {/* Sidebar Toggle Button (When Closed) */}
       {!isSidebarOpen && (
-        <div className="hidden md:flex border-r bg-background items-start py-2 px-1">
-           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSidebarOpen(true)}
-            title="Open Sidebar"
-          >
-            <PanelLeftOpen className="h-5 w-5" />
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => setIsSidebarOpen(true)}
+          className="hidden md:flex fixed left-4 top-20 z-50 shadow-lg bg-background/95 backdrop-blur-sm border-primary/20 hover:border-primary"
+          title="Open Course Navigation"
+        >
+          <PanelLeftOpen className="h-5 w-5 mr-2" />
+          <span className="text-sm font-medium">Course Nav</span>
+        </Button>
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-black overflow-y-auto relative">
+      <main className="flex-1 flex flex-col min-w-0 bg-black overflow-y-auto relative transition-all duration-300 ease-in-out">
         <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
         <div 
           className="fixed inset-0 opacity-10 pointer-events-none z-0"
@@ -384,10 +384,20 @@ export default function LecturePlayerPage() {
           <span className="font-semibold truncate">{currentVideo?.title || cleanCourseTitle(course.title)}</span>
         </div>
 
-        <div className="flex-1 p-4 md:p-6 max-w-5xl mx-auto w-full space-y-4">
+        <div className={cn(
+          "flex-1 p-4 md:p-6 w-full space-y-4 transition-all duration-300",
+          isSidebarOpen ? "max-w-5xl mx-auto" : "max-w-7xl mx-auto"
+        )}>
           {currentVideo ? (
             <div className="space-y-4">
-              <div className="relative">
+              <div className="relative group">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30 rounded-t-lg overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${currentVideo.duration > 0 ? (currentTime / currentVideo.duration) * 100 : 0}%` }}
+                  />
+                </div>
+                
                 <VideoPlayer 
                   ref={playerRef}
                   videoId={currentVideo.youtubeId}
@@ -397,6 +407,29 @@ export default function LecturePlayerPage() {
                   theaterMode={theaterMode}
                   onTheaterModeChange={setTheaterMode}
                 />
+
+                {user && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="shadow-lg backdrop-blur-sm bg-background/95 hover:bg-background border border-primary/20 hover:border-primary"
+                      onClick={handleQuickAddBookmark}
+                    >
+                      <Bookmark className="h-4 w-4 mr-1" />
+                      Bookmark
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="shadow-lg backdrop-blur-sm bg-background/95 hover:bg-background border border-primary/20 hover:border-primary"
+                      onClick={() => setShowQuickNote(true)}
+                    >
+                      <StickyNote className="h-4 w-4 mr-1" />
+                      Note
+                    </Button>
+                  </div>
+                )}
 
                 {showAutoplayCountdown && findNextVideo() && (
                   <AutoplayOverlay 
@@ -452,7 +485,7 @@ export default function LecturePlayerPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="rounded-lg border bg-background/50 backdrop-blur-sm overflow-hidden">
                   <button
                     onClick={() => setBookmarksExpanded(!bookmarksExpanded)}
