@@ -167,7 +167,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
                   </button>
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <div className="space-y-2">
                   <AnimatePresence>
                     {filteredCourses?.map((course) => (
                       <motion.button
