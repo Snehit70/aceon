@@ -28,7 +28,7 @@ export function LectureHeader({
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex-1 min-w-0">
-        <h1 className="text-2xl font-display font-black uppercase tracking-wide text-white drop-shadow-md truncate">{title}</h1>
+        <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-wide text-white drop-shadow-md truncate">{title}</h1>
         <p className="text-sm font-mono text-muted-foreground uppercase tracking-widest mt-1">
           {weekTitle} <span className="text-primary mx-2">//</span> {Math.floor(duration / 60)} min
         </p>
