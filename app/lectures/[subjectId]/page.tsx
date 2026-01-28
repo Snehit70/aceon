@@ -358,7 +358,7 @@ export default function LecturePlayerPage() {
             )`
           }}
         />
-        <div className="fixed inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none z-0" />
+        <div className="fixed inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent pointer-events-none z-0" />
         
         {/* Mobile Header */}
         <div className="md:hidden flex items-center p-4 border-b bg-background/80 backdrop-blur-sm relative z-10">
