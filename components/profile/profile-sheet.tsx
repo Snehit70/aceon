@@ -189,8 +189,8 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
                           <Circle className="w-5 h-5 text-muted-foreground/50 flex-shrink-0 mt-0.5" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{course.code}</p>
-                          <p className="text-xs text-muted-foreground/70 truncate">{course.title}</p>
+                          <p className="text-sm font-medium truncate">{course.title}</p>
+                          <p className="text-xs text-muted-foreground/70 truncate">{course.code}</p>
                         </div>
                       </motion.button>
                     ))}
