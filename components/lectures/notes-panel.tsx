@@ -163,12 +163,17 @@ export function NotesPanel({
             </div>
           ) : notes.length === 0 ? (
             <div className={cn(
-              "flex flex-col items-center justify-center text-center text-muted-foreground",
+              "flex flex-col items-center justify-center text-center text-muted-foreground relative overflow-hidden",
               compact ? "py-6" : "h-40"
             )}>
-              <StickyNote className={cn("opacity-30 mb-2", compact ? "w-6 h-6" : "w-10 h-10")} />
-              <p className="text-sm font-medium">No notes yet</p>
-              {!compact && <p className="text-xs mt-1">Add a note to remember key points</p>}
+              <div className="absolute inset-0 bg-[url('/images/character-pochita.jpg')] bg-cover bg-center opacity-20 pointer-events-none mix-blend-luminosity" />
+              <div className="absolute inset-0 bg-black/60 pointer-events-none" />
+              
+              <div className="relative z-10">
+                <StickyNote className={cn("opacity-30 mb-2 mx-auto", compact ? "w-6 h-6" : "w-10 h-10")} />
+                <p className="text-sm font-medium">No notes yet</p>
+                {!compact && <p className="text-xs mt-1">Add a note to remember key points</p>}
+              </div>
             </div>
           ) : (
             notes.map((note: Doc<"videoNotes">) => (

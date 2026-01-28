@@ -55,7 +55,11 @@ export function LectureSidebar({
   const isCourseComplete = totalVideos > 0 && completedVideos === totalVideos;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative overflow-hidden bg-black">
+      <div className="absolute inset-0 bg-[url('/images/bg-denji-demon.jpg')] bg-cover bg-center opacity-15 pointer-events-none mix-blend-luminosity" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-transparent pointer-events-none" />
+      
+      <div className="relative z-10 flex flex-col h-full">
       <div className="p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
         <Button 
           asChild 
@@ -195,6 +199,7 @@ export function LectureSidebar({
             })}
           </Accordion>
         </div>
+      </div>
       </div>
     </div>
   );

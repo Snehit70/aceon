@@ -343,9 +343,24 @@ export default function LecturePlayerPage() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-muted/10 overflow-y-auto">
+      <main className="flex-1 flex flex-col min-w-0 bg-black overflow-y-auto relative">
+        <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
+        <div 
+          className="fixed inset-0 opacity-10 pointer-events-none z-0"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 4px,
+              #ffffff 4px,
+              #ffffff 5px
+            )`
+          }}
+        />
+        <div className="fixed inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none z-0" />
+        
         {/* Mobile Header */}
-        <div className="md:hidden flex items-center p-4 border-b bg-background">
+        <div className="md:hidden flex items-center p-4 border-b bg-background/80 backdrop-blur-sm relative z-10">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="mr-2">

@@ -173,23 +173,28 @@ export function BookmarkPanel({
             </div>
           ) : bookmarks.length === 0 ? (
             <div className={cn(
-              "flex flex-col items-center justify-center text-center text-muted-foreground",
+              "flex flex-col items-center justify-center text-center text-muted-foreground relative overflow-hidden",
               compact ? "py-6 px-3" : "py-12 px-4"
             )}>
-              <Bookmark className={cn("mb-2 opacity-30", compact ? "w-6 h-6" : "w-8 h-8")} />
-              <p className="text-sm font-medium">No bookmarks yet</p>
-              {!compact && (
-                <p className="text-xs mt-1 max-w-[150px]">
-                  Save important moments to return to them later.
-                </p>
-              )}
-              <Button 
-                variant="link" 
-                onClick={() => setIsAdding(true)}
-                className="mt-2 text-primary h-auto p-0 text-xs"
-              >
-                Add one now
-              </Button>
+              <div className="absolute inset-0 bg-[url('/images/character-pochita.jpg')] bg-cover bg-center opacity-20 pointer-events-none mix-blend-luminosity" />
+              <div className="absolute inset-0 bg-black/60 pointer-events-none" />
+              
+              <div className="relative z-10">
+                <Bookmark className={cn("mb-2 opacity-30 mx-auto", compact ? "w-6 h-6" : "w-8 h-8")} />
+                <p className="text-sm font-medium">No bookmarks yet</p>
+                {!compact && (
+                  <p className="text-xs mt-1 max-w-[150px] mx-auto">
+                    Save important moments to return to them later.
+                  </p>
+                )}
+                <Button 
+                  variant="link" 
+                  onClick={() => setIsAdding(true)}
+                  className="mt-2 text-primary h-auto p-0 text-xs"
+                >
+                  Add one now
+                </Button>
+              </div>
             </div>
           ) : (
             bookmarks.map((bookmark: Doc<"bookmarks">) => (
