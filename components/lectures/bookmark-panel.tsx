@@ -173,28 +173,33 @@ export function BookmarkPanel({
             </div>
           ) : bookmarks.length === 0 ? (
             <div className={cn(
-              "flex flex-col items-center justify-center text-center text-muted-foreground relative overflow-hidden",
-              compact ? "py-6 px-3" : "h-48 px-4"
+              "flex flex-col items-center justify-center text-center relative overflow-hidden",
+              compact ? "py-8 px-4" : "h-48 px-4"
             )}>
-              <div className="absolute inset-0 bg-white/5 pointer-events-none" />
-              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_25%,rgba(255,255,255,0.05)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.05)_75%,rgba(255,255,255,0.05)_100%)] bg-[length:10px_10px] opacity-20" />
+              <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
               
               <div className="relative z-10 flex flex-col items-center">
-                <div className="p-3 bg-white/5 rounded-full mb-3 border border-white/10">
-                  <Bookmark className={cn("text-muted-foreground", compact ? "w-4 h-4" : "w-6 h-6")} />
+                <div className={cn(
+                  "rounded-full bg-primary/10 flex items-center justify-center mb-3 border border-primary/20",
+                  compact ? "w-12 h-12" : "w-16 h-16"
+                )}>
+                  <Bookmark className={cn("text-primary", compact ? "h-5 w-5" : "h-7 w-7")} />
                 </div>
-                <p className="text-sm font-medium text-foreground">No bookmarks yet</p>
-                {!compact && (
-                  <p className="text-xs mt-1 max-w-[150px] mx-auto">
-                    Save important moments to return to them later.
-                  </p>
-                )}
+                <p className="text-sm font-semibold text-foreground mb-1">No bookmarks yet</p>
+                <p className={cn(
+                  "text-xs text-muted-foreground mb-3",
+                  compact ? "max-w-[200px]" : "max-w-[180px]"
+                )}>
+                  Save important moments while watching
+                </p>
                 <Button 
-                  variant="link" 
+                  size="sm"
+                  variant="outline"
                   onClick={() => setIsAdding(true)}
-                  className="mt-2 text-primary h-auto p-0 text-xs"
+                  className="border-primary/30 hover:bg-primary/10 hover:border-primary"
                 >
-                  Add one now
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add Bookmark at {formatTimestamp(currentTime)}
                 </Button>
               </div>
             </div>
