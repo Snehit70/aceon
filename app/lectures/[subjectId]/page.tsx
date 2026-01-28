@@ -5,7 +5,8 @@ import { api } from "@/convex/_generated/api";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle, Bookmark, StickyNote, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle, Bookmark, StickyNote, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -388,6 +389,18 @@ export default function LecturePlayerPage() {
           "flex-1 p-4 md:p-6 w-full space-y-4 transition-all duration-300",
           isSidebarOpen ? "max-w-5xl mx-auto" : "max-w-7xl mx-auto"
         )}>
+          <Button 
+            asChild 
+            variant="ghost" 
+            size="sm" 
+            className="gap-2 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 w-fit"
+          >
+            <Link href="/lectures">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Missions
+            </Link>
+          </Button>
+
           {currentVideo ? (
             <div className="space-y-4">
               <div className="relative group">
