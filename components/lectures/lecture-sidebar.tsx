@@ -1,10 +1,11 @@
 "use client";
 
-import { CheckCircle2, PlayCircle, Circle } from "lucide-react";
+import { CheckCircle2, PlayCircle, Circle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, cleanCourseTitle } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Doc } from "@/convex/_generated/dataModel";
+import Link from "next/link";
 
 export interface SidebarProps {
   courseTitle: string;
@@ -56,6 +57,17 @@ export function LectureSidebar({
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+        <Button 
+          asChild 
+          variant="ghost" 
+          size="sm" 
+          className="gap-2 text-muted-foreground hover:text-foreground mb-3 -ml-2"
+        >
+          <Link href="/lectures">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Missions
+          </Link>
+        </Button>
         <div className="flex items-center gap-4">
           <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
             <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
