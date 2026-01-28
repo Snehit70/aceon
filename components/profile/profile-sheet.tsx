@@ -121,84 +121,80 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
             </SheetDescription>
           </SheetHeader>
 
-          <ScrollArea className="flex-1 px-6 py-6">
-            <div className="space-y-8 pb-10">
-              {/* Level Selection */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-foreground/90">Academic Level</h3>
-                  <Badge variant="outline" className="bg-primary/5 border-primary/20 text-primary uppercase text-[10px] tracking-wider">
-                    Required
-                  </Badge>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-3">
-                  {levels.map((lvl) => (
-                    <button
-                      key={lvl.id}
-                      onClick={() => setLevel(lvl.id)}
+          <div className="px-6 py-6 border-b border-white/5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-foreground/90">Academic Level</h3>
+              <Badge variant="outline" className="bg-primary/5 border-primary/20 text-primary uppercase text-[10px] tracking-wider">
+                Required
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-3">
+              {levels.map((lvl) => (
+                <button
+                  key={lvl.id}
+                  onClick={() => setLevel(lvl.id)}
+                  className={cn(
+                    "group relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 overflow-hidden",
+                    level === lvl.id 
+                      ? `${lvl.activeBorder} bg-background` 
+                      : "border-white/5 bg-white/5 hover:bg-white/10",
+                    lvl.border
+                  )}
+                >
+                  {level === lvl.id && (
+                    <div className={cn("absolute inset-0 bg-gradient-to-br opacity-20", lvl.color)} />
+                  )}
+                  <lvl.icon className={cn("w-6 h-6 mb-2 relative z-10", lvl.iconColor)} />
+                  <span className="text-xs font-medium relative z-10">{lvl.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="px-6 py-4 flex items-center justify-between border-b border-white/5">
+              <h3 className="text-sm font-medium text-foreground/90">Enrolled Courses</h3>
+              <button
+                onClick={() => setShowAllLevels(!showAllLevels)}
+                className="text-xs text-primary/70 hover:text-primary transition-colors"
+              >
+                {showAllLevels ? "Show Level Only" : "Show All"}
+              </button>
+            </div>
+            
+            <ScrollArea className="flex-1">
+              <div className="px-6 py-4 space-y-2">
+                <AnimatePresence>
+                  {filteredCourses?.map((course) => (
+                    <motion.button
+                      key={course._id}
+                      onClick={() => toggleCourse(course._id)}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
                       className={cn(
-                        "group relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 overflow-hidden",
-                        level === lvl.id 
-                          ? `${lvl.activeBorder} bg-background` 
-                          : "border-white/5 bg-white/5 hover:bg-white/10",
-                        lvl.border
+                        "w-full flex items-start gap-3 p-3 rounded-lg border transition-all text-left",
+                        selectedCourses.includes(course._id)
+                          ? "border-primary/50 bg-primary/5"
+                          : "border-white/5 bg-white/5 hover:bg-white/10"
                       )}
                     >
-                      {level === lvl.id && (
-                        <div className={cn("absolute inset-0 bg-gradient-to-br opacity-20", lvl.color)} />
+                      {selectedCourses.includes(course._id) ? (
+                        <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-muted-foreground/50 flex-shrink-0 mt-0.5" />
                       )}
-                      <lvl.icon className={cn("w-6 h-6 mb-2 relative z-10", lvl.iconColor)} />
-                      <span className="text-xs font-medium relative z-10">{lvl.label}</span>
-                    </button>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{course.title}</p>
+                        <p className="text-xs text-muted-foreground/70 truncate">{course.code}</p>
+                      </div>
+                    </motion.button>
                   ))}
-                </div>
+                </AnimatePresence>
               </div>
-
-              {/* Course Selection */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-foreground/90">Enrolled Courses</h3>
-                  <button
-                    onClick={() => setShowAllLevels(!showAllLevels)}
-                    className="text-xs text-primary/70 hover:text-primary transition-colors"
-                  >
-                    {showAllLevels ? "Show Level Only" : "Show All"}
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  <AnimatePresence>
-                    {filteredCourses?.map((course) => (
-                      <motion.button
-                        key={course._id}
-                        onClick={() => toggleCourse(course._id)}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className={cn(
-                          "w-full flex items-start gap-3 p-3 rounded-lg border transition-all text-left",
-                          selectedCourses.includes(course._id)
-                            ? "border-primary/50 bg-primary/5"
-                            : "border-white/5 bg-white/5 hover:bg-white/10"
-                        )}
-                      >
-                        {selectedCourses.includes(course._id) ? (
-                          <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        ) : (
-                          <Circle className="w-5 h-5 text-muted-foreground/50 flex-shrink-0 mt-0.5" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{course.title}</p>
-                          <p className="text-xs text-muted-foreground/70 truncate">{course.code}</p>
-                        </div>
-                      </motion.button>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
 
           <SheetFooter className="px-6 py-4 border-t border-white/5 bg-white/5">
             <Button
