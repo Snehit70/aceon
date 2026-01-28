@@ -101,8 +101,20 @@ export default function LecturesPage() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
       <div className="fixed inset-0 bg-[url('/images/halftone.svg')] opacity-5 pointer-events-none mix-blend-screen z-0" />
-      <div className="fixed inset-0 bg-[url('/images/hero-bg-chainsaw.jpg')] bg-cover bg-center opacity-10 pointer-events-none z-0 mix-blend-luminosity" />
-      <div className="fixed inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
+      <div 
+        className="fixed inset-0 opacity-10 pointer-events-none z-0"
+        style={{
+          backgroundImage: `repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 4px,
+            #ffffff 4px,
+            #ffffff 5px
+          )`
+        }}
+      />
+      <div className="fixed inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none z-0" />
       
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-16 relative z-10 animate-in fade-in duration-500">
         
