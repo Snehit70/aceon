@@ -109,11 +109,7 @@ export function ChainsawCard({
             </div>
           </div>
 
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover/card:opacity-100 transition-opacity duration-100 z-20">
-             <div className="bg-primary text-white font-display text-4xl uppercase tracking-tighter px-4 py-2 rotate-[-12deg] border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-               Execute
-             </div>
-          </div>
+          
 
         </div>
       </div>
