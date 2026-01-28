@@ -174,9 +174,9 @@ export function BookmarkPanel({
           ) : bookmarks.length === 0 ? (
             <div className={cn(
               "flex flex-col items-center justify-center text-center text-muted-foreground relative overflow-hidden",
-              compact ? "py-6 px-3" : "py-12 px-4"
+              compact ? "py-6 px-3" : "h-48 px-4"
             )}>
-              <div className="absolute inset-0 bg-[url('/images/character-pochita.jpg')] bg-cover bg-center opacity-20 pointer-events-none mix-blend-luminosity" />
+              <div className="absolute inset-0 bg-[url('/images/character-pochita.jpg')] bg-cover bg-[center_30%] opacity-40 pointer-events-none mix-blend-luminosity" />
               <div className="absolute inset-0 bg-black/60 pointer-events-none" />
               
               <div className="relative z-10">

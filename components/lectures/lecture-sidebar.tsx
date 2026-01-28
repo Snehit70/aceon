@@ -131,7 +131,7 @@ export function LectureSidebar({
                 <div className="flex items-center gap-1">
                   <AccordionTrigger className="flex-1 px-2 py-2 hover:no-underline hover:bg-muted/50 rounded-md text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      {weekComplete && <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />}
+                      {weekComplete && <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />}
                       <span className="text-left">{week.title}</span>
                     </div>
                   </AccordionTrigger>
