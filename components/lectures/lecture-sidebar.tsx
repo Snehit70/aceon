@@ -56,20 +56,19 @@ export function LectureSidebar({
 
   return (
     <div className="flex flex-col h-full relative overflow-hidden bg-black">
-      <div className="absolute inset-0 bg-[url('/images/bg-denji-demon.jpg')] bg-cover bg-center opacity-15 pointer-events-none mix-blend-luminosity" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-transparent pointer-events-none" />
       
       <div className="relative z-10 flex flex-col h-full">
-      <div className="relative p-4 border-b border-white/10 sticky top-0 z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_20%] opacity-100 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black pointer-events-none" />
+      <div className="relative p-4 border-b border-white/10 sticky top-0 z-10 overflow-hidden backdrop-blur-sm">
+        <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_top] opacity-60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/70 to-black pointer-events-none" />
         
         <div className="relative z-10">
         <Button 
           asChild 
           variant="ghost" 
           size="sm" 
-          className="gap-2 text-muted-foreground hover:text-white mb-3 -ml-2"
+          className="gap-2 text-muted-foreground hover:text-white mb-3 -ml-2 bg-white/5 hover:bg-white/10 border border-white/10"
         >
           <Link href="/lectures">
             <ArrowLeft className="h-4 w-4" />
@@ -106,9 +105,9 @@ export function LectureSidebar({
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-lg truncate">{cleanCourseTitle(courseTitle)}</h2>
-            <p className="text-sm text-muted-foreground">{courseCode}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <h2 className="font-semibold text-lg truncate drop-shadow-lg">{cleanCourseTitle(courseTitle)}</h2>
+            <p className="text-sm text-muted-foreground drop-shadow-lg">{courseCode}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 drop-shadow-lg">
               {completedVideos} of {totalVideos} completed
             </p>
             {onMarkCourseComplete && !isCourseComplete && (
@@ -116,7 +115,7 @@ export function LectureSidebar({
                 size="sm"
                 variant="ghost"
                 onClick={onMarkCourseComplete}
-                className="h-6 px-2 text-xs mt-1 text-muted-foreground hover:text-foreground"
+                className="h-6 px-2 text-xs mt-1 text-muted-foreground hover:text-foreground bg-white/5 hover:bg-white/10 border border-white/10"
               >
                 <CheckCircle2 className="h-3 w-3 mr-1" />
                 Mark All Done
