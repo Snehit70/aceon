@@ -61,8 +61,8 @@ export function LectureSidebar({
       
       <div className="relative z-10 flex flex-col h-full">
       <div className="relative p-4 border-b border-white/10 sticky top-0 z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_20%] opacity-30 pointer-events-none mix-blend-luminosity" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_20%] opacity-100 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black pointer-events-none" />
         
         <div className="relative z-10">
         <Button 
