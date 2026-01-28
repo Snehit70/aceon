@@ -113,9 +113,10 @@ export const markComplete = mutation({
     const now = Date.now();
 
     if (existing) {
+      const newCompletedState = !existing.completed;
       await ctx.db.patch(existing._id, {
-        completed: true,
-        progress: 1,
+        completed: newCompletedState,
+        progress: newCompletedState ? 1 : existing.progress,
         lastWatchedAt: now,
       });
       return existing._id;
@@ -151,25 +152,32 @@ export const markWeekComplete = mutation({
       .withIndex("by_week", (q) => q.eq("weekId", args.weekId))
       .collect();
 
+    const progressRecords = await Promise.all(
+      videos.map(video =>
+        ctx.db
+          .query("videoProgress")
+          .withIndex("by_user_video", (q) =>
+            q.eq("clerkId", args.clerkId).eq("videoId", video._id)
+          )
+          .first()
+      )
+    );
+
+    const allComplete = videos.length > 0 && progressRecords.every(record => record?.completed);
+    const newCompletedState = !allComplete;
     const now = Date.now();
 
-    for (const video of videos) {
-      const existing = await ctx.db
-        .query("videoProgress")
-        .withIndex("by_user_video", (q) =>
-          q.eq("clerkId", args.clerkId).eq("videoId", video._id)
-        )
-        .first();
+    for (let i = 0; i < videos.length; i++) {
+      const video = videos[i];
+      const existing = progressRecords[i];
 
       if (existing) {
-        if (!existing.completed) {
-          await ctx.db.patch(existing._id, {
-            completed: true,
-            progress: 1,
-            lastWatchedAt: now,
-          });
-        }
-      } else {
+        await ctx.db.patch(existing._id, {
+          completed: newCompletedState,
+          progress: newCompletedState ? 1 : existing.progress,
+          lastWatchedAt: now,
+        });
+      } else if (newCompletedState) {
         await ctx.db.insert("videoProgress", {
           clerkId: args.clerkId,
           videoId: video._id,
@@ -183,7 +191,7 @@ export const markWeekComplete = mutation({
       }
     }
 
-    return { markedCount: videos.length };
+    return { markedCount: videos.length, completed: newCompletedState };
   },
 });
 
@@ -203,25 +211,32 @@ export const markWeekComplete = mutation({
       .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
       .collect();
 
+    const progressRecords = await Promise.all(
+      videos.map(video =>
+        ctx.db
+          .query("videoProgress")
+          .withIndex("by_user_video", (q) =>
+            q.eq("clerkId", args.clerkId).eq("videoId", video._id)
+          )
+          .first()
+      )
+    );
+
+    const allComplete = videos.length > 0 && progressRecords.every(record => record?.completed);
+    const newCompletedState = !allComplete;
     const now = Date.now();
 
-    for (const video of videos) {
-      const existing = await ctx.db
-        .query("videoProgress")
-        .withIndex("by_user_video", (q) =>
-          q.eq("clerkId", args.clerkId).eq("videoId", video._id)
-        )
-        .first();
+    for (let i = 0; i < videos.length; i++) {
+      const video = videos[i];
+      const existing = progressRecords[i];
 
       if (existing) {
-        if (!existing.completed) {
-          await ctx.db.patch(existing._id, {
-            completed: true,
-            progress: 1,
-            lastWatchedAt: now,
-          });
-        }
-      } else {
+        await ctx.db.patch(existing._id, {
+          completed: newCompletedState,
+          progress: newCompletedState ? 1 : existing.progress,
+          lastWatchedAt: now,
+        });
+      } else if (newCompletedState) {
         await ctx.db.insert("videoProgress", {
           clerkId: args.clerkId,
           videoId: video._id,
@@ -235,7 +250,7 @@ export const markWeekComplete = mutation({
       }
     }
 
-    return { markedCount: videos.length };
+    return { markedCount: videos.length, completed: newCompletedState };
   },
 });
 

@@ -39,7 +39,6 @@ export function LectureHeader({
           <Button
             size="lg"
             onClick={onMarkComplete}
-            disabled={isCompleted}
             className={cn(
               "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 transition-all",
               isCompleted 
@@ -48,7 +47,7 @@ export function LectureHeader({
             )}
           >
             <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
-            {isCompleted ? "Mission Complete" : "Mark Complete"}
+            {isCompleted ? "Completed" : "Mark Complete"}
           </Button>
         </div>
       )}
