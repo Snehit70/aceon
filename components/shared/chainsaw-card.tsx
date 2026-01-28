@@ -37,13 +37,13 @@ export function ChainsawCard({
   return (
     <Link href={href} className={cn("block group/card outline-none h-full", className)}>
       <div className="relative h-full transition-all duration-200 group-hover/card:translate-x-[-4px] group-hover/card:translate-y-[-4px]">
-        <div className="absolute inset-0 bg-accent translate-x-2 translate-y-2 clip-corner opacity-0 group-hover/card:opacity-100 transition-opacity duration-200" />
+        <div className="absolute inset-0 bg-primary translate-x-2 translate-y-2 clip-corner opacity-0 group-hover/card:opacity-100 transition-opacity duration-200" />
         
-        <div className="relative h-full bg-void border-2 border-border group-hover/card:border-accent flex flex-col clip-corner transition-colors duration-200 overflow-hidden">
+        <div className="relative h-full bg-void border-2 border-border group-hover/card:border-primary flex flex-col clip-corner transition-colors duration-200 overflow-hidden">
           
-          <div className="p-4 border-b-2 border-border group-hover/card:border-accent/50 bg-secondary/5 space-y-3">
+          <div className="p-4 border-b-2 border-border group-hover/card:border-primary/50 bg-secondary/5 space-y-3">
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className="font-mono text-[10px] uppercase border-accent text-accent bg-accent/10 rounded-none px-1.5 py-0.5">
+              <Badge variant="outline" className="font-mono text-[10px] uppercase border-primary text-primary bg-primary/10 rounded-none px-1.5 py-0.5">
                 {code}
               </Badge>
               <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -53,7 +53,7 @@ export function ChainsawCard({
             </div>
             
             <div className="space-y-1">
-              <h3 className="font-display text-2xl font-bold leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-accent transition-colors">
+              <h3 className="font-display text-2xl font-bold leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-primary transition-colors">
                 {cleanCourseTitle(title)}
               </h3>
               {subtitle && (
@@ -72,18 +72,18 @@ export function ChainsawCard({
               <div className="flex items-center justify-between font-mono text-xs uppercase tracking-wider">
                 <span className={cn(
                   "font-bold",
-                  isCompleted ? "text-accent" : "text-muted-foreground"
+                  isCompleted ? "text-primary" : "text-muted-foreground"
                 )}>
                   {isCompleted ? "Target_Eliminated" : isStarted ? "In_Progress" : "Not_Started"}
                 </span>
-                <span className="text-accent">{Math.round(progress)}%</span>
+                <span className="text-primary">{Math.round(progress)}%</span>
               </div>
               
               <div className="h-3 w-full bg-secondary border border-border relative">
                 <div 
                   className={cn(
                     "h-full transition-all duration-300",
-                    isCompleted ? "bg-accent" : "bg-primary"
+                    isCompleted ? "bg-primary" : "bg-primary"
                   )}
                   style={{ width: `${progress}%` }}
                 />
@@ -91,18 +91,18 @@ export function ChainsawCard({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-dashed border-border group-hover/card:border-accent/30 z-10">
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-dashed border-border group-hover/card:border-primary/30 z-10">
               <div className="flex flex-col">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Lectures</span>
                 <div className="flex items-center gap-1.5 font-mono text-sm font-bold">
-                  <BookOpen className="w-3.5 h-3.5 text-accent" />
+                  <BookOpen className="w-3.5 h-3.5 text-primary" />
                   {lectureCount}
                 </div>
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Duration</span>
                 <div className="flex items-center gap-1.5 font-mono text-sm font-bold">
-                  <Clock className="w-3.5 h-3.5 text-accent" />
+                  <Clock className="w-3.5 h-3.5 text-primary" />
                   {totalDuration}
                 </div>
               </div>
