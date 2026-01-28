@@ -8,7 +8,7 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Search, Play, Clock, ArrowRight, BookOpen, Settings2 } from "lucide-react";
+import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
@@ -149,30 +149,46 @@ export default function LecturesPage() {
       />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-3 sm:space-y-4">
-          <h1 className="text-5xl sm:text-6xl font-black tracking-tighter text-white uppercase font-display drop-shadow-[0_2px_0_rgba(0,0,0,1)]">
-            Active <span className="text-accent">Missions</span>
-          </h1>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl font-mono uppercase tracking-widest border-l-4 border-accent pl-4 mt-4">
-            {profile?.level ? (
-              <span className="flex items-center gap-2">
-                <span className="text-accent">///</span> 
-                {profile.level} Threat Level 
-                <span className="text-accent">///</span>
-                Status: Active Duty
-              </span>
-            ) : (
-              "Resume patrol or accept a new contract."
-            )}
-          </p>
-        </div>
-        {user && (
-          <Button variant="outline" onClick={() => setShowProfileSheet(true)} className="gap-2">
-            <Settings2 className="h-4 w-4" />
-            Customize Profile
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <Button 
+            asChild 
+            variant="ghost" 
+            size="sm" 
+            className="gap-2 text-muted-foreground hover:text-white transition-colors"
+          >
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4" />
+              Back to HQ
+            </Link>
           </Button>
-        )}
+        </div>
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-3 sm:space-y-4">
+            <h1 className="text-5xl sm:text-6xl font-black tracking-tighter text-white uppercase font-display drop-shadow-[0_2px_0_rgba(0,0,0,1)]">
+              Active <span className="text-accent">Missions</span>
+            </h1>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl font-mono uppercase tracking-widest border-l-4 border-accent pl-4 mt-4">
+              {profile?.level ? (
+                <span className="flex items-center gap-2">
+                  <span className="text-accent">///</span> 
+                  {profile.level} Threat Level 
+                  <span className="text-accent">///</span>
+                  Status: Active Duty
+                </span>
+              ) : (
+                "Resume patrol or accept a new contract."
+              )}
+            </p>
+          </div>
+          {user && (
+            <Button variant="outline" onClick={() => setShowProfileSheet(true)} className="gap-2">
+              <Settings2 className="h-4 w-4" />
+              Customize Profile
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Tabs Layout */}
