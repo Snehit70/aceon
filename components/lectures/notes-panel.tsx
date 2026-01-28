@@ -166,12 +166,14 @@ export function NotesPanel({
               "flex flex-col items-center justify-center text-center text-muted-foreground relative overflow-hidden",
               compact ? "py-6" : "h-48"
             )}>
-              <div className="absolute inset-0 bg-[url('/images/character-pochita.jpg')] bg-cover bg-[center_30%] opacity-40 pointer-events-none mix-blend-luminosity" />
-              <div className="absolute inset-0 bg-black/60 pointer-events-none" />
+              <div className="absolute inset-0 bg-white/5 pointer-events-none" />
+              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_25%,rgba(255,255,255,0.05)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.05)_75%,rgba(255,255,255,0.05)_100%)] bg-[length:10px_10px] opacity-20" />
               
-              <div className="relative z-10">
-                <StickyNote className={cn("opacity-30 mb-2 mx-auto", compact ? "w-6 h-6" : "w-10 h-10")} />
-                <p className="text-sm font-medium">No notes yet</p>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="p-3 bg-white/5 rounded-full mb-3 border border-white/10">
+                  <StickyNote className={cn("text-muted-foreground", compact ? "w-4 h-4" : "w-6 h-6")} />
+                </div>
+                <p className="text-sm font-medium text-foreground">No notes yet</p>
                 {!compact && <p className="text-xs mt-1">Add a note to remember key points</p>}
               </div>
             </div>

@@ -176,12 +176,14 @@ export function BookmarkPanel({
               "flex flex-col items-center justify-center text-center text-muted-foreground relative overflow-hidden",
               compact ? "py-6 px-3" : "h-48 px-4"
             )}>
-              <div className="absolute inset-0 bg-[url('/images/character-pochita.jpg')] bg-cover bg-[center_30%] opacity-40 pointer-events-none mix-blend-luminosity" />
-              <div className="absolute inset-0 bg-black/60 pointer-events-none" />
+              <div className="absolute inset-0 bg-white/5 pointer-events-none" />
+              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_25%,rgba(255,255,255,0.05)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.05)_75%,rgba(255,255,255,0.05)_100%)] bg-[length:10px_10px] opacity-20" />
               
-              <div className="relative z-10">
-                <Bookmark className={cn("mb-2 opacity-30 mx-auto", compact ? "w-6 h-6" : "w-8 h-8")} />
-                <p className="text-sm font-medium">No bookmarks yet</p>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="p-3 bg-white/5 rounded-full mb-3 border border-white/10">
+                  <Bookmark className={cn("text-muted-foreground", compact ? "w-4 h-4" : "w-6 h-6")} />
+                </div>
+                <p className="text-sm font-medium text-foreground">No bookmarks yet</p>
                 {!compact && (
                   <p className="text-xs mt-1 max-w-[150px] mx-auto">
                     Save important moments to return to them later.
