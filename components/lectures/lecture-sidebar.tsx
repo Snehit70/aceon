@@ -129,10 +129,10 @@ export function LectureSidebar({
               return (
               <AccordionItem key={week._id} value={week._id} className="border-none">
                 <div className="flex items-center gap-1">
-                  <AccordionTrigger className="flex-1 px-2 py-2 hover:no-underline hover:bg-muted/50 rounded-md text-sm font-medium">
+                  <AccordionTrigger className="flex-1 px-2 py-3 hover:no-underline hover:bg-white/5 rounded-none text-sm transition-colors group">
                     <div className="flex items-center gap-2">
                       {weekComplete && <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />}
-                      <span className="text-left">{week.title}</span>
+                      <span className="text-left font-display font-bold uppercase tracking-wide text-foreground/90">{week.title}</span>
                     </div>
                   </AccordionTrigger>
                   {onMarkWeekComplete && !weekComplete && week.videos.length > 0 && (
@@ -163,21 +163,21 @@ export function LectureSidebar({
                         return (
                           <Button
                             key={video._id}
-                            variant={currentVideoId === video._id ? "secondary" : "ghost"}
+                            variant="ghost"
                             className={cn(
-                              "w-full justify-start text-left h-auto py-3 px-3",
-                              currentVideoId === video._id && "bg-secondary"
+                              "w-full justify-start text-left h-auto py-3 px-3 border-l-2 transition-all rounded-none",
+                              currentVideoId === video._id 
+                                ? "bg-primary/10 border-primary text-white" 
+                                : "border-transparent text-muted-foreground hover:bg-primary/5 hover:text-white"
                             )}
                             onClick={() => onVideoSelect(video._id)}
                           >
                             <div className="flex items-start gap-3 w-full">
-                              {isCompleted ? (
-                                <CheckCircle2 className="h-4 w-4 mt-1 shrink-0 text-green-500" />
-                              ) : isInProgress ? (
-                                <Circle className="h-4 w-4 mt-1 shrink-0 text-yellow-500 fill-yellow-500/20" />
+{isCompleted ? (
+                                <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                               ) : (
                                 <PlayCircle className={cn(
-                                  "h-4 w-4 mt-1 shrink-0",
+                                  "h-4 w-4 shrink-0",
                                   currentVideoId === video._id ? "text-primary" : "text-muted-foreground"
                                 )} />
                               )}
