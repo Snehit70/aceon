@@ -16,43 +16,35 @@ interface LandscapeHintProps {
 
 export default function LandscapeHint({ isReady = false }: LandscapeHintProps) {
   const isPortrait = useMediaQuery("(max-width: 768px) and (orientation: portrait)");
+  // Visibility of the hint, lazily initialized to false.
   const [isVisible, setIsVisible] = useState(false);
-  const [hasShown, setHasShown] = useState(false);
-
-  useEffect(() => {
-    // Check session storage on mount
+  // Whether the hint has already been shown this session, initialized from sessionStorage.
+  const [hasShown, setHasShown] = useState(() => {
     try {
-      const shown = sessionStorage.getItem("aceon-landscape-hint-shown");
-      if (shown) {
-        setHasShown(true);
-      }
-    } catch (e) {
-      // Ignore errors (e.g. incognito mode blocking storage)
-      console.warn("Session storage access failed", e);
+      return !!sessionStorage.getItem("aceon-landscape-hint-shown");
+    } catch {
+      // In environments where sessionStorage is unavailable (e.g., incognito), default to false.
+      return false;
     }
-  }, []);
+  });
 
+  // Effect to trigger the hint when conditions are met.
   useEffect(() => {
-    // Only trigger if:
-    // 1. Video is ready
-    // 2. We are in portrait mode
-    // 3. We haven't shown it yet this session
-    // 4. It's not currently visible (avoid re-triggering)
     if (isReady && isPortrait && !hasShown && !isVisible) {
-      setIsVisible(true);
-      setHasShown(true);
-      
-      try {
-        sessionStorage.setItem("aceon-landscape-hint-shown", "true");
-      } catch (e) {
-        // Ignore
-      }
-      
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
+      // Defer state updates to avoid synchronous setState in effect.
+      const timerId = setTimeout(() => {
+        setIsVisible(true);
+        setHasShown(true);
+        try {
+          sessionStorage.setItem("aceon-landscape-hint-shown", "true");
+        } catch {}
+        // Auto‑hide after 3 seconds.
+        const hideTimer = setTimeout(() => setIsVisible(false), 3000);
+        // Cleanup hide timer on unmount or condition change.
+        return () => clearTimeout(hideTimer);
+      }, 0);
+      // Cleanup the initial timeout if the effect re‑runs before it fires.
+      return () => clearTimeout(timerId);
     }
   }, [isReady, isPortrait, hasShown, isVisible]);
 

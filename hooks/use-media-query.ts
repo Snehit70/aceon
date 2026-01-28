@@ -9,30 +9,24 @@ import { useEffect, useState } from "react";
  */
 export default function useMediaQuery(query: string): boolean {
   // Track whether the component has mounted (client‑side only).
-  const [mounted, setMounted] = useState(false);
-  // Current match state of the media query.
-  const [matches, setMatches] = useState(false);
+  // Current match state of the media query, initialized lazily for SSR safety.
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(query).matches;
+  });
 
-  // Hydration: set mounted flag after first render to avoid SSR mismatch.
+  // Set up matchMedia listener and keep state in sync.
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Set up matchMedia listener once we are on the client.
-  useEffect(() => {
-    if (!mounted) return;
     const media = window.matchMedia(query);
-    // Initialise state with current match.
-    setMatches(media.matches);
     const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    // Ensure state reflects current match (covers query changes).
+    setTimeout(() => setMatches(media.matches), 0);
     media.addEventListener("change", handler);
     return () => {
       media.removeEventListener("change", handler);
     };
-  }, [query, mounted]);
+  }, [query]);
 
-  // During SSR (mounted === false) we deliberately return false to avoid
-  // hydration mismatches.
-  return mounted ? matches : false;
+  // Return the current match state.
+  return matches;
 }
