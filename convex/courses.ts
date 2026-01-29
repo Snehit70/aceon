@@ -32,7 +32,7 @@ export const listWithStats = query({
           .collect();
 
         const totalVideos = videos.length;
-        const totalSeconds = videos.reduce((sum, v) => sum + (v.duration || 0), 0);
+        const totalSeconds = videos.reduce((sum, video) => sum + (video.duration || 0), 0);
 
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -169,15 +169,14 @@ export const searchLectures = query({
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 20;
-    const query = args.searchQuery.toLowerCase().trim();
+    const query = args.searchQuery.trim();
 
     if (!query) return [];
 
-    const allVideos = await ctx.db.query("videos").collect();
-
-    const matchingVideos = allVideos
-      .filter((video) => video.title.toLowerCase().includes(query))
-      .slice(0, limit);
+    const matchingVideos = await ctx.db
+      .query("videos")
+      .withSearchIndex("search_title", (q) => q.search("title", query))
+      .take(limit);
 
     const results = await Promise.all(
       matchingVideos.map(async (video) => {

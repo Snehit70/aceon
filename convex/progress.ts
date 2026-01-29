@@ -435,13 +435,19 @@ export const getAllCoursesProgress = query({
     const courses = await ctx.db.query("courses").collect();
     const result: Record<string, number> = {};
 
-    for (const course of courses) {
-      const allVideos = await ctx.db
-        .query("videos")
-        .withIndex("by_course", (q) => q.eq("courseId", course._id))
-        .collect();
+    // Optimize: fetch all videos once and group by courseId to avoid N+1 queries
+    const allVideos = await ctx.db.query("videos").collect();
+    const videosByCourse: Record<string, number> = {};
+    
+    for (const video of allVideos) {
+      if (!videosByCourse[video.courseId]) {
+        videosByCourse[video.courseId] = 0;
+      }
+      videosByCourse[video.courseId]++;
+    }
 
-      const totalVideos = allVideos.length;
+    for (const course of courses) {
+      const totalVideos = videosByCourse[course._id] || 0;
       const completedVideos = progressByCourseTmp[course._id]?.completed || 0;
 
       result[course._id] = totalVideos > 0 ? (completedVideos / totalVideos) * 100 : 0;
