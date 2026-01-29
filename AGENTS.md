@@ -9,6 +9,8 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 ## 2. Environment & Commands
 
+the port is 5550 understood ?
+
 **Package Manager**: `bun`
 
 | Action            | Command                        | Notes                               |
@@ -94,6 +96,7 @@ When placing text over background images, use this pattern for optimal readabili
 5. **Button Styling**: Use `bg-white/5 hover:bg-white/10 border border-white/10` for subtle prominence
 
 **Example Pattern** (from LectureSidebar header):
+
 ```tsx
 <div className="relative p-4 backdrop-blur-sm">
   <div className="absolute inset-0 bg-[url('/path/to/image.jpg')] opacity-60" />
@@ -120,6 +123,7 @@ When placing text over background images, use this pattern for optimal readabili
 ### Key Components
 
 **LectureSidebar** (`components/lectures/lecture-sidebar.tsx`)
+
 - Main course navigation component
 - Header section uses background image with visibility pattern (see Section 5)
 - Displays course progress, week list, and video navigation
@@ -127,21 +131,25 @@ When placing text over background images, use this pattern for optimal readabili
 - Background: Single image in header only (removed full sidebar background for performance)
 
 **VideoPlayer** (`components/shared/video-player.tsx`)
+
 - React Player wrapper with custom controls
 - Includes landscape rotation hint on mobile portrait mode
 - Height constraint: `max-h-[50vh] sm:max-h-none` on mobile
 - Integrates with progress tracking
 
 **ProfileSheet** (`components/profile/profile-sheet.tsx`)
+
 - User profile and settings
 - Mobile responsive: `w-full max-w-[400px]` to prevent overflow
 - Uses Sheet component for mobile-friendly drawer
 
 **LectureHeader** (`components/lectures/lecture-header.tsx`)
+
 - Course header with navigation
 - Touch targets: All buttons use `min-h-[44px]` for mobile accessibility
 
 **useMediaQuery Hook** (`hooks/use-media-query.ts`)
+
 - SSR-safe media query detection
 - Used for responsive behavior across components
 - Prevents hydration mismatches
