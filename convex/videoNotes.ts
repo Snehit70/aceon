@@ -1,6 +1,16 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+/**
+ * Creates a new note for a specific video.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.videoId - The ID of the video the note is for.
+ * @param args.timestamp - The timestamp in the video where the note refers to (in seconds).
+ * @param args.content - The text content of the note.
+ * @returns The ID of the newly created note.
+ * @throws Error if the user is unauthorized.
+ */
 export const addNote = mutation({
   args: {
     clerkId: v.string(),
@@ -26,6 +36,13 @@ export const addNote = mutation({
   },
 });
 
+/**
+ * Updates the content of an existing note.
+ *
+ * @param args.noteId - The ID of the note to update.
+ * @param args.content - The new content of the note.
+ * @throws Error if the user is unauthorized or the note belongs to another user.
+ */
 export const updateNote = mutation({
   args: {
     noteId: v.id("videoNotes"),
@@ -49,6 +66,12 @@ export const updateNote = mutation({
   },
 });
 
+/**
+ * Deletes a note permanently.
+ *
+ * @param args.noteId - The ID of the note to delete.
+ * @throws Error if the user is unauthorized or the note belongs to another user.
+ */
 export const deleteNote = mutation({
   args: {
     noteId: v.id("videoNotes"),
@@ -68,6 +91,13 @@ export const deleteNote = mutation({
   },
 });
 
+/**
+ * Retrieves all notes for a specific video and user.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.videoId - The ID of the video.
+ * @returns A list of notes sorted by timestamp.
+ */
 export const getNotesForVideo = query({
   args: {
     clerkId: v.string(),
@@ -90,6 +120,13 @@ export const getNotesForVideo = query({
   },
 });
 
+/**
+ * Retrieves all notes created by a user across all videos.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.limit - Optional limit on the number of notes to return (default: 50).
+ * @returns A list of notes with populated video information.
+ */
 export const getAllNotes = query({
   args: {
     clerkId: v.string(),
@@ -121,3 +158,4 @@ export const getAllNotes = query({
     return results.filter((r) => r.video);
   },
 });
+
