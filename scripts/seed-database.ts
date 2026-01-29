@@ -43,7 +43,7 @@ async function seed() {
   console.log("🌱 Starting database seed...");
 
   // 1. Read the index file
-  const indexParams = fs.readFileSync("data_courses_index.json", "utf-8");
+  const indexParams = fs.readFileSync("data/data_courses_index.json", "utf-8");
   const coursesIndex = JSON.parse(indexParams);
 
   console.log(`Found ${coursesIndex.length} courses in index.`);
@@ -54,7 +54,7 @@ async function seed() {
     // Construct filename
     // Note: The file naming seems to be data_course:_[code].json based on previous ls
     // e.g. data_course:_cs1001.json
-    const filename = `data_course:_${code}.json`;
+    const filename = `data/data_course:_${code}.json`;
 
     if (!fs.existsSync(filename)) {
       console.warn(`⚠️  Warning: Data file ${filename} not found for course ${code}. Skipping.`);
