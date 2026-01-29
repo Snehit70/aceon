@@ -1,5 +1,23 @@
-import { mutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 import { v } from "convex/values";
+
+export const clearAll = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const tables = ["videoNotes", "videoProgress", "videos", "weeks", "courses", "users"] as const;
+    const results: Record<string, number> = {};
+    
+    for (const table of tables) {
+      const docs = await ctx.db.query(table).collect();
+      for (const doc of docs) {
+        await ctx.db.delete(doc._id);
+      }
+      results[table] = docs.length;
+    }
+    
+    return results;
+  },
+});
 
 const videoSchema = v.object({
   title: v.string(),
