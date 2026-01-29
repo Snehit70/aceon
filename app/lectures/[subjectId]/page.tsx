@@ -306,15 +306,13 @@ export default function LecturePlayerPage() {
       {/* Desktop Sidebar */}
       {isSidebarOpen && (
         <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative transition-all">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 z-20 h-8 w-8 text-muted-foreground hover:text-foreground"
+          <button
             onClick={() => setIsSidebarOpen(false)}
+            className="absolute top-3 right-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
             title="Close Sidebar"
           >
-            <PanelLeftClose className="h-4 w-4" />
-          </Button>
+            <PanelLeftClose className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" />
+          </button>
           <LectureSidebar
             courseTitle={course.title}
             courseCode={course.code}
@@ -331,16 +329,14 @@ export default function LecturePlayerPage() {
 
       {/* Sidebar Toggle Button (When Closed) */}
       {!isSidebarOpen && (
-        <Button
-          variant="outline"
-          size="lg"
+        <button
           onClick={() => setIsSidebarOpen(true)}
-          className="hidden md:flex fixed left-4 top-20 z-50 shadow-lg bg-background/95 backdrop-blur-sm border-primary/20 hover:border-primary"
+          className="hidden md:flex items-center gap-2 fixed left-4 top-20 z-50 h-10 px-3 bg-black/90 border border-white/10 hover:border-primary hover:bg-black backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[3px_3px_0px_0px_#E62E2D] group transition-all duration-200"
           title="Open Course Navigation"
         >
-          <PanelLeftOpen className="h-5 w-5 mr-2" />
-          <span className="text-sm font-medium">Course Nav</span>
-        </Button>
+          <PanelLeftOpen className="h-5 w-5 text-white/70 group-hover:text-primary transition-colors" />
+          <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">Menu</span>
+        </button>
       )}
 
       {/* Main Content */}
