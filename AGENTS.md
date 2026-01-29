@@ -186,7 +186,7 @@ When placing text over background images, use this pattern for optimal readabili
 
 **Branch Status:**
 - Working tree clean, up to date with origin/main
-- Unmerged remote branch: `remotes/origin/coderabbitai/docstrings/5381e4e` (can be ignored/deleted)
+- All merged branches cleaned up
 
 ## 9. Checklist for "Sisyphus"
 
