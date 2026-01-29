@@ -11,6 +11,21 @@ interface KeyboardShortcutsConfig {
   enabled?: boolean;
 }
 
+/**
+ * Custom hook to handle keyboard shortcuts for the video player.
+ * Supports standard shortcuts like Space/K for play/pause, Arrows/J/L for seeking, etc.
+ * Automatically ignores shortcuts when typing in input fields.
+ *
+ * @param config - Configuration object for keyboard actions.
+ * @param config.onPlayPause - Callback for play/pause toggle.
+ * @param config.onSeekForward - Callback for seeking forward (passes seconds).
+ * @param config.onSeekBackward - Callback for seeking backward (passes seconds).
+ * @param config.onVolumeUp - Callback for increasing volume.
+ * @param config.onVolumeDown - Callback for decreasing volume.
+ * @param config.onMuteToggle - Callback for muting/unmuting.
+ * @param config.onFullscreenToggle - Callback for toggling fullscreen.
+ * @param config.enabled - Whether shortcuts are active (default: true).
+ */
 export function useKeyboardShortcuts({
   onPlayPause,
   onSeekForward,
@@ -92,3 +107,4 @@ export function useKeyboardShortcuts({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [enabled, handleKeyDown]);
 }
+
