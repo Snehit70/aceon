@@ -36,9 +36,9 @@ export default function LecturesPage() {
   
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<"all" | "foundation" | "diploma" | "degree">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "not-completed">("all");
   const [showProfileSheet, setShowProfileSheet] = useState(false);
 
-  // Split courses into Enrolled and Others
   const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
   const { enrolledCourses, otherCourses } = useMemo(() => {
@@ -48,16 +48,43 @@ export default function LecturesPage() {
     return { enrolledCourses: enrolled, otherCourses: other };
   }, [courses, enrolledCourseIds]);
 
-  // Filter function for "Other Courses" (Course Library)
+  const getLevelOrder = (lvl: string) => {
+    if (lvl === "foundation") return 1;
+    if (lvl === "diploma") return 2;
+    if (lvl === "degree") return 3;
+    return 0;
+  };
+
+  const userLevelOrder = profile?.level ? getLevelOrder(profile.level) : 0;
+
   const filteredLibraryCourses = useMemo(() => {
-    return otherCourses.filter((course) => {
-      const matchesSearch =
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.code.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesLevel = levelFilter === "all" || course.level === levelFilter;
-      return matchesSearch && matchesLevel;
-    });
-  }, [otherCourses, searchQuery, levelFilter]);
+    return otherCourses
+      .filter((course) => {
+        const matchesSearch =
+          course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          course.code.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesLevel = levelFilter === "all" || course.level === levelFilter;
+        
+        const courseLevel = getLevelOrder(course.level);
+        const isPrior = userLevelOrder > courseLevel;
+        const progress = isPrior ? 100 : (coursesProgress?.[course._id] || 0);
+        const isCompleted = progress === 100;
+        const matchesStatus = statusFilter === "all" || 
+          (statusFilter === "completed" && isCompleted) ||
+          (statusFilter === "not-completed" && !isCompleted);
+        
+        return matchesSearch && matchesLevel && matchesStatus;
+      })
+      .sort((a, b) => {
+        const levelA = getLevelOrder(a.level);
+        const levelB = getLevelOrder(b.level);
+        const isPriorA = userLevelOrder > levelA;
+        const isPriorB = userLevelOrder > levelB;
+        const progressA = isPriorA ? 100 : (coursesProgress?.[a._id] || 0);
+        const progressB = isPriorB ? 100 : (coursesProgress?.[b._id] || 0);
+        return progressA - progressB;
+      });
+  }, [otherCourses, searchQuery, levelFilter, statusFilter, coursesProgress, userLevelOrder]);
 
   // Force open profile sheet if no profile exists
   useEffect(() => {
@@ -88,15 +115,6 @@ export default function LecturesPage() {
       </div>
     );
   }
-
-  const getLevelOrder = (lvl: string) => {
-    if (lvl === "foundation") return 1;
-    if (lvl === "diploma") return 2;
-    if (lvl === "degree") return 3;
-    return 0;
-  };
-
-  const userLevelOrder = profile?.level ? getLevelOrder(profile.level) : 0;
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
@@ -337,11 +355,24 @@ export default function LecturesPage() {
                     />
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar items-center">
-                    {(["all", "foundation", "diploma", "degree"] as const).map((filter) => (
+                    <Button
+                      variant="ghost"
+                      onClick={() => { setLevelFilter("all"); setStatusFilter("all"); }}
+                      className={cn(
+                        "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
+                        levelFilter === "all" && statusFilter === "all"
+                          ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
+                          : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
+                      )}
+                    >
+                      All
+                    </Button>
+                    <div className="w-px h-6 bg-neutral-700" />
+                    {(["foundation", "diploma", "degree"] as const).map((filter) => (
                       <Button
                         key={filter}
                         variant="ghost"
-                        onClick={() => setLevelFilter(filter)}
+                        onClick={() => setLevelFilter(levelFilter === filter ? "all" : filter)}
                         className={cn(
                           "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
                           levelFilter === filter 
@@ -350,6 +381,22 @@ export default function LecturesPage() {
                         )}
                       >
                         {filter}
+                      </Button>
+                    ))}
+                    <div className="w-px h-6 bg-neutral-700" />
+                    {(["completed", "not-completed"] as const).map((filter) => (
+                      <Button
+                        key={filter}
+                        variant="ghost"
+                        onClick={() => setStatusFilter(statusFilter === filter ? "all" : filter)}
+                        className={cn(
+                          "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
+                          statusFilter === filter 
+                            ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
+                            : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
+                        )}
+                      >
+                        {filter === "not-completed" ? "In Progress" : filter}
                       </Button>
                     ))}
                   </div>
