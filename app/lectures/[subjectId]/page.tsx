@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Loader2, Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
@@ -234,8 +234,69 @@ export default function LecturePlayerPage() {
 
   if (course === undefined || content === undefined) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden bg-black">
+        <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative">
+          <div className="relative p-4 border-b border-white/10 backdrop-blur-sm overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_top] opacity-60 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/70 to-black pointer-events-none" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
+                  <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="4" className="text-muted/20" />
+                    <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="4" className="text-primary/50 animate-pulse" strokeDasharray={`${2 * Math.PI * 28}`} strokeDashoffset={`${2 * Math.PI * 28 * 0.7}`} />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-4 w-8 bg-neutral-800/50 animate-pulse" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-5 w-32 bg-neutral-800/50 animate-pulse drop-shadow-lg" />
+                  <div className="h-4 w-20 bg-neutral-800/30 animate-pulse drop-shadow-lg" />
+                  <div className="h-3 w-28 bg-neutral-800/30 animate-pulse drop-shadow-lg" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="space-y-1">
+                <div className="h-10 w-full bg-white/5 hover:bg-white/10 animate-pulse flex items-center px-2">
+                  <div className="h-4 w-24 bg-neutral-800/50" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
+        
+        <main className="flex-1 flex flex-col min-w-0 bg-black overflow-y-auto relative">
+          <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
+          <div 
+            className="fixed inset-0 opacity-10 pointer-events-none z-0"
+            style={{
+              backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 4px, #ffffff 4px, #ffffff 5px)`
+            }}
+          />
+          <div className="fixed inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent pointer-events-none z-0" />
+          
+          <div className="flex-1 p-4 md:p-6 w-full max-w-5xl mx-auto space-y-4 relative z-10">
+            <div className="h-8 w-40 bg-white/5 border border-white/10 animate-pulse" />
+            
+            <div className="aspect-video bg-black border border-white/10 animate-pulse relative" />
+            
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <div className="h-8 w-3/4 bg-neutral-800/50 animate-pulse" />
+                  <div className="h-4 w-32 bg-neutral-800/30 animate-pulse" />
+                </div>
+                <div className="h-12 w-40 bg-[#E62E2D]/20 border-2 border-[#E62E2D]/50 animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
