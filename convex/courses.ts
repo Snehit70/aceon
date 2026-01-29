@@ -169,13 +169,13 @@ export const searchLectures = query({
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 20;
-    const query = args.searchQuery.trim();
+    const searchTerm = args.searchQuery.trim();
 
-    if (!query) return [];
+    if (!searchTerm) return [];
 
     const matchingVideos = await ctx.db
       .query("videos")
-      .withSearchIndex("search_title", (q) => q.search("title", query))
+      .withSearchIndex("search_title", (q) => q.search("title", searchTerm))
       .take(limit);
 
     const results = await Promise.all(
