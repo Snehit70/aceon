@@ -1,6 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+/**
+ * Retrieves a user profile by their Clerk ID.
+ *
+ * @param args.clerkId - The unique Clerk user ID.
+ * @returns The user document, or null if not found.
+ */
 export const getUser = query({
   args: { clerkId: v.string() },
   handler: async (ctx, args) => {
@@ -11,6 +17,14 @@ export const getUser = query({
   },
 });
 
+/**
+ * Updates an existing user profile or creates a new one if it doesn't exist.
+ *
+ * @param args.clerkId - The unique Clerk user ID.
+ * @param args.level - The academic level of the user ("foundation", "diploma", or "degree").
+ * @param args.enrolledCourseIds - A list of course IDs the user is enrolled in.
+ * @returns The ID of the updated or created user record.
+ */
 export const updateUser = mutation({
   args: {
     clerkId: v.string(),
@@ -42,6 +56,14 @@ export const updateUser = mutation({
   },
 });
 
+/**
+ * Enrolls a user in a specific course.
+ * If the user is already enrolled, no action is taken.
+ *
+ * @param args.clerkId - The unique Clerk user ID.
+ * @param args.courseId - The ID of the course to enroll in.
+ * @throws Error if the user profile is not found.
+ */
 export const enrollInCourse = mutation({
   args: {
     clerkId: v.string(),
@@ -66,6 +88,12 @@ export const enrollInCourse = mutation({
   },
 });
 
+/**
+ * Unenrolls a user from a specific course.
+ *
+ * @param args.clerkId - The unique Clerk user ID.
+ * @param args.courseId - The ID of the course to unenroll from.
+ */
 export const unenrollFromCourse = mutation({
   args: {
     clerkId: v.string(),
@@ -85,3 +113,4 @@ export const unenrollFromCourse = mutation({
     });
   },
 });
+

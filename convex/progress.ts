@@ -1,6 +1,19 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+/**
+ * Updates the watch progress for a specific video.
+ * Handles both creating new progress records and updating existing ones.
+ * Marks the video as completed if progress exceeds 90%.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.videoId - The ID of the video being watched.
+ * @param args.courseId - The ID of the course the video belongs to.
+ * @param args.progress - The progress value (0 to 1).
+ * @param args.watchedSeconds - The number of seconds watched.
+ * @param args.lastPosition - The last playback position in seconds.
+ * @returns The ID of the updated or created progress record.
+ */
 export const updateProgress = mutation({
   args: {
     clerkId: v.string(),
@@ -50,6 +63,13 @@ export const updateProgress = mutation({
   },
 });
 
+/**
+ * Retrieves the progress for a specific video and user.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.videoId - The ID of the video.
+ * @returns The progress record, or null if not found (or unauthorized).
+ */
 export const getProgress = query({
   args: {
     clerkId: v.string(),
@@ -71,6 +91,13 @@ export const getProgress = query({
   },
 });
 
+/**
+ * Retrieves all progress records for a specific course and user.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.courseId - The ID of the course.
+ * @returns A list of progress records.
+ */
 export const getCourseProgress = query({
   args: {
     clerkId: v.string(),
@@ -91,6 +118,15 @@ export const getCourseProgress = query({
   },
 });
 
+/**
+ * Toggles the completion status of a video.
+ * If not completed, marks as 100% complete. If completed, marks as incomplete.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.videoId - The ID of the video.
+ * @param args.courseId - The ID of the course.
+ * @returns The ID of the updated or created progress record.
+ */
 export const markComplete = mutation({
   args: {
     clerkId: v.string(),
@@ -135,6 +171,15 @@ export const markComplete = mutation({
   },
 });
 
+/**
+ * Toggles completion status for all videos in a specific week.
+ * If all videos are complete, unmarks them. Otherwise, marks all as complete.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.courseId - The ID of the course.
+ * @param args.weekId - The ID of the week.
+ * @returns An object containing `markedCount` and the new `completed` state.
+ */
 export const markWeekComplete = mutation({
   args: {
     clerkId: v.string(),
@@ -195,7 +240,15 @@ export const markWeekComplete = mutation({
   },
 });
 
-  export const markCourseComplete = mutation({
+/**
+ * Toggles completion status for all videos in a specific course.
+ * If all videos are complete, unmarks them. Otherwise, marks all as complete.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.courseId - The ID of the course.
+ * @returns An object containing `markedCount` and the new `completed` state.
+ */
+export const markCourseComplete = mutation({
   args: {
     clerkId: v.string(),
     courseId: v.id("courses"),
@@ -254,6 +307,13 @@ export const markWeekComplete = mutation({
   },
 });
 
+/**
+ * Retrieves the recently watched videos for a user.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.limit - Optional number of videos to return (default: 10).
+ * @returns A list of recently watched videos with course information populated.
+ */
 export const getRecentlyWatched = query({
   args: {
     clerkId: v.string(),
@@ -293,7 +353,14 @@ export const getRecentlyWatched = query({
   },
 });
 
-  export const getContinueWatching = query({
+/**
+ * Retrieves videos that are currently in progress (started but not completed).
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @param args.limit - Optional number of videos to return (default: 5).
+ * @returns A list of in-progress videos with course information populated.
+ */
+export const getContinueWatching = query({
   args: {
     clerkId: v.string(),
     limit: v.optional(v.number()),
@@ -331,6 +398,12 @@ export const getRecentlyWatched = query({
   },
 });
 
+/**
+ * Calculates the completion percentage for all courses a user has interacted with.
+ *
+ * @param args.clerkId - The user's Clerk ID.
+ * @returns A record mapping course IDs to their completion percentage (0-100).
+ */
 export const getAllCoursesProgress = query({
   args: {
     clerkId: v.string(),
@@ -377,3 +450,4 @@ export const getAllCoursesProgress = query({
     return result;
   },
 });
+
