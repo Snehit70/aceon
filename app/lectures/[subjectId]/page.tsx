@@ -5,17 +5,15 @@ import { api } from "@/convex/_generated/api";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import { useParams } from "next/navigation";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Loader2, PlayCircle, Menu, PanelLeftClose, PanelLeftOpen, CheckCircle2, Circle, Bookmark, StickyNote, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
+import { Loader2, Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn, cleanCourseTitle } from "@/lib/utils";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 import { useUser } from "@clerk/nextjs";
-import { BookmarkPanel } from "@/components/lectures/bookmark-panel";
-import { NotesPanel } from "@/components/lectures/notes-panel";
-import { TimelineMarkers } from "@/components/lectures/timeline-markers";
+
 import { LectureSidebar } from "@/components/lectures/lecture-sidebar";
 import { AutoplayOverlay } from "@/components/lectures/autoplay-overlay";
 import { LectureHeader } from "@/components/lectures/lecture-header";
@@ -35,8 +33,6 @@ export default function LecturePlayerPage() {
 
   const updateProgress = useMutation(api.progress.updateProgress);
   
-  const [videoDuration, setVideoDuration] = useState(0);
-
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
@@ -45,61 +41,15 @@ export default function LecturePlayerPage() {
   const [showAutoplayCountdown, setShowAutoplayCountdown] = useState(false);
   const [autoplayCountdown, setAutoplayCountdown] = useState(10);
   
-  const [bookmarksExpanded, setBookmarksExpanded] = useState(true);
-  const [notesExpanded, setNotesExpanded] = useState(true);
-  const [bookmarkCount, setBookmarkCount] = useState(0);
-  const [notesCount, setNotesCount] = useState(0);
-  const [showQuickNote, setShowQuickNote] = useState(false);
-  const [quickNoteContent, setQuickNoteContent] = useState("");
+
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const lastProgressUpdate = useRef<number>(0);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  const addBookmark = useMutation(api.bookmarks.addBookmark);
-  const addNote = useMutation(api.videoNotes.addNote);
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
   const markCourseComplete = useMutation(api.progress.markCourseComplete);
-  
-  const formatTimestamp = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    if (h > 0) {
-      return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-    }
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
-  
-  const handleQuickAddBookmark = async () => {
-    if (!user || !activeVideoId) return;
-    try {
-      await addBookmark({
-        videoId: activeVideoId as Id<"videos">,
-        clerkId: user.id,
-        timestamp: currentTime,
-      });
-    } catch (error) {
-      console.error("Failed to add bookmark", error);
-    }
-  };
-  
-  const handleQuickAddNote = async () => {
-    if (!user || !activeVideoId || !quickNoteContent.trim()) return;
-    try {
-      await addNote({
-        videoId: activeVideoId as Id<"videos">,
-        clerkId: user.id,
-        timestamp: Math.floor(currentTime),
-        content: quickNoteContent.trim(),
-      });
-      setQuickNoteContent("");
-      setShowQuickNote(false);
-    } catch (error) {
-      console.error("Failed to add note", error);
-    }
-  };
   
   const handleMarkComplete = async () => {
     if (!user || !activeVideoId) return;
@@ -237,13 +187,6 @@ export default function LecturePlayerPage() {
       setSelectedVideoId(nextVideoId);
     }
   }, [findNextVideo, cancelAutoplay]);
-
-  const handleSeek = (timestamp: number) => {
-    if (playerRef.current) {
-      playerRef.current.seekTo(timestamp);
-      setCurrentTime(timestamp);
-    }
-  };
 
   const handleProgressUpdate = useCallback((progress: { played: number; playedSeconds: number }) => {
     const played = typeof progress.played === 'number' && !isNaN(progress.played) ? progress.played : 0;
@@ -427,15 +370,7 @@ export default function LecturePlayerPage() {
                 )}
               </div>
 
-              {user && currentVideo.duration > 0 && (
-                <TimelineMarkers
-                  videoId={currentVideo._id as Id<"videos">}
-                  clerkId={user.id}
-                  duration={currentVideo.duration}
-                  currentTime={currentTime}
-                  onSeek={handleSeek}
-                />
-              )}
+
 
               <LectureHeader 
                 title={currentVideo.title}
@@ -443,97 +378,10 @@ export default function LecturePlayerPage() {
                 duration={currentVideo.duration}
                 showUserActions={!!user}
                 isCompleted={isCurrentVideoCompleted}
-                onBookmark={() => handleQuickAddBookmark()}
-                onToggleNote={() => setShowQuickNote(!showQuickNote)}
                 onMarkComplete={handleMarkComplete}
               />
 
-              {showQuickNote && user && (
-                <div className="p-3 rounded-lg border bg-muted/30 space-y-2 animate-in slide-in-from-top-2 duration-200">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Note at {formatTimestamp(currentTime)}</span>
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setShowQuickNote(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                  <textarea
-                    value={quickNoteContent}
-                    onChange={(e) => setQuickNoteContent(e.target.value)}
-                    placeholder="Type your note..."
-                    className="w-full min-h-[60px] p-2 text-sm bg-background border rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-primary"
-                    autoFocus
-                  />
-                  <div className="flex justify-end">
-                    <Button size="sm" onClick={handleQuickAddNote} disabled={!quickNoteContent.trim()}>
-                      Save Note
-                    </Button>
-                  </div>
-                </div>
-              )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="rounded-lg border bg-background/50 backdrop-blur-sm overflow-hidden">
-                  <button
-                    onClick={() => setBookmarksExpanded(!bookmarksExpanded)}
-                    className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Bookmark className="h-4 w-4 text-primary" />
-                      <span className="font-medium text-sm">Bookmarks</span>
-                      <span className="text-xs text-muted-foreground">({bookmarkCount})</span>
-                    </div>
-                    {bookmarksExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </button>
-                  {bookmarksExpanded && (
-                    <div className="border-t">
-                      <BookmarkPanel
-                        videoId={currentVideo._id as Id<"videos">}
-                        clerkId={user?.id || ""}
-                        currentTime={currentTime}
-                        onSeek={handleSeek}
-                        onCountChange={setBookmarkCount}
-                        className="border-0 bg-transparent max-h-[300px]"
-                        compact
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="rounded-lg border bg-background/50 backdrop-blur-sm overflow-hidden">
-                  <button
-                    onClick={() => setNotesExpanded(!notesExpanded)}
-                    className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <StickyNote className="h-4 w-4 text-primary" />
-                      <span className="font-medium text-sm">Notes</span>
-                      <span className="text-xs text-muted-foreground">({notesCount})</span>
-                    </div>
-                    {notesExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </button>
-                  {notesExpanded && (
-                    <div className="border-t">
-                      <NotesPanel
-                        videoId={currentVideo._id as Id<"videos">}
-                        clerkId={user?.id || ""}
-                        currentTime={currentTime}
-                        onSeek={handleSeek}
-                        onCountChange={setNotesCount}
-                        className="border-0 bg-transparent max-h-[300px] w-full"
-                        compact
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-10">
