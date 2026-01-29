@@ -181,9 +181,6 @@ export default function LecturesPage() {
               className="group gap-2 font-display font-black uppercase tracking-widest text-2xl data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
             >
               Enrolled_Missions
-              <span className="ml-2 text-xs bg-neutral-800 text-white px-2 py-0.5 rounded-full group-data-[state=active]:bg-[#E62E2D]">
-                {enrolledCourses.length}
-              </span>
             </TabsTrigger>
             <TabsTrigger 
               value="library" 
