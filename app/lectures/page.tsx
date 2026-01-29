@@ -37,6 +37,7 @@ export default function LecturesPage() {
   const [levelFilter, setLevelFilter] = useState<"all" | "foundation" | "diploma" | "degree">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "not-completed">("all");
   const [showProfileSheet, setShowProfileSheet] = useState(false);
+  const [cachedCounts, setCachedCounts] = useState({ enrolled: 3, library: 8 });
 
   const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
@@ -95,6 +96,29 @@ export default function LecturesPage() {
     }
   }, [user, profile]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('aceon_course_counts');
+      if (cached) {
+        try {
+          setCachedCounts(JSON.parse(cached));
+        } catch {
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (courses && typeof window !== 'undefined') {
+      const counts = {
+        enrolled: enrolledCourses.length,
+        library: otherCourses.length
+      };
+      localStorage.setItem('aceon_course_counts', JSON.stringify(counts));
+      setCachedCounts(counts);
+    }
+  }, [courses, enrolledCourses.length, otherCourses.length]);
+
   if (courses === undefined) {
     return (
       <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
@@ -145,7 +169,7 @@ export default function LecturesPage() {
             </div>
 
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              {Array.from({ length: cachedCounts.library }).map((_, i) => (
                 <div key={i} className="border-2 border-neutral-800 bg-black clip-corner overflow-hidden animate-pulse">
                   <div className="p-4 border-b-2 border-neutral-800 bg-neutral-900/20 space-y-3">
                     <div className="flex items-center justify-between">
