@@ -9,14 +9,13 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetHeader,
   SheetTitle,
   SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Circle, GraduationCap, BookOpen, Sprout } from "lucide-react";
+import { CheckCircle2, GraduationCap, BookOpen, Sprout } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -56,14 +55,25 @@ const levels = [
   },
 ] as const;
 
+const getLevelOrder = (lvl: string) => {
+  if (lvl === "foundation") return 1;
+  if (lvl === "diploma") return 2;
+  if (lvl === "degree") return 3;
+  return 0;
+};
+
 export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileSheetProps) {
   const { user } = useUser();
   const profile = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
   const courses = useQuery(api.courses.list);
+  const allProgress = useQuery(api.progress.getAllCoursesProgress, user ? { clerkId: user.id } : "skip");
   const updateProfile = useMutation(api.users.updateUser);
+  const markCourseComplete = useMutation(api.progress.markCourseComplete);
 
   const [level, setLevel] = useState<"foundation" | "diploma" | "degree">("foundation");
-  const [selectedCourses, setSelectedCourses] = useState<Id<"courses">[]>([]);
+  const [studyingCourseIds, setStudyingCourseIds] = useState<Id<"courses">[]>([]);
+  const [completedCourseIds, setCompletedCourseIds] = useState<Id<"courses">[]>([]);
+  const [initialCompletedIds, setInitialCompletedIds] = useState<Id<"courses">[]>([]);
   const [showAllLevels, setShowAllLevels] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,15 +82,53 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
     if (profile) {
       const profileLevel = profile.level as "foundation" | "diploma" | "degree";
       setLevel(profileLevel);
-      setSelectedCourses(profile.enrolledCourseIds || []);
+      setStudyingCourseIds(profile.enrolledCourseIds || []);
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (allProgress && profile?.level && courses) {
+      const userLevelOrder = getLevelOrder(profile.level);
+      
+      const doneIds: Id<"courses">[] = [];
+      
+      for (const course of courses) {
+        const courseLevelOrder = getLevelOrder(course.level);
+        const isPriorLevel = userLevelOrder > courseLevelOrder;
+        const progressPercent = allProgress[course._id] || 0;
+        
+        if (isPriorLevel || progressPercent === 100) {
+          doneIds.push(course._id);
+        }
+      }
+      
+      setCompletedCourseIds(doneIds);
+      setInitialCompletedIds(doneIds);
+    }
+  }, [allProgress, profile, courses]);
 
   // Filter courses based on selected level
   const filteredCourses = courses?.filter(course => {
     if (showAllLevels) return true;
     return course.level === level;
   });
+
+  const getCourseStatus = (courseId: Id<"courses">) => {
+    if (studyingCourseIds.includes(courseId)) return 'studying';
+    if (completedCourseIds.includes(courseId)) return 'done';
+    return null;
+  };
+
+  const handleCourseStatusChange = (courseId: Id<"courses">, status: 'studying' | 'done' | null) => {
+    setStudyingCourseIds(prev => prev.filter(id => id !== courseId));
+    setCompletedCourseIds(prev => prev.filter(id => id !== courseId));
+
+    if (status === 'studying') {
+      setStudyingCourseIds(prev => [...prev, courseId]);
+    } else if (status === 'done') {
+      setCompletedCourseIds(prev => [...prev, courseId]);
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -89,22 +137,42 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
       await updateProfile({
         clerkId: user.id,
         level,
-        enrolledCourseIds: selectedCourses,
+        enrolledCourseIds: studyingCourseIds,
       });
+
+      // Mark newly completed courses (wasn't 100% before, now marked DONE)
+      const toComplete = completedCourseIds.filter(courseId => {
+        const currentProgress = allProgress?.[courseId] || 0;
+        return currentProgress < 100;
+      });
+
+      // Un-complete courses that were DONE before but now changed to STUDYING or unselected
+      const toUncomplete = initialCompletedIds.filter(courseId => 
+        !completedCourseIds.includes(courseId)
+      );
+
+      // Process completions (fault-tolerant - continue even if some fail)
+      const results = await Promise.allSettled([
+        ...toComplete.map(courseId => 
+          markCourseComplete({ clerkId: user.id, courseId })
+        ),
+        ...toUncomplete.map(courseId => 
+          markCourseComplete({ clerkId: user.id, courseId })
+        ),
+      ]);
+
+      // Log any failures but don't block save
+      const failures = results.filter(r => r.status === 'rejected');
+      if (failures.length > 0) {
+        console.warn(`${failures.length} course status updates failed:`, failures);
+      }
+      
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to save profile", error);
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const toggleCourse = (courseId: Id<"courses">) => {
-    setSelectedCourses((prev) =>
-      prev.includes(courseId)
-        ? prev.filter((id) => id !== courseId)
-        : [...prev, courseId]
-    );
   };
 
   return (
@@ -176,44 +244,63 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
             <ScrollArea className="flex-1">
               <div className="px-6 py-4 pb-6 space-y-1">
                 <AnimatePresence>
-                  {filteredCourses?.map((course) => (
-                    <motion.button
-                      key={course._id}
-                      onClick={() => toggleCourse(course._id)}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      className={cn(
-                        "w-full flex items-center gap-3 p-3 rounded border transition-all text-left group",
-                        selectedCourses.includes(course._id)
-                          ? "border-primary/30 bg-primary/5 hover:bg-primary/10"
-                          : "border-transparent hover:bg-white/5"
-                      )}
-                    >
-                      <div className={cn(
-                        "w-4 h-4 rounded-sm border flex items-center justify-center transition-colors",
-                        selectedCourses.includes(course._id)
-                          ? "bg-primary border-primary text-black"
-                          : "border-muted-foreground/50 group-hover:border-white/50"
-                      )}>
-                        {selectedCourses.includes(course._id) && <CheckCircle2 className="w-3 h-3" />}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
+                  {filteredCourses?.map((course) => {
+                    const status = getCourseStatus(course._id);
+                    return (
+                      <motion.div
+                        key={course._id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className={cn(
+                          "w-full p-4 rounded border transition-all space-y-3",
+                          status !== null
+                            ? "border-white/10 bg-white/5"
+                            : "border-transparent hover:bg-white/5"
+                        )}
+                      >
+                        <div className="flex items-start justify-between gap-2">
                           <p className={cn(
-                            "text-sm font-bold uppercase tracking-tight truncate",
-                            selectedCourses.includes(course._id) ? "text-white" : "text-muted-foreground group-hover:text-white"
+                            "text-sm font-bold uppercase tracking-tight",
+                            status !== null ? "text-white" : "text-muted-foreground"
                           )}>
                             {course.title}
                           </p>
-                          <Badge variant="outline" className="ml-2 font-mono text-[9px] border-white/10 text-muted-foreground">
+                          <Badge variant="outline" className="shrink-0 font-mono text-[9px] border-white/10 text-muted-foreground">
                             {course.code}
                           </Badge>
                         </div>
-                      </div>
-                    </motion.button>
-                  ))}
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => handleCourseStatusChange(course._id, status === 'studying' ? null : 'studying')}
+                            className={cn(
+                              "flex items-center justify-center gap-2 py-1.5 px-3 rounded text-[10px] font-bold uppercase tracking-wider border transition-all",
+                              status === 'studying'
+                                ? "bg-primary/20 border-primary text-primary"
+                                : "bg-black/20 border-white/10 text-muted-foreground hover:bg-white/5 hover:text-white"
+                            )}
+                          >
+                            <BookOpen className="w-3 h-3" />
+                            Studying
+                          </button>
+                          
+                          <button
+                            onClick={() => handleCourseStatusChange(course._id, status === 'done' ? null : 'done')}
+                            className={cn(
+                              "flex items-center justify-center gap-2 py-1.5 px-3 rounded text-[10px] font-bold uppercase tracking-wider border transition-all",
+                              status === 'done'
+                                ? "bg-emerald-500/20 border-emerald-500 text-emerald-400"
+                                : "bg-black/20 border-white/10 text-muted-foreground hover:bg-white/5 hover:text-white"
+                            )}
+                          >
+                            <CheckCircle2 className="w-3 h-3" />
+                            Done
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
               </div>
             </ScrollArea>
