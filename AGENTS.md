@@ -2,6 +2,10 @@
 
 ## 1. Project Overview
 
+** never push any code you can only commti and never push even if the users asks you too do that
+
+
+
 Aceon is an academic companion app for IITM BS Degree students.
 **Stack**: Next.js 16 (App Router), React 19, Convex (BaaS), Clerk (Auth), Tailwind 4, Shadcn UI.
 **Theme**: "Royal Indigo" with glassmorphism effects.
