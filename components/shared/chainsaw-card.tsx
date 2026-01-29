@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 export interface ChainsawCardProps {
   id: string
   code: string
-  term: string
   title: string
   subtitle?: string
   level: string
@@ -21,7 +20,6 @@ export interface ChainsawCardProps {
 
 export function ChainsawCard({
   code,
-  term,
   title,
   subtitle,
   level,

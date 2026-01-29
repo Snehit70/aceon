@@ -1,0 +1,200 @@
+[
+  {
+    "_creationTime": 1768305299304.7537,
+    "_id": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "code": "MA1002",
+    "courseId": "ns_24t3_ma1002",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "Statistics I"
+  },
+  {
+    "_creationTime": 1768305299801.1685,
+    "_id": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "code": "CS1001",
+    "courseId": "ns_24t3_cs1001",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "CT"
+  },
+  {
+    "_creationTime": 1768305300259.092,
+    "_id": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "code": "CS1002",
+    "courseId": "ns_24t3_cs1002",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "Python"
+  },
+  {
+    "_creationTime": 1768305300688.088,
+    "_id": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "code": "CS2001",
+    "courseId": "ns_24t3_cs2001",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "DBMS"
+  },
+  {
+    "_creationTime": 1768305301150.675,
+    "_id": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "code": "CS2002",
+    "courseId": "ns_24t3_cs2002",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "PDSA"
+  },
+  {
+    "_creationTime": 1768305301580.3018,
+    "_id": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "code": "CS2003",
+    "courseId": "ns_24t3_cs2003",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "MAD I"
+  },
+  {
+    "_creationTime": 1768305302250.0635,
+    "_id": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "code": "CS2004",
+    "courseId": "ns_24t3_cs2004",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "ML Foundations"
+  },
+  {
+    "_creationTime": 1768305302691.9294,
+    "_id": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "code": "CS2005",
+    "courseId": "ns_24t3_cs2005",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "JAVA"
+  },
+  {
+    "_creationTime": 1768305303350.584,
+    "_id": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "code": "CS2006",
+    "courseId": "ns_24t3_cs2006",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "MAD II"
+  },
+  {
+    "_creationTime": 1768305303737.5977,
+    "_id": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "code": "MS2001",
+    "courseId": "ns_24t3_ms2001",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "BDM"
+  },
+  {
+    "_creationTime": 1768305304182.6934,
+    "_id": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "code": "CS2007",
+    "courseId": "ns_24t3_cs2007",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "MLT"
+  },
+  {
+    "_creationTime": 1768305304845.07,
+    "_id": "k971tsdwf5ney1v57myz006xn17z5539",
+    "code": "CS2008",
+    "courseId": "ns_24t3_cs2008",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "MLP"
+  },
+  {
+    "_creationTime": 1768305305271.0518,
+    "_id": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "code": "CS3002",
+    "courseId": "ns_24t3_cs3002",
+    "level": "degree",
+    "term": "24t3",
+    "title": "Software Testing"
+  },
+  {
+    "_creationTime": 1768305305680.3447,
+    "_id": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "code": "CS3003",
+    "courseId": "ns_24t3_cs3003",
+    "level": "degree",
+    "term": "24t3",
+    "title": "AI: Search Methods for Problem Solving"
+  },
+  {
+    "_creationTime": 1768305306320.3643,
+    "_id": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "code": "CS3004",
+    "courseId": "ns_24t3_cs3004",
+    "level": "degree",
+    "term": "24t3",
+    "title": "Deep Learning"
+  },
+  {
+    "_creationTime": 1768305306787.631,
+    "_id": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "code": "CS3005",
+    "courseId": "ns_24t3_cs3005",
+    "level": "degree",
+    "term": "24t3",
+    "title": "Programming in C"
+  },
+  {
+    "_creationTime": 1768972746608.3123,
+    "_id": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "code": "HS1001",
+    "courseId": "ns_24t3_hs1001",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "English I"
+  },
+  {
+    "_creationTime": 1768972747046.2249,
+    "_id": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "code": "MA1003",
+    "courseId": "ns_24t3_ma1003",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "Mathematics II"
+  },
+  {
+    "_creationTime": 1768972747473.9258,
+    "_id": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "code": "MA1004",
+    "courseId": "ns_24t3_ma1004",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "Statistics II"
+  },
+  {
+    "_creationTime": 1768972748316.0051,
+    "_id": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "code": "HS1002",
+    "courseId": "ns_24t3_hs1002",
+    "level": "foundation",
+    "term": "24t3",
+    "title": "English II"
+  },
+  {
+    "_creationTime": 1768972896985.5051,
+    "_id": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "code": "SE2001",
+    "courseId": "ns_24t3_se2001",
+    "level": "diploma",
+    "term": "24t3",
+    "title": "System Commands"
+  },
+  {
+    "_creationTime": 1769275406777.962,
+    "_id": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "code": "MA1001",
+    "courseId": "ns_25t1_ma1001",
+    "level": "foundation",
+    "term": "25t1",
+    "title": "Jan 2025- Mathematics I"
+  }
+]

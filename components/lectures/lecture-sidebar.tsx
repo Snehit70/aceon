@@ -9,7 +9,6 @@ import { Doc } from "@/convex/_generated/dataModel";
 export interface SidebarProps {
   courseTitle: string;
   courseCode: string;
-  courseTerm: string;
   content: Array<{
     _id: string;
     title: string;
@@ -29,7 +28,6 @@ export interface SidebarProps {
 export function LectureSidebar({ 
   courseTitle, 
   courseCode, 
-  courseTerm, 
   content, 
   currentVideoId, 
   onVideoSelect, 

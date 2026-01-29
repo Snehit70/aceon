@@ -1,13 +1,11 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
-// Input validation schema matching the scraped data structure
 const videoSchema = v.object({
   title: v.string(),
   youtubeId: v.string(),
   duration: v.number(),
   slug: v.string(),
-  isPublic: v.boolean(),
   order: v.number(),
 });
 
@@ -18,9 +16,7 @@ const weekSchema = v.object({
 });
 
 const courseSchema = v.object({
-  courseId: v.string(), // "ns_24t3_cs1001"
   code: v.string(),
-  term: v.string(),
   title: v.string(),
   level: v.union(v.literal("foundation"), v.literal("diploma"), v.literal("degree")),
   weeks: v.array(weekSchema),
@@ -33,26 +29,21 @@ export const syncCourseData = mutation({
   handler: async (ctx, args) => {
     const { course } = args;
 
-    // 1. Sync Course
     let courseId = null;
     const existingCourse = await ctx.db
       .query("courses")
-      .withIndex("by_courseId", (q) => q.eq("courseId", course.courseId))
+      .withIndex("by_code", (q) => q.eq("code", course.code))
       .first();
 
     if (existingCourse) {
       courseId = existingCourse._id;
       await ctx.db.patch(courseId, {
-        code: course.code,
-        term: course.term,
         title: course.title,
         level: course.level,
       });
     } else {
       courseId = await ctx.db.insert("courses", {
-        courseId: course.courseId,
         code: course.code,
-        term: course.term,
         title: course.title,
         level: course.level,
       });
@@ -105,9 +96,8 @@ export const syncCourseData = mutation({
             title: video.title,
             duration: video.duration,
             slug: video.slug,
-            isPublic: video.isPublic,
             order: video.order,
-            courseId: courseId!, // Ensure denormalized field is correct
+            courseId: courseId!,
           });
         } else {
           await ctx.db.insert("videos", {
@@ -117,13 +107,12 @@ export const syncCourseData = mutation({
             youtubeId: video.youtubeId,
             duration: video.duration,
             slug: video.slug,
-            isPublic: video.isPublic,
             order: video.order,
           });
         }
       }
     }
 
-    return { success: true, courseId: course.courseId };
+    return { success: true, code: course.code };
   },
 });

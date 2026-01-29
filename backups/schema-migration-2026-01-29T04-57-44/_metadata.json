@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-01-29T04:57:47.145Z",
+  "convexUrl": "https://marvelous-lobster-114.convex.cloud",
+  "tables": {
+    "users": 0,
+    "studentProfile": 0,
+    "userPreferences": 0,
+    "bookmarks": 0,
+    "courses": 0,
+    "weeks": 0,
+    "videos": 0,
+    "videoProgress": 0,
+    "videoNotes": 0
+  },
+  "totalRecords": 0
+}

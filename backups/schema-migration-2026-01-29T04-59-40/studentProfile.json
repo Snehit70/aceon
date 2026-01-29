@@ -1,0 +1,25 @@
+[
+  {
+    "_creationTime": 1769253914676.766,
+    "_id": "m978sbgck97pj5ztatjwveqxch7zvj23",
+    "clerkId": "user_38geYxtha858eQijwjH3UU42KC9",
+    "currentTerm": "Jan 2024",
+    "enrolledCourseIds": [
+      "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+      "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+      "k97f010ktvs90deecz7a8r186x7z48v5"
+    ],
+    "level": "diploma"
+  },
+  {
+    "_creationTime": 1769571739890.4456,
+    "_id": "m970k5ca5ww0chnt1nerew45yn803cen",
+    "clerkId": "user_38CIM3vyeRQpInmw7paNNkdAkWd",
+    "currentTerm": "Jan 2024",
+    "enrolledCourseIds": [
+      "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+      "k97f010ktvs90deecz7a8r186x7z48v5"
+    ],
+    "level": "diploma"
+  }
+]

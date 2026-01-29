@@ -1,57 +1,87 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const syncUser = mutation({
-  args: {
-    clerkId: v.string(),
-    email: v.string(),
-    name: v.string(),
-    avatarUrl: v.optional(v.string()),
-  },
+export const getUser = query({
+  args: { clerkId: v.string() },
   handler: async (ctx, args) => {
-    // Security: Verify caller identity matches the clerkId being synced
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity || identity.subject !== args.clerkId) {
-      throw new Error("Unauthorized: Cannot sync another user's profile");
-    }
-
-    const existingUser = await ctx.db
+    return await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .first();
-
-    if (existingUser) {
-      await ctx.db.patch(existingUser._id, {
-        email: args.email,
-        name: args.name,
-        avatarUrl: args.avatarUrl,
-      });
-      return existingUser._id;
-    }
-
-    const newUserId = await ctx.db.insert("users", {
-      clerkId: args.clerkId,
-      email: args.email,
-      name: args.name,
-      avatarUrl: args.avatarUrl,
-      joinedAt: Date.now(),
-    });
-
-    return newUserId;
+      .unique();
   },
 });
 
-export const getUser = query({
-  args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+export const updateUser = mutation({
+  args: {
+    clerkId: v.string(),
+    level: v.union(v.literal("foundation"), v.literal("diploma"), v.literal("degree")),
+    enrolledCourseIds: v.array(v.id("courses")),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
 
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        level: args.level,
+        enrolledCourseIds: args.enrolledCourseIds,
+      });
+      return existing._id;
+    } else {
+      return await ctx.db.insert("users", {
+        clerkId: args.clerkId,
+        email: `${args.clerkId}@placeholder.com`,
+        name: "User",
+        joinedAt: Date.now(),
+        level: args.level,
+        enrolledCourseIds: args.enrolledCourseIds,
+      });
+    }
+  },
+});
+
+export const enrollInCourse = mutation({
+  args: {
+    clerkId: v.string(),
+    courseId: v.id("courses"),
+  },
+  handler: async (ctx, args) => {
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
 
-    return user;
+    if (!user) {
+      throw new Error("User not found. Please set up your profile first.");
+    }
+
+    const currentCourses = user.enrolledCourseIds || [];
+    if (!currentCourses.includes(args.courseId)) {
+      await ctx.db.patch(user._id, {
+        enrolledCourseIds: [...currentCourses, args.courseId],
+      });
+    }
+  },
+});
+
+export const unenrollFromCourse = mutation({
+  args: {
+    clerkId: v.string(),
+    courseId: v.id("courses"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+
+    if (!user) return;
+
+    const currentCourses = user.enrolledCourseIds || [];
+    await ctx.db.patch(user._id, {
+      enrolledCourseIds: currentCourses.filter((id) => id !== args.courseId),
+    });
   },
 });

@@ -1,5 +1,4 @@
-
-import { internalQuery } from "./_generated/server";
+import { query, internalQuery } from "./_generated/server";
 
 export const verifyContent = internalQuery({
   args: {},
@@ -19,7 +18,6 @@ export const verifyContent = internalQuery({
         .withIndex("by_course", q => q.eq("courseId", course._id))
         .collect();
         
-      // Get week numbers/titles to see range
       const weekTitles = weeks.map(w => w.title).sort();
       
       results.push({
@@ -33,4 +31,46 @@ export const verifyContent = internalQuery({
     
     return results.sort((a, b) => a.code.localeCompare(b.code));
   }
+});
+
+export const getAllUsers = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("users").collect();
+  },
+});
+
+export const getAllCourses = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("courses").collect();
+  },
+});
+
+export const getAllWeeks = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("weeks").collect();
+  },
+});
+
+export const getAllVideos = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("videos").collect();
+  },
+});
+
+export const getAllVideoProgress = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("videoProgress").collect();
+  },
+});
+
+export const getAllVideoNotes = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("videoNotes").collect();
+  },
 });

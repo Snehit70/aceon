@@ -23,7 +23,7 @@ const ProfileSheet = dynamic(
 export default function LecturesPage() {
   const { user } = useUser();
   const courses = useQuery(api.courses.listWithStats);
-  const profile = useQuery(api.studentProfile.getProfile, user?.id ? { clerkId: user.id } : "skip");
+  const profile = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip");
   
   const continueWatching = useQuery(
     api.progress.getContinueWatching,
@@ -206,7 +206,6 @@ export default function LecturesPage() {
                         id={course._id}
                         href={`/lectures/${course._id}`}
                         code={course.code}
-                        term={course.term}
                         title={course.title}
                         level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
                         lectureCount={course.stats.lectureCount}
@@ -374,7 +373,6 @@ export default function LecturesPage() {
                       id={course._id}
                       href={`/lectures/${course._id}`}
                       code={course.code}
-                      term={course.term}
                       title={course.title}
                       level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
                       lectureCount={course.stats.lectureCount}

@@ -1,0 +1,1927 @@
+[
+  {
+    "_creationTime": 1768305299304.754,
+    "_id": "kn78h0sk8aq6x57j9aayna3bdn7z55tz",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 1,
+    "title": "Course Introduction"
+  },
+  {
+    "_creationTime": 1768305299304.7544,
+    "_id": "kn79spjzqy2v80xtrp3f38jr7n7z4acc",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 2,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305299304.7568,
+    "_id": "kn78x2vr6r1nfkre4b68wb25fn7z557f",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 3,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305299304.7593,
+    "_id": "kn72c4vjxc3xkqcn748ysr9jz17z4nej",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 4,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305299304.7632,
+    "_id": "kn74nbb3qw0qfvh0gfgce3kczn7z4v0c",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 5,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305299304.7668,
+    "_id": "kn7ff0zenq4kxp2dhtkgx496qs7z49f9",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 6,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305299304.77,
+    "_id": "kn70rvhnmcn0y6037ec9rfmqqh7z5mhx",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 7,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305299304.7725,
+    "_id": "kn7c20ctrwa7221xfed60cs3597z43g5",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 8,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305299304.776,
+    "_id": "kn78kqzz72fxthyyqyeanp1hcd7z5q8q",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 9,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305299304.7793,
+    "_id": "kn7dt00ypkvtbprc9ze5vapf697z54ek",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 10,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305299304.7827,
+    "_id": "kn787s28gqkks8xpt6tvcsv1x97z5jhn",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 11,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305299304.7844,
+    "_id": "kn746tqpm32p9dbgkfngv2v1717z4x62",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 12,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305299304.788,
+    "_id": "kn7e0m4mqazfnqeg1hpq1p2pw97z426b",
+    "courseId": "k97fn4mkawqm8yjwxt6n6eeekn7z4pny",
+    "order": 13,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305299801.1687,
+    "_id": "kn7dty9vazzgheav3qg3d0qfy57z5h3j",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 1,
+    "title": "Course Introduction"
+  },
+  {
+    "_creationTime": 1768305299801.1692,
+    "_id": "kn787qk786j8xa05ffd6yhw5h97z4bqd",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 2,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305299801.1726,
+    "_id": "kn75x0hxep20dc1zpn457qvk3d7z5x10",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 3,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305299801.1772,
+    "_id": "kn73hs2zm3880vqpq09m5zywe97z4ndt",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 4,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305299801.1804,
+    "_id": "kn7b2j2dkh76djdfy8rjn84m657z5v13",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 5,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305299801.183,
+    "_id": "kn71a6k4qmzxz48mwfktmjvwj17z42gj",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 6,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305299801.1853,
+    "_id": "kn70s1b8vbn1vfqdwaxpfkw8hn7z56bp",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 7,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305299801.1877,
+    "_id": "kn715vd691ws2f8dbjnkyj95j17z5cfx",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 8,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305299801.1897,
+    "_id": "kn77jp8y6k7ap7nzqw749e3r617z45xn",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 9,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305299801.1912,
+    "_id": "kn7562rn77m3ewm93k2xtjms297z59d7",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 10,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305299801.193,
+    "_id": "kn70bf0hcexgkpt713ehfvy87s7z4e4z",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 11,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305299801.1943,
+    "_id": "kn7f9vxmh586kbv72hnyb8h8gn7z5kpj",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 12,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305299801.196,
+    "_id": "kn77t56ngmndq8z6zy4qnvc81s7z4aky",
+    "courseId": "k97ayfwzr1g085agk25g236a8d7z4z5k",
+    "order": 13,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305300259.0923,
+    "_id": "kn78n7899vgh7nnwxh55bkcahn7z57wr",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 1,
+    "title": "Course Introduction"
+  },
+  {
+    "_creationTime": 1768305300259.0928,
+    "_id": "kn76r3p5bs42hv0ancvstr6pd17z4k47",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 2,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305300259.0962,
+    "_id": "kn7fvyxspva2khkkj20agt7hjd7z4vcr",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 3,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305300259.0994,
+    "_id": "kn71mtea015yvsma7171pa92qn7z5jhm",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 4,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305300259.103,
+    "_id": "kn7d72xkadj4wjnpnrtmwp0m3n7z5z48",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 5,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305300259.106,
+    "_id": "kn78h3s25z68ev3c9k58ephjcn7z4k8j",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 6,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305300259.1086,
+    "_id": "kn79c96823ahs3t125t0zz95yn7z4am5",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 7,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305300259.1104,
+    "_id": "kn7fcx0gb8cte87qbyj8s4jb4n7z4t6z",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 8,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305300259.113,
+    "_id": "kn745r46cf7r6ytnf47c06r8097z5het",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 9,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305300259.1145,
+    "_id": "kn73ehamfv840fsd2k6hr6d60n7z5dyk",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 10,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305300259.1157,
+    "_id": "kn78xzqsar7kx7hx614h8h4m997z5qne",
+    "courseId": "k977mn9mkfgma22e0yysw1ndcn7z5fcd",
+    "order": 11,
+    "title": "Week 12 (OPPE-2 Mock)"
+  },
+  {
+    "_creationTime": 1768305300688.0881,
+    "_id": "kn7dk5m5p5kq784m3a2a82mj0x7z5h3h",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 1,
+    "title": "Orientation and the Process"
+  },
+  {
+    "_creationTime": 1768305300688.0903,
+    "_id": "kn79ve9vf3k3n8teavrd3zxzg17z56y0",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 2,
+    "title": "Disciplinary & Non Academic Conduct"
+  },
+  {
+    "_creationTime": 1768305300688.093,
+    "_id": "kn7agm1bdxphnj8pcyp5ma12497z5zcd",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 3,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305300688.0945,
+    "_id": "kn7a0x4apwas5mmfys8c8dr4t97z587s",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 4,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305300688.0972,
+    "_id": "kn7br1cnz3khccchqbntwsam1d7z4m0n",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 5,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305300688.0989,
+    "_id": "kn72fz4jktcce83psq1ex5158d7z5vcw",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 6,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305300688.1013,
+    "_id": "kn7da7zs3x5vj0s9c7m47mk7y57z47mv",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 7,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305300688.104,
+    "_id": "kn71fzmw4pjtmnvg6yavxkj6r57z4xw3",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 8,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305300688.106,
+    "_id": "kn78nekqce22htkjdd94nzktdx7z4g32",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 9,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305300688.1074,
+    "_id": "kn7abzs2s3zdej6chct00pjed97z4x1a",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 10,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305300688.1091,
+    "_id": "kn7bab6zzxh9dtkh6ptgyaq8fd7z5h6g",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 11,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305300688.111,
+    "_id": "kn74ycxh4xc9asyrtmc0e3yy3s7z5c8t",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 12,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305300688.1125,
+    "_id": "kn7a9ty2gpe0ddq5dj3fwmc65n7z4crq",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 13,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305300688.114,
+    "_id": "kn7bsf8c5kbdqhj3wv7fvvanz17z50n4",
+    "courseId": "k973pzfd0xaajf5ahf91azkrk17z5e0x",
+    "order": 14,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305301150.6753,
+    "_id": "kn7b6vjpsezcmm2cjqjq3zvn3h7z43c3",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305301150.6785,
+    "_id": "kn7aqag66cqc6mdmxr13x66wgn7z5nt9",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305301150.681,
+    "_id": "kn76f09t8gbfmdmx08kt08vyhh7z4tzt",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305301150.6833,
+    "_id": "kn7cg3cswtja5rz0ecgw6wtrrn7z4w3t",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305301150.6855,
+    "_id": "kn70zp515dwga74bdwvw19hjqs7z407m",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305301150.6875,
+    "_id": "kn7ft5kpfsefd15sezhsafjcwh7z47y4",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305301150.689,
+    "_id": "kn7cj3744ency6rn944gdtcxgs7z459h",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305301150.6902,
+    "_id": "kn7cy8qkrn6p70pjecvaqdwy7h7z5fh7",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305301150.692,
+    "_id": "kn73pm8qez9knz4hj4wpt4apwx7z4sey",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305301150.6936,
+    "_id": "kn7ddt5waq2n6qamn7vc91tkcs7z4svq",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 10,
+    "title": "Week 10 (Refresher Week)"
+  },
+  {
+    "_creationTime": 1768305301150.6946,
+    "_id": "kn7a5hzaj8hxcg6gfjgwjx46g17z4yj6",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305301150.6965,
+    "_id": "kn7fke5zk4k3wwmahcxgfa3qqs7z4fwm",
+    "courseId": "k9770nzzszztxyvjgxzm9ah2t57z5fzm",
+    "order": 12,
+    "title": "Week 12 (Extra Contents)"
+  },
+  {
+    "_creationTime": 1768305301580.302,
+    "_id": "kn7az27t9kmchr3m3a3fw9gah97z41bp",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305301580.305,
+    "_id": "kn7ep1ycg1kz31f76xa2cpfnns7z5pwc",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305301580.3071,
+    "_id": "kn7fej2qpetag2kpzcvptk7aa57z4xvs",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305301580.31,
+    "_id": "kn7c6ay7nt0fea305k1v3w5pw57z5de8",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305301580.3115,
+    "_id": "kn71d4q3yf2mpj5qqqg886tp657z4z5x",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305301580.3142,
+    "_id": "kn7bnfenc39gg5bj4b382b49dh7z5h6n",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305301580.3167,
+    "_id": "kn7dmr80h9t5e2kdvm3pb9t5hx7z5xzt",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305301580.3188,
+    "_id": "kn7fbadqk4djejh61b6xznt2m57z4f1m",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305301580.3206,
+    "_id": "kn79wk6xvwmrvz209px05rk7c97z4y2e",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305301580.3223,
+    "_id": "kn70aca416k4c37w000hzmy1ps7z43a8",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305301580.324,
+    "_id": "kn708brze2fd7ntknsj4551yvh7z52rx",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305301580.3254,
+    "_id": "kn73ck5wbh38v8c8d78w4s458d7z5tjn",
+    "courseId": "k972fsk2ter6brwy2yra8jj48x7z4ga9",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305302250.0637,
+    "_id": "kn74d6yd60e5h1s3a2t6rhz3f57z4eya",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305302250.0662,
+    "_id": "kn78s8qzsqa0k7ssk3yrtmawmn7z4kyr",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305302250.068,
+    "_id": "kn7d4ncmzaycf11fqyjf11xp557z5m73",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305302250.0706,
+    "_id": "kn772nkejd7jngy4yn2ty0gtwn7z5qh7",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305302250.0725,
+    "_id": "kn7117k4hfv93dfwh0y2b0jczx7z5dxv",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305302250.0742,
+    "_id": "kn70m6n02c05sqtnskvn0k1dcx7z51nj",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305302250.0762,
+    "_id": "kn76h2yjzam2e7psqn1ejv0h9s7z4s3b",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305302250.0774,
+    "_id": "kn71pfea05wr1pmbys1amg29d57z50eg",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305302250.0798,
+    "_id": "kn7ed3gm7yxdpm64b4mxkjs4w97z5j0m",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305302250.082,
+    "_id": "kn773wdt36wrv9ef72npjq4qps7z4409",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305302250.0837,
+    "_id": "kn79qmpbexhs9e34mv770z8kj97z5x44",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305302250.086,
+    "_id": "kn76zpebzn7zsq34qdrqggcegn7z5fyh",
+    "courseId": "k97f010ktvs90deecz7a8r186x7z48v5",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305302691.9297,
+    "_id": "kn74gy21at1xrq2x2pm6h3v7cx7z47fx",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305302691.9314,
+    "_id": "kn7b5ys5j0taqfqbnzg74hpvvd7z44ra",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305302691.9329,
+    "_id": "kn71khqc3h0kxt190g3nkx14vx7z5zpn",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305302691.9346,
+    "_id": "kn7c5r1534v6hrme6cmv6fz8657z50bw",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305302691.9363,
+    "_id": "kn75x5s7xahfvf7mew5n7kdegd7z4n11",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305302691.9377,
+    "_id": "kn7dgqstxrxehrxghycckakvv17z4bfn",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305302691.939,
+    "_id": "kn70n8e4s91rr1968vxfvjrsj17z4440",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305302691.9404,
+    "_id": "kn7616dgw12hbtj7bv93gcjmhs7z5f3q",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305302691.9417,
+    "_id": "kn749j74awbhhax8rb6y0vgbrs7z58z4",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305302691.9429,
+    "_id": "kn7dx4k0dmrq7zcsa06jtr6q1x7z4wyh",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305302691.9443,
+    "_id": "kn783b98scdc127jnrpse1dm3n7z5t9s",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305302691.9456,
+    "_id": "kn71dht491mkz8j5bfzqsqe2tn7z4vh4",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305302691.9465,
+    "_id": "kn71sycqptanj40v3m5pw12fs17z4p3j",
+    "courseId": "k97b9h4d1m3n1xz9dese0pwe597z50hv",
+    "order": 13,
+    "title": "Live Sessions"
+  },
+  {
+    "_creationTime": 1768305303350.5842,
+    "_id": "kn79b11b5gfp22dfqr5hctmymd7z4qny",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305303350.586,
+    "_id": "kn7ca05yj44vw5dfze85h1h9vh7z4e8p",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305303350.5881,
+    "_id": "kn71v8620xcrx4nb1z4w7qnwf97z5199",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305303350.5886,
+    "_id": "kn7ac8sqr5m5zjzdjsb8aeqbkd7z5783",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305303350.589,
+    "_id": "kn796fb5c59y48ebw1qd67vv117z59mr",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305303350.5903,
+    "_id": "kn74aktyc0c8rkxmghpst9pvkh7z4m0j",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305303350.5918,
+    "_id": "kn7a5xjp0n8gch2egvxtxyztah7z5057",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305303350.5935,
+    "_id": "kn7asbyx4w1z9jdnvj0ft5cx897z4kd2",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305303350.5957,
+    "_id": "kn71qq2vd6m01sq9dmhagbh51s7z5xn2",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305303350.5974,
+    "_id": "kn74xb9k6d7t35acr0ft7ry9157z55d2",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305303350.599,
+    "_id": "kn76fw6e3f4zdkzemm909dwhmx7z54q7",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305303350.5996,
+    "_id": "kn7fs9z7hvcpkpz3h6acsg4j757z5e1g",
+    "courseId": "k97ag9yh68dm8bvgb7vydkk7t97z4dje",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305303737.598,
+    "_id": "kn735nmsppsdadsj4tczg0a4357z51zq",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 1,
+    "title": "Week 0"
+  },
+  {
+    "_creationTime": 1768305303737.5984,
+    "_id": "kn72vz18rrdefszss4bj6ectdn7z4srd",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 2,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305303737.5999,
+    "_id": "kn7btpcwzbyhx4rgzkmzm8h96d7z5wvz",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 3,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305303737.601,
+    "_id": "kn71dkkz3sjmkanqv0cgqyb9s97z5s1m",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 4,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305303737.602,
+    "_id": "kn70xsv9byks8chbv6zrggrvbd7z4pk6",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 5,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305303737.604,
+    "_id": "kn7160mneqhhmcamf0rh9x10057z57x3",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 6,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305303737.6062,
+    "_id": "kn734136dgvxtedma27fdkzfa57z465n",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 7,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305303737.6084,
+    "_id": "kn7bqat6jtyjd0vk57rbc9py9x7z4ten",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 8,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305303737.611,
+    "_id": "kn74c8vdrwa5796esfzam96d457z49zy",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 9,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305303737.6135,
+    "_id": "kn7ahn7zjm3vkmfc8qttaqpdrd7z51g0",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 10,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305303737.6172,
+    "_id": "kn7c3dshwv1nk90q5jvhq3abcn7z5k9t",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 11,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305303737.6194,
+    "_id": "kn7bf3cdsjw87hg1kg8azkt2as7z538j",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 12,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305303737.6216,
+    "_id": "kn79ed3cqh42nx3d3y3hcr50yd7z58d9",
+    "courseId": "k97817dvvrpv2s7jtefjjqz7as7z4jp6",
+    "order": 13,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305304182.6936,
+    "_id": "kn70dc30z4vyq904pm1sdcy5c57z4b4d",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305304182.6958,
+    "_id": "kn7dh33mtvh65rz3fah6pq4a8n7z55pw",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305304182.6975,
+    "_id": "kn7dtr8dzs9mwsyhy8hmsr1fvd7z56bt",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305304182.6995,
+    "_id": "kn7876xp87qwnngbrq8bn9b9q97z5whe",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305304182.702,
+    "_id": "kn7f6j57rwtygpej3dzxr3j5mn7z52vz",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305304182.704,
+    "_id": "kn775n9t1sqf27h0qzzz0nqnms7z5xrs",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305304182.7063,
+    "_id": "kn71vf0ghpcq30z20148ntcac17z5dp5",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305304182.7078,
+    "_id": "kn7cz62x9zj0mwg6587nhyfeph7z5mfv",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305304182.7095,
+    "_id": "kn79jxp0n5mtb8tqenqsh7rkgx7z4r84",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305304182.711,
+    "_id": "kn73bpyw8wjtn37dvmwhqjjqv97z5mtw",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305304182.7126,
+    "_id": "kn70hj5axbye2eqtj60r6gc9897z4gg7",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305304182.7144,
+    "_id": "kn76d37nfnvw459ksrazvfkfg57z57w8",
+    "courseId": "k972tr98r1xffp8xsm2f1ds7js7z4eza",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305304845.0703,
+    "_id": "kn7b2tjqk8e28de0e8sr581k997z5c8v",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 1,
+    "title": "Week 0"
+  },
+  {
+    "_creationTime": 1768305304845.0713,
+    "_id": "kn7eyjhg26fb7tksfa84e0phk97z464f",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 2,
+    "title": "Week 1 Pandas"
+  },
+  {
+    "_creationTime": 1768305304845.073,
+    "_id": "kn79dnfjxv3eb0wf9jests0t357z4m9s",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 3,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305304845.0752,
+    "_id": "kn7bn8vn15qywjjs8f3zhjzkth7z56yv",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 4,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305304845.0781,
+    "_id": "kn75fb9j6crrgqpmhm7vwj14cx7z5bb4",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 5,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305304845.0796,
+    "_id": "kn74xddsw90h5wcn3qp270kymx7z4xqs",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 6,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305304845.081,
+    "_id": "kn77ynsndyx9j3wcr3j0mm36k17z544f",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 7,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305304845.0825,
+    "_id": "kn75zvsgxay6mgsrmn10ja74r17z5wfk",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 8,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305304845.0842,
+    "_id": "kn7176re5kbtqt126mhdnf4axd7z40g3",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 9,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305304845.0862,
+    "_id": "kn75nvgb67hmxksbzb4yz1nm717z5zr7",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 10,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305304845.0889,
+    "_id": "kn7e55rc7wb0jfd1y5mhcgasvd7z5mhq",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 11,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305304845.0906,
+    "_id": "kn7ae8v51kyz93n7djcj3nc7v97z5taj",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 12,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305304845.092,
+    "_id": "kn7fa9ds0efavrf93d13g746457z4vtq",
+    "courseId": "k971tsdwf5ney1v57myz006xn17z5539",
+    "order": 13,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305305271.052,
+    "_id": "kn79t9m1n39dxfd0qb1bh1m7yd7z4ped",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305305271.0537,
+    "_id": "kn7d791d9vzmc7v7ctbwce684d7z5kv1",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305305271.0552,
+    "_id": "kn7768zqg581de3h61q3wmw8697z5cht",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305305271.0566,
+    "_id": "kn77mfa42ggnr5tg4v0pec9fa57z47kj",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305305271.058,
+    "_id": "kn7fv75hqwpbb0bw9tamb2kpy97z4bev",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305305271.0596,
+    "_id": "kn78sh44c6t92wxnfc0fmypvv57z4wdw",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305305271.061,
+    "_id": "kn7aksmet79dbf3h47ke6z4ddd7z4k08",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305305271.0625,
+    "_id": "kn7ahrwgbcezxywn8jzrrj6y157z42r1",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305305271.064,
+    "_id": "kn7b5qv4tp9qxeas20cm5phdcx7z5wph",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305305271.0654,
+    "_id": "kn73tvcbdgz8xkcn8qqjpdpt0d7z4vc4",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305305271.067,
+    "_id": "kn78fnjea2j8ey1aas8t43w7fs7z4mah",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305305271.068,
+    "_id": "kn7b3z4yhabzhwf53h72tfkp157z5ene",
+    "courseId": "k978a18j4013yjv5pnvke14xfd7z4n9x",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305305680.345,
+    "_id": "kn78kc9bcektykb7050apqmqan7z4d0d",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305305680.347,
+    "_id": "kn7e6dd9be03bp5243vx6jkyad7z4z3f",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305305680.3489,
+    "_id": "kn750tgbh4g5dgwzzab518bwvn7z4b3a",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305305680.3503,
+    "_id": "kn777gsmahrzd8fqp6rszr9h4d7z47r3",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305305680.3518,
+    "_id": "kn78fq5yb1tmhmt5w8ty63vta17z4k9f",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305305680.3535,
+    "_id": "kn7b66hsgjkwwyg8bjngvgyj8s7z576e",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305305680.3555,
+    "_id": "kn748zfp5msh3xpc71ck85n2y57z511f",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305305680.3584,
+    "_id": "kn7cnz03ag7gbd5bh8pc7n1y2n7z4q01",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305305680.3606,
+    "_id": "kn73nv5a1qgqk7aqr8cm9q6stx7z40nd",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305305680.3625,
+    "_id": "kn70tnyn2nawrb2htynqdjr96n7z46cw",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305305680.3638,
+    "_id": "kn7ej5gqmgf17y3ykevk132ghs7z4y9e",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305305680.3655,
+    "_id": "kn7fgm8tt6famayy1sqd2ahard7z45ax",
+    "courseId": "k973bjaqdcrgfbf2x80h74x33d7z5zxc",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305306320.3645,
+    "_id": "kn7eh76t7khxrwv1xg62414hr97z5jm1",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305306320.3674,
+    "_id": "kn71ywqncqbfp6vqs6hvhtchqn7z5n8g",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305306320.37,
+    "_id": "kn73ae3dtxr89pgs21s58dsg6s7z4dwx",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305306320.3723,
+    "_id": "kn7dmw5gmsg6whqk3shfsyr1q57z4113",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305306320.374,
+    "_id": "kn7a3haf4m4myrmhnr4bcdv1kd7z5w58",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305306320.3762,
+    "_id": "kn7684xxbvprmpgercacfdx5y57z524n",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305306320.3794,
+    "_id": "kn75f204dqefqeqw6vy9ye3scn7z5w53",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305306320.381,
+    "_id": "kn7exqm96qf0f9v577dg68hf5d7z4ejz",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305306320.3855,
+    "_id": "kn73gj95kdf3wvb1g8jbmre7ph7z44xp",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305306320.3887,
+    "_id": "kn7djbkye3h6ch60wt098d8m9n7z5zb8",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305306320.391,
+    "_id": "kn7crbe5ygwm2h77wcg7qc7g457z5gg0",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768305306320.3923,
+    "_id": "kn70mxn86mp58wbjbxssxjcpm57z4q24",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768305306320.3936,
+    "_id": "kn744vt12qa8wdh9vdfmjqyaxd7z52wa",
+    "courseId": "k97fjf1kyrj07chhg859gvn13n7z5rak",
+    "order": 13,
+    "title": "Revision Session"
+  },
+  {
+    "_creationTime": 1768305306787.6313,
+    "_id": "kn7dn05smjyeda2nbs274d16rx7z5dr2",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768305306787.6333,
+    "_id": "kn70n12zycv4wznxxnabthnjbd7z473s",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768305306787.6353,
+    "_id": "kn7fckpjpb49mx1fyfg3f8f4717z5g6c",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768305306787.6365,
+    "_id": "kn72h2f6xs3zvsspj2zns3s1zd7z4t1s",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768305306787.6377,
+    "_id": "kn74bcfx5ymeztyzy8kqkqgw257z4k2a",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768305306787.6392,
+    "_id": "kn70e7840dw3eghk5x73ca2xe17z48rg",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768305306787.6406,
+    "_id": "kn7bdk1e0e8vvhhh307szxj1q57z5pg7",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768305306787.6423,
+    "_id": "kn736wfg5rqx04j0n1178y9r9d7z5689",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768305306787.644,
+    "_id": "kn7dv43741hqbawwnz722zd09x7z4jex",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768305306787.6455,
+    "_id": "kn73y13atps2m2djq8nae15xen7z41mt",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768305306787.647,
+    "_id": "kn78cntwv4th6f83yd7hp6qgz57z49n8",
+    "courseId": "k97f3fvkycznq4r568gk5e3nc97z51bh",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768972746608.3125,
+    "_id": "kn7220bvnyzn23aehfkhza816n7zmpwe",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 1,
+    "title": "Orientation & Process"
+  },
+  {
+    "_creationTime": 1768972746608.3152,
+    "_id": "kn7e9bxaqq6bssrehwm28nc53s7zmzpx",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 2,
+    "title": "Disciplinary & Non Academic Conduct"
+  },
+  {
+    "_creationTime": 1768972746608.3179,
+    "_id": "kn7b7j6varbz85rcewatbs76e17zmybq",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 3,
+    "title": "Week 0"
+  },
+  {
+    "_creationTime": 1768972746608.3184,
+    "_id": "kn71zqq8qqz4rnbmy4cq6r3x157zmk3n",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 4,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768972746608.3203,
+    "_id": "kn7egnrppypayn25p73rxr58e57zmcyj",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 5,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768972746608.322,
+    "_id": "kn7csccbg94njg0yhk8fqa3vqs7znxjg",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 6,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768972746608.324,
+    "_id": "kn7enqdtestrfz1kccxby8zyas7zmaaa",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 7,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768972746608.3257,
+    "_id": "kn72kpjjw9g0atsxtg89dd1x757zm76x",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 8,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768972746608.3271,
+    "_id": "kn7amvdqafh1nte2vsc3natm6h7zn7x5",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 9,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768972746608.3289,
+    "_id": "kn7f95p32wvt3wg7pxf4gm29mh7zm0vv",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 10,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768972746608.3303,
+    "_id": "kn729n17frw6k2vtnek005q2yx7zndww",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 11,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768972746608.3318,
+    "_id": "kn71y5wz4htt20xp1gvyrbxbgh7zn28p",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 12,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768972746608.3335,
+    "_id": "kn76c92jxxyxjzwnfw9kzfnw5x7znrvq",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 13,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768972746608.3354,
+    "_id": "kn75v487331mf3te3qpmqmx2kd7zn3ev",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 14,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768972746608.3376,
+    "_id": "kn7bhhk4hz3sm31xhtdh2bvjt17znyka",
+    "courseId": "k97agr6h1zhtqjcxzbwzwsc8r97znb9s",
+    "order": 15,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768972747046.225,
+    "_id": "kn77p16khbvbtqj0ydfwg6pht57zmdzn",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768972747046.2285,
+    "_id": "kn79r019tr3kc5cz11z9wmz3n57zngt7",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768972747046.2322,
+    "_id": "kn76c67ec11zd608qb0btan9vh7znfzj",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768972747046.235,
+    "_id": "kn7dp5ebmsnx9w4cmp4neskpfn7zmbqd",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768972747046.2378,
+    "_id": "kn7enq1zb864jmrh2bs4bmh4557znd6k",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768972747046.2405,
+    "_id": "kn71yf5sqje6gc321b7ys01w797zmnd7",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768972747046.242,
+    "_id": "kn74mh56xhv4yqxspy4qrm5mpn7zn9ky",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768972747046.2446,
+    "_id": "kn7ewnnbammxkr4twe1qxtn4v17zmfgs",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768972747046.2473,
+    "_id": "kn730yqr8t31qrasvgpksap4yd7zn79e",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768972747046.2505,
+    "_id": "kn79fn3hw27p9paxaz30dvwx4x7znvyk",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768972747046.2532,
+    "_id": "kn75bfhc5m9trmebnx0xe2a4t57zmr41",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768972747046.2546,
+    "_id": "kn7ekkmkpgt1q48g2ayyp82p6n7zn1t7",
+    "courseId": "k97bswvmja7brkfne9ar11vsgd7zmf57",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768972747473.926,
+    "_id": "kn7apez4797f7zpz5g61c0ksks7znf9v",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 1,
+    "title": "Week 0 Part 1"
+  },
+  {
+    "_creationTime": 1768972747473.9265,
+    "_id": "kn786rvkq7s5s9rmtcr97vg0gd7zmnmb",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 2,
+    "title": "Week 0 Part 2"
+  },
+  {
+    "_creationTime": 1768972747473.9277,
+    "_id": "kn75pggmr5phm4qqm56cs2fjd17znmkh",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 3,
+    "title": "Week 0 Part 3"
+  },
+  {
+    "_creationTime": 1768972747473.9287,
+    "_id": "kn772njg62fa11wkffk8a964b17znybz",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 4,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768972747473.9307,
+    "_id": "kn75fhnkdkkm4z876s0q09s66s7zn1zz",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 5,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768972747473.9336,
+    "_id": "kn7dgyfzr8hce6kj1bsvantx0h7zm9e4",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 6,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768972747473.9355,
+    "_id": "kn7bkxek6g03khkdbxt0frvs497znbfm",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 7,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768972747473.9375,
+    "_id": "kn798qfn60h2y9a7wve545q9vs7zny5k",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 8,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768972747473.9404,
+    "_id": "kn786svnesespvncf9j9jbk5rd7znt5f",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 9,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768972747473.9421,
+    "_id": "kn7eb5x7knpa17g7wv7w9hrmxx7znt70",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 10,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768972747473.9434,
+    "_id": "kn79p7xawkt87yam33nhwgan6x7zmbgf",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 11,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768972747473.9446,
+    "_id": "kn75apj1b2xkvykjzkx73wm07s7znxv5",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 12,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768972747473.9468,
+    "_id": "kn709aj1j28trjfwbh62xq750s7znmp4",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 13,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768972747473.948,
+    "_id": "kn7357tzry73y2mkbmwej0d05h7znr39",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 14,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768972747473.9502,
+    "_id": "kn76j61ds08ycwpx5dy2t1znf97zmekw",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 15,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768972747473.9521,
+    "_id": "kn7fyttcx4z4t4tcxb3d9tc3ps7zmrrg",
+    "courseId": "k97dbqn4cmg0t7pea8hhgn9yfs7zn95e",
+    "order": 16,
+    "title": "Stats2_AQ/PA/GA_Solutions_Recording_By_TAs"
+  },
+  {
+    "_creationTime": 1768972748316.0054,
+    "_id": "kn77p9swnnsyes812hnv33pds57znmse",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768972748316.007,
+    "_id": "kn7d0dw0sxe1e74dpktvc936d17znxr1",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768972748316.0088,
+    "_id": "kn7c9z6kxdavtfskmnwym0yfax7zmszc",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768972748316.0103,
+    "_id": "kn70pvctn2m649708e66xk56dh7zm5wd",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768972748316.012,
+    "_id": "kn7b6n92gz50ngxg1pwrz75ff57zmhba",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768972748316.014,
+    "_id": "kn72hef56ewwbybr34ngrrtm797zmqc3",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 6,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1768972748316.0154,
+    "_id": "kn71bthtb0jfde73ry78enfnqh7zmq6w",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768972748316.017,
+    "_id": "kn71y7525xq6gfyh5br2sjzd4n7zmj8m",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768972748316.019,
+    "_id": "kn73fr6yhteshh93tpr7p74j7h7znfkd",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768972748316.0208,
+    "_id": "kn75k67xaqzttyedtnw2kc0p0n7znaky",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1768972748316.0227,
+    "_id": "kn7d09b04hm8e3re38xwa6tnfd7znfh7",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 11,
+    "title": "Week 11"
+  },
+  {
+    "_creationTime": 1768972748316.0244,
+    "_id": "kn7a6vmgqv33g66erswbxj8reh7znj3b",
+    "courseId": "k973rs87qsedym7tz6v1fhk4c17zmv7p",
+    "order": 12,
+    "title": "Week 12"
+  },
+  {
+    "_creationTime": 1768972896985.5054,
+    "_id": "kn78mm4r2r8byrqdstmpngw3p57znch5",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 1,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1768972896985.5066,
+    "_id": "kn77b4j6wwjjr57x8161vs1zm57zmdwz",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 2,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1768972896985.5078,
+    "_id": "kn7c26xt1a7w9g1d1xhah5s5fh7zmsb9",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 3,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1768972896985.5093,
+    "_id": "kn7bqncwztwryzj3agbsfrh1c17znk2t",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 4,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1768972896985.51,
+    "_id": "kn715tvkvwwtmkf7svf71cbp5h7zm2b0",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 5,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1768972896985.511,
+    "_id": "kn70fxw359n0jtvksmny2vyqvx7zmbmr",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 6,
+    "title": "Week 6 "
+  },
+  {
+    "_creationTime": 1768972896985.512,
+    "_id": "kn75tnd7c0xjcehfssg487cezx7znmtw",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 7,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1768972896985.513,
+    "_id": "kn70agxa55kn3w6h89x81pzhrn7zn59p",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 8,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1768972896985.5137,
+    "_id": "kn72x6jykdg3b7gx8ksnyzy8897zms0h",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 9,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1768972896985.5144,
+    "_id": "kn7bsctytqz4e8gbj312m1qqbd7zm743",
+    "courseId": "k9798wmzt5wdjvbh7rcpna0rzn7zmn5z",
+    "order": 10,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1769275406777.9622,
+    "_id": "kn773dvz8qg08vb8rfax6dp64d7ztsgh",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 1,
+    "title": "Course Introduction"
+  },
+  {
+    "_creationTime": 1769275406777.9626,
+    "_id": "kn7b82f0vtw8zn8ha6rs3fjhsd7ztk7g",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 2,
+    "title": "Week 1"
+  },
+  {
+    "_creationTime": 1769275406777.9666,
+    "_id": "kn78c9a2k1efyd1504abhry2hx7ztwam",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 3,
+    "title": "Week 2"
+  },
+  {
+    "_creationTime": 1769275406777.975,
+    "_id": "kn7b0xcep0xxs8sqyn4yh59n057ztz5y",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 4,
+    "title": "Week 3"
+  },
+  {
+    "_creationTime": 1769275406777.982,
+    "_id": "kn7349c7hjwrmjbjcgnm3af16n7ztbjn",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 5,
+    "title": "Week 4"
+  },
+  {
+    "_creationTime": 1769275406777.9897,
+    "_id": "kn75nygfdwq029c4nqd3td47zh7ztq5q",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 6,
+    "title": "Week 5"
+  },
+  {
+    "_creationTime": 1769275406777.9944,
+    "_id": "kn784nfkft75zd52f5y6116gs57ztd5g",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 7,
+    "title": "Week 6"
+  },
+  {
+    "_creationTime": 1769275406777.9978,
+    "_id": "kn79ekmrsksvwa3jgne4j77mch7zttcb",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 8,
+    "title": "Week 7"
+  },
+  {
+    "_creationTime": 1769275406778.002,
+    "_id": "kn79bp5bwbdhvk7067hy5q098n7zvxa2",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 9,
+    "title": "Week 8"
+  },
+  {
+    "_creationTime": 1769275406778.0051,
+    "_id": "kn714g714gy7vt7j5mvnrxarqh7zttm4",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 10,
+    "title": "Week 9"
+  },
+  {
+    "_creationTime": 1769275406778.009,
+    "_id": "kn79z2hdj6p7bvs8t46d7rqaj97zts0q",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 11,
+    "title": "Week 10"
+  },
+  {
+    "_creationTime": 1769275406778.0125,
+    "_id": "kn7d92x2kskdca805th7x751a97zt606",
+    "courseId": "k972vqbcx9dtewbk0gygnn4ans7zvmbd",
+    "order": 12,
+    "title": "Week 11"
+  }
+]

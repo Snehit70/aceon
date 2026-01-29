@@ -259,7 +259,6 @@ export default function LecturePlayerPage() {
           <LectureSidebar
             courseTitle={course.title}
             courseCode={course.code}
-            courseTerm={course.term}
             content={content}
             currentVideoId={activeVideoId}
             onVideoSelect={handleVideoSelect}
@@ -311,7 +310,6 @@ export default function LecturePlayerPage() {
               <LectureSidebar
                 courseTitle={course.title}
                 courseCode={course.code}
-                courseTerm={course.term}
                 content={content}
                 currentVideoId={activeVideoId}
                 onVideoSelect={handleVideoSelect}
