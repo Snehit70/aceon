@@ -93,6 +93,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const playerIdRef = useRef(`yt-player-${Math.random().toString(36).slice(2, 9)}`);
     const [isReady, setIsReady] = useState(false);
+    const pendingSeekRef = useRef<number | null>(null);
     
     const onEndedRef = useRef(onEnded);
     const onProgressUpdateRef = useRef(onProgressUpdate);
@@ -107,12 +108,16 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
     useImperativeHandle(ref, () => ({
       seekTo: (seconds: number) => {
-        playerRef.current?.seekTo(seconds, true);
+        if (isReady && playerRef.current) {
+          playerRef.current.seekTo(seconds, true);
+        } else {
+          pendingSeekRef.current = seconds;
+        }
       },
       getCurrentTime: () => {
         return playerRef.current?.getCurrentTime() ?? 0;
       },
-    }));
+    }), [isReady]);
 
     const startProgressTracking = useCallback(() => {
       if (progressIntervalRef.current) return;
@@ -173,6 +178,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           events: {
             onReady: () => {
               setIsReady(true);
+              if (pendingSeekRef.current !== null && playerRef.current) {
+                playerRef.current.seekTo(pendingSeekRef.current, true);
+                pendingSeekRef.current = null;
+              }
             },
             onStateChange: (event) => {
               const state = event.data;
@@ -200,6 +209,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           playerRef.current.destroy();
           playerRef.current = null;
         }
+        setIsReady(false);
+        pendingSeekRef.current = null;
       };
     }, [videoId, initialPosition, startProgressTracking, stopProgressTracking]);
 
