@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * Render a full-screen themed loading screen with layered decorative backgrounds and pulsing skeleton visuals.
+ *
+ * This is a purely presentational component that displays halftone/noise/gradient background layers and centered animated placeholder elements; it has no state or side effects.
+ *
+ * @returns The JSX element for the full-screen loading UI.
+ */
 export default function Loading() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">

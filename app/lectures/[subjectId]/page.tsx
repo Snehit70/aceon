@@ -18,6 +18,11 @@ import { LectureSidebar } from "@/components/lectures/lecture-sidebar";
 import { AutoplayOverlay } from "@/components/lectures/autoplay-overlay";
 import { LectureHeader } from "@/components/lectures/lecture-header";
 
+/**
+ * Render the lecture player page for a course, including course navigation, video playback, and progress controls.
+ *
+ * @returns A React element that displays the course sidebar, video player, autoplay controls, and progress-related actions.
+ */
 export default function LecturePlayerPage() {
   const { user } = useUser();
   const params = useParams();
@@ -453,4 +458,3 @@ export default function LecturePlayerPage() {
     </div>
   );
 }
-
