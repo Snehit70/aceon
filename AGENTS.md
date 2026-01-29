@@ -8,8 +8,8 @@
 
 Aceon is an academic companion app for IITM BS Degree students.
 **Stack**: Next.js 16 (App Router), React 19, Convex (BaaS), Clerk (Auth), Tailwind 4, Shadcn UI.
-**Theme**: "Royal Indigo" with glassmorphism effects.
-**Core Features**: Lecture Viewer (Course -> Week -> Video), Progress Tracking, Bookmarks, Notes.
+**Theme**: "Royal Indigo" with glassmorphism effects / Chainsaw Man aesthetic.
+**Core Features**: Lecture Viewer (Course -> Week -> Video), Progress Tracking (with toggle mark complete/incomplete).
 
 ## 2. Environment & Commands
 
@@ -136,10 +136,10 @@ When placing text over background images, use this pattern for optimal readabili
 
 **VideoPlayer** (`components/shared/video-player.tsx`)
 
-- React Player wrapper with custom controls
+- Direct YouTube IFrame API integration (no third-party wrapper)
 - Includes landscape rotation hint on mobile portrait mode
 - Height constraint: `max-h-[50vh] sm:max-h-none` on mobile
-- Integrates with progress tracking
+- Integrates with progress tracking (toggle mark complete/incomplete)
 
 **ProfileSheet** (`components/profile/profile-sheet.tsx`)
 
@@ -166,16 +166,27 @@ When placing text over background images, use this pattern for optimal readabili
 
 ## 8. Known Issues / Context
 
-- `react-player` types can be tricky; strict typing preferred but `any` used historically in `video-player.tsx` (aim to refactor).
 - User ID is `clerkId` (string), NOT Convex `_id`.
 
-### Current Implementation State
+### Current Implementation State (Jan 29, 2026)
 
+**Recent Updates:**
+- **Schema Migration**: Removed dead fields (courseId, term, forumUrl, credits from courses; isPublic from videos)
+- **Simplified UI**: Bookmark/notes panels removed for cleaner experience
+- **Video Player**: Refactored to use direct YouTube IFrame API (no third-party dependencies)
+- **Progress Tracking**: Mark complete is now a toggle (can mark/unmark videos)
+- **Sidebar Toggle**: Brutalist hover effect styling
+
+**Design System:**
 - **Background Images**: `bg-denji-power.jpg` and `bg-denji-demon.jpg` are rotated to landscape orientation
 - **Sidebar Design**: Uses single background image in header only (full sidebar background removed for performance)
 - **Mobile Support**: Responsive improvements completed for 375px+ devices
 - **Visibility Pattern**: Header uses opacity-60 background + via-black/70 gradient + backdrop-blur-sm + drop-shadow-lg text
 - **Button Pattern**: Subtle backgrounds (bg-white/5) with borders for visibility over images
+
+**Branch Status:**
+- Working tree clean, up to date with origin/main
+- Unmerged remote branch: `remotes/origin/coderabbitai/docstrings/5381e4e` (can be ignored/deleted)
 
 ## 9. Checklist for "Sisyphus"
 
