@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 
+/**
+ * Lists all available courses.
+ *
+ * @returns A list of all course documents.
+ */
 export const list = query({
   args: {},
   handler: async (ctx) => {
@@ -8,6 +13,12 @@ export const list = query({
   },
 });
 
+/**
+ * Lists all courses with aggregated statistics.
+ * Calculates total lecture count and duration for each course.
+ *
+ * @returns A list of courses with an added `stats` object containing `lectureCount`, `totalDurationSeconds`, and `totalDurationFormatted`.
+ */
 export const listWithStats = query({
   args: {},
   handler: async (ctx) => {
@@ -21,7 +32,7 @@ export const listWithStats = query({
           .collect();
 
         const totalVideos = videos.length;
-        const totalSeconds = videos.reduce((sum, v) => sum + (v.duration || 0), 0);
+        const totalSeconds = videos.reduce((sum, video) => sum + (video.duration || 0), 0);
 
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -42,6 +53,12 @@ export const listWithStats = query({
   },
 });
 
+/**
+ * Retrieves a single course by its ID.
+ *
+ * @param args.id - The ID of the course to retrieve.
+ * @returns The course document, or null if not found.
+ */
 export const get = query({
   args: { id: v.id("courses") },
   handler: async (ctx, args) => {
@@ -49,6 +66,12 @@ export const get = query({
   },
 });
 
+/**
+ * Retrieves a course by its course code.
+ *
+ * @param args.code - The unique code of the course (e.g., "CS101").
+ * @returns The course document, or null if not found.
+ */
 export const getCourseByCode = query({
   args: { code: v.string() },
   handler: async (ctx, args) => {
@@ -59,6 +82,12 @@ export const getCourseByCode = query({
   },
 });
 
+/**
+ * Retrieves all weeks associated with a specific course.
+ *
+ * @param args.courseId - The ID of the course.
+ * @returns A list of week documents sorted by their order.
+ */
 export const getWeeks = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
@@ -71,6 +100,12 @@ export const getWeeks = query({
   },
 });
 
+/**
+ * Retrieves all videos associated with a specific week.
+ *
+ * @param args.weekId - The ID of the week.
+ * @returns A list of video documents sorted by their order.
+ */
 export const getVideos = query({
   args: { weekId: v.id("weeks") },
   handler: async (ctx, args) => {
@@ -83,6 +118,13 @@ export const getVideos = query({
   },
 });
 
+/**
+ * Retrieves the full content structure of a course.
+ * Includes all weeks and their associated videos.
+ *
+ * @param args.courseId - The ID of the course.
+ * @returns A list of weeks, each containing a `videos` array.
+ */
 export const getCourseContent = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
@@ -113,6 +155,13 @@ export const getCourseContent = query({
   },
 });
 
+/**
+ * Searches for lectures by title across all videos.
+ *
+ * @param args.searchQuery - The text to search for in video titles.
+ * @param args.limit - Optional limit on the number of results (default: 20).
+ * @returns A list of matching video documents with their associated course and week populated.
+ */
 export const searchLectures = query({
   args: {
     searchQuery: v.string(),
@@ -120,15 +169,14 @@ export const searchLectures = query({
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 20;
-    const query = args.searchQuery.toLowerCase().trim();
+    const searchTerm = args.searchQuery.trim();
 
-    if (!query) return [];
+    if (!searchTerm) return [];
 
-    const allVideos = await ctx.db.query("videos").collect();
-
-    const matchingVideos = allVideos
-      .filter((video) => video.title.toLowerCase().includes(query))
-      .slice(0, limit);
+    const matchingVideos = await ctx.db
+      .query("videos")
+      .withSearchIndex("search_title", (q) => q.search("title", searchTerm))
+      .take(limit);
 
     const results = await Promise.all(
       matchingVideos.map(async (video) => {
@@ -146,6 +194,12 @@ export const searchLectures = query({
   },
 });
 
+/**
+ * Calculates aggregate statistics for a specific course.
+ *
+ * @param args.courseId - The ID of the course.
+ * @returns An object containing `lectureCount`, `totalDurationSeconds`, and `totalDurationFormatted`.
+ */
 export const getCourseStats = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
@@ -168,3 +222,4 @@ export const getCourseStats = query({
     };
   },
 });
+

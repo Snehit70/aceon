@@ -36,7 +36,11 @@ export default defineSchema({
   })
     .index("by_course", ["courseId"])
     .index("by_week", ["weekId"])
-    .index("by_youtubeId", ["youtubeId"]),
+    .index("by_youtubeId", ["youtubeId"])
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["courseId"],
+    }),
 
   videoProgress: defineTable({
     clerkId: v.string(),
