@@ -54,7 +54,7 @@ export const getCourseByCode = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("courses")
-      .withIndex("by_courseId", (q) => q.eq("courseId", args.code))
+      .withIndex("by_code", (q) => q.eq("code", args.code))
       .first();
   },
 });

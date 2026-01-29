@@ -58,12 +58,12 @@ const levels = [
 
 export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileSheetProps) {
   const { user } = useUser();
-  const profile = useQuery(api.studentProfile.getProfile, user ? { clerkId: user.id } : "skip");
+  const profile = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
   const courses = useQuery(api.courses.list);
-  const updateProfile = useMutation(api.studentProfile.updateProfile);
+  const updateProfile = useMutation(api.users.updateUser);
 
   const [level, setLevel] = useState<"foundation" | "diploma" | "degree">("foundation");
-  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<Id<"courses">[]>([]);
   const [showAllLevels, setShowAllLevels] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,7 +72,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
     if (profile) {
       const profileLevel = profile.level as "foundation" | "diploma" | "degree";
       setLevel(profileLevel);
-      setSelectedCourses(profile.enrolledCourseIds);
+      setSelectedCourses(profile.enrolledCourseIds || []);
     }
   }, [profile]);
 
@@ -89,8 +89,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
       await updateProfile({
         clerkId: user.id,
         level,
-        enrolledCourseIds: selectedCourses as Id<"courses">[],
-        currentTerm: "Jan 2024", // Hardcoded for now or fetch dynamically
+        enrolledCourseIds: selectedCourses,
       });
       onOpenChange(false);
     } catch (error) {
@@ -100,7 +99,7 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
     }
   };
 
-  const toggleCourse = (courseId: string) => {
+  const toggleCourse = (courseId: Id<"courses">) => {
     setSelectedCourses((prev) =>
       prev.includes(courseId)
         ? prev.filter((id) => id !== courseId)

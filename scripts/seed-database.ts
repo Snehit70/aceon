@@ -66,9 +66,6 @@ async function seed() {
     const courseDataRaw = fs.readFileSync(filename, "utf-8");
     const courseData = JSON.parse(courseDataRaw);
 
-    // Transform data
-    const term = id.split("_")[1] || "24t3"; // extract term from id like ns_24t3_cs1001
-
     interface Video {
       title: string;
       yt_vid: string;
@@ -88,25 +85,21 @@ async function seed() {
         youtubeId: video.yt_vid,
         duration: video.duration || 0,
         slug: slugify(video.title),
-        isPublic: true,
         order: vIndex + 1,
       })),
     }));
 
     const coursePayload = {
-      courseId: id,
       code: code.toUpperCase(),
-      term: term,
       title: title,
       level: getLevel(code),
       weeks: weeks,
     };
 
     try {
-      // Call mutation
       // @ts-expect-error - The generated types might be slightly off for the script environment
       const result = await client.mutation(api.seed.syncCourseData, { course: coursePayload });
-      console.log(`✅ Synced ${code}: ${result.courseId}`);
+      console.log(`✅ Synced ${code}: ${result.code}`);
     } catch (error) {
       console.error(`❌ Failed to sync ${code}:`, error);
     }

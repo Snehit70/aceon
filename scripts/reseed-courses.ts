@@ -80,7 +80,7 @@ async function reseed() {
 
     try {
       const result = await client.mutation(api.seed.syncCourseData, { course: payload });
-      console.log(`✅ Synced: ${result.courseId}\n`);
+      console.log(`✅ Synced: ${result.code}\n`);
     } catch (error) {
       console.error(`❌ Failed to sync ${code}:`, error);
     }
