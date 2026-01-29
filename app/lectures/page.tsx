@@ -169,7 +169,7 @@ export default function LecturesPage() {
             </div>
 
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: cachedCounts.library }).map((_, i) => (
+              {Array.from({ length: cachedCounts.enrolled }).map((_, i) => (
                 <div key={i} className="border-2 border-neutral-800 bg-black clip-corner overflow-hidden animate-pulse">
                   <div className="p-4 border-b-2 border-neutral-800 bg-neutral-900/20 space-y-3">
                     <div className="flex items-center justify-between">
