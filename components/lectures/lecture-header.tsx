@@ -1,17 +1,15 @@
 "use client";
 
-import { Bookmark, StickyNote, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface LectureHeaderProps {
   title: string;
   weekTitle: string;
-  duration: number; // in seconds
+  duration: number;
   showUserActions?: boolean;
   isCompleted?: boolean;
-  onBookmark?: () => void;
-  onToggleNote?: () => void;
   onMarkComplete?: () => void;
 }
 
@@ -21,9 +19,7 @@ export function LectureHeader({
   duration,
   showUserActions = false,
   isCompleted = false,
-  onBookmark,
-  onToggleNote,
-  onMarkComplete
+  onMarkComplete,
 }: LectureHeaderProps) {
   return (
     <div className="flex items-start justify-between gap-4">
