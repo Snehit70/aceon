@@ -49,6 +49,7 @@ token.txt
 data_*.json
 extract_*.html
 data_auth_info.json
+backups/
 
 # Tooling
 .brv/
