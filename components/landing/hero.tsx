@@ -12,7 +12,7 @@ export function Hero() {
   const { isSignedIn } = useUser();
 
   return (
-    <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
+    <section className="relative flex min-h-[calc(100dvh-67px)] flex-col items-center justify-center overflow-hidden px-4 py-12 md:py-24 text-center">
       <div className="absolute inset-0 z-0 select-none bg-black">
         <div 
             className="absolute inset-0 bg-[url('/images/hero-bg-chainsaw.jpg')] bg-cover bg-center opacity-50 mix-blend-luminosity grayscale contrast-125" 

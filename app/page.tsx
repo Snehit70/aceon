@@ -6,7 +6,7 @@ import { GraduationCap } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden">
+    <div className="flex flex-col w-full bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden">
       
       <Hero />
 
