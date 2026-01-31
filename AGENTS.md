@@ -188,7 +188,26 @@ When placing text over background images, use this pattern for optimal readabili
 - Working tree clean, up to date with origin/main
 - All merged branches cleaned up
 
-## 9. Checklist for "Sisyphus"
+## 9. Version Management
+
+This project follows Semantic Versioning (MAJOR.MINOR.PATCH).
+
+### When to Update Versions
+
+- **Patch (0.1.0 → 0.1.1)**: Bug fixes, typo corrections, minor tweaks
+- **Minor (0.1.0 → 0.2.0)**: New features, UI redesigns, significant improvements
+- **Major (0.9.0 → 1.0.0)**: Breaking changes, production-ready release
+
+### Process
+
+1. Complete changes and commit them
+2. Update version in `package.json`
+3. Commit version bump: `chore: bump version to X.Y.Z`
+
+**Current Version**: 0.2.0
+**Goal**: Reach 1.0.0 when production-ready.
+
+## 10. Checklist for "Sisyphus"
 
 - [ ] Did I understand the _intent_, not just the instruction?
 - [ ] Did I verify the fix with `tsc`?
