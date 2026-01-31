@@ -10,24 +10,20 @@ export default function LandingPage() {
       
       <Hero />
 
-      <footer className="border-t-[8px] border-black py-6 bg-[#E62E2D] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10 mix-blend-multiply pointer-events-none" />
-        <div className="absolute -left-10 -bottom-20 text-[15rem] font-display font-black text-black opacity-10 rotate-12 select-none pointer-events-none">
-             ACEON
-        </div>
-        <div className="container relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-bold uppercase text-black">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-black text-white transform -rotate-3 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]">
-                <GraduationCap className="h-6 w-6" />
+      <footer className="border-t-4 border-black py-3 bg-[#E62E2D]">
+        <div className="container flex items-center justify-between gap-4 text-sm font-bold uppercase text-black">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-black text-white">
+              <GraduationCap className="h-4 w-4" />
             </div>
-            <span className="font-display font-black text-3xl tracking-widest">Aceon</span>
+            <span className="font-display font-black text-lg tracking-widest">Aceon</span>
           </div>
-          <div className="flex gap-8 tracking-widest text-lg">
-            <Link href="#" className="hover:text-white hover:underline decoration-4 underline-offset-4 transition-all">Privacy</Link>
-            <Link href="#" className="hover:text-white hover:underline decoration-4 underline-offset-4 transition-all">Terms</Link>
-            <Link href="#" className="hover:text-white hover:underline decoration-4 underline-offset-4 transition-all">GitHub</Link>
+          <div className="flex items-center gap-6 tracking-widest">
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <a href="https://github.com/Snehit70" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
-          <p className="font-sans text-xs opacity-80">© {new Date().getFullYear()} Aceon. Public Safety Bureau.</p>
+          <p className="font-sans text-xs opacity-80 hidden sm:block">© {new Date().getFullYear()} Aceon</p>
         </div>
       </footer>
     </div>
