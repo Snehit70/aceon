@@ -168,14 +168,14 @@ When placing text over background images, use this pattern for optimal readabili
 
 - User ID is `clerkId` (string), NOT Convex `_id`.
 
-### Current Implementation State (Jan 29, 2026)
+### Current Implementation State (Jan 31, 2026)
 
 **Recent Updates:**
-- **Schema Migration**: Removed dead fields (courseId, term, forumUrl, credits from courses; isPublic from videos)
-- **Simplified UI**: Bookmark/notes panels removed for cleaner experience
-- **Video Player**: Refactored to use direct YouTube IFrame API (no third-party dependencies)
-- **Progress Tracking**: Mark complete is now a toggle (can mark/unmark videos)
-- **Sidebar Toggle**: Brutalist hover effect styling
+- **Landing Page**: Removed "Weapons of Mass Construction" feature cards section
+- **Footer**: Slimmed down (reduced padding, border, removed decorative elements)
+- **Legal Pages**: Added `/privacy` and `/terms` pages with brutalist styling
+- **Hero Layout**: Uses `min-h-[calc(100dvh-67px)]` to fill viewport minus navbar
+- **Version Management**: Added semantic versioning process to AGENTS.md
 
 **Design System:**
 - **Background Images**: `bg-denji-power.jpg` and `bg-denji-demon.jpg` are rotated to landscape orientation
@@ -183,6 +183,8 @@ When placing text over background images, use this pattern for optimal readabili
 - **Mobile Support**: Responsive improvements completed for 375px+ devices
 - **Visibility Pattern**: Header uses opacity-60 background + via-black/70 gradient + backdrop-blur-sm + drop-shadow-lg text
 - **Button Pattern**: Subtle backgrounds (bg-white/5) with borders for visibility over images
+- **Dark Background**: Pure black (`#000000`) to prevent overscroll color mismatch
+- **Hero Height**: `100dvh - 67px` (navbar height) ensures footer is below fold on desktop
 
 **Branch Status:**
 - Working tree clean, up to date with origin/main
