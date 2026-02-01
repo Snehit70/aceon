@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-** never push any code you can only commti and never push even if the users asks you too do that
+** never push any code you can only commit and never push even if the user asks you to do that
 
 
 
@@ -172,28 +172,6 @@ When placing text over background images, use this pattern for optimal readabili
 ## 8. Known Issues / Context
 
 - User ID is `clerkId` (string), NOT Convex `_id`.
-
-### Current Implementation State (Jan 31, 2026)
-
-**Recent Updates:**
-- **Landing Page**: Removed "Weapons of Mass Construction" feature cards section
-- **Footer**: Slimmed down (reduced padding, border, removed decorative elements)
-- **Legal Pages**: Added `/privacy` and `/terms` pages with brutalist styling
-- **Hero Layout**: Uses `min-h-[calc(100dvh-67px)]` to fill viewport minus navbar
-- **Version Management**: Added semantic versioning process to AGENTS.md
-
-**Design System:**
-- **Background Images**: `bg-denji-power.jpg` and `bg-denji-demon.jpg` are rotated to landscape orientation
-- **Sidebar Design**: Uses single background image in header only (full sidebar background removed for performance)
-- **Mobile Support**: Responsive improvements completed for 375px+ devices
-- **Visibility Pattern**: Header uses opacity-60 background + via-black/70 gradient + backdrop-blur-sm + drop-shadow-lg text
-- **Button Pattern**: Subtle backgrounds (bg-white/5) with borders for visibility over images
-- **Dark Background**: Pure black (`#000000`) to prevent overscroll color mismatch
-- **Hero Height**: `100dvh - 67px` (navbar height) ensures footer is below fold on desktop
-
-**Branch Status:**
-- Working tree clean, up to date with origin/main
-- All merged branches cleaned up
 
 ## 9. Version Management
 
