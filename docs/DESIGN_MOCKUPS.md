@@ -1,15 +1,16 @@
 # Aceon Design Mockups
 
-## Color Reference
+## Color Reference (Chainsaw Man Theme)
 ```
-Background:    ████ #0F0D15 (Deep Obsidian)
-Surface:       ████ #1A1625 (Card/Panel)
-Surface Hover: ████ #251F35 (Interactive)
-Primary:       ████ #8B5CF6 (Royal Indigo)
-Accent:        ████ #22D3EE (Cyan Progress)
-Success:       ████ #34D399 (Completed)
-Text Primary:  ████ #F1F5F9 (White)
-Text Muted:    ████ #94A3B8 (Gray)
+Background:    ████ #000000 (Black)
+Surface:       ████ #0A0A0A (Card/Panel)
+Surface Hover: ████ #27272a (Interactive)
+Primary:       ████ #E62E2D (Blood Red)
+Accent:        ████ #2BFF00 (Acid Green)
+Success:       ████ #2BFF00 (Acid Green)
+Text Primary:  ████ #ffffff (White)
+Text Muted:    ████ #a1a1aa (Gray)
+Border:        ████ #27272a (Dark Gray)
 ```
 
 ---
