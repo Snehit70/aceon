@@ -2,11 +2,11 @@
 
 > The ultimate academic companion for IITM BS Degree students.
 
-Aceon is a modern, high-performance learning platform designed to streamline the study experience for IIT Madras BS Degree students. It replaces scattered resources with a unified "Royal Indigo" interface for lectures, progress tracking, bookmarks, and notes.
+Aceon is a modern, high-performance learning platform designed to streamline the study experience for IIT Madras BS Degree students. It replaces scattered resources with a unified Chainsaw Man-themed interface (Blood Red #E62E2D + Acid Green #2BFF00) for lectures, progress tracking, bookmarks, and notes.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
-![Stack](https://img.shields.io/badge/stack-Next.js_16_|_Convex_|_Clerk-indigo)
+![Stack](https://img.shields.io/badge/stack-Next.js_16_|_Convex_|_Clerk-red)
 
 ## 🚀 Tech Stack
 

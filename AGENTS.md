@@ -8,7 +8,7 @@
 
 Aceon is an academic companion app for IITM BS Degree students.
 **Stack**: Next.js 16 (App Router), React 19, Convex (BaaS), Clerk (Auth), Tailwind 4, Shadcn UI.
-**Theme**: "Royal Indigo" with glassmorphism effects / Chainsaw Man aesthetic.
+**Theme**: Chainsaw Man aesthetic - Blood Red (#E62E2D) primary, Acid Green (#2BFF00) accent, brutal angular design with glassmorphism effects.
 **Core Features**: Lecture Viewer (Course -> Week -> Video), Progress Tracking (with toggle mark complete/incomplete).
 
 ## 2. Environment & Commands
@@ -196,5 +196,5 @@ This project follows Semantic Versioning (MAJOR.MINOR.PATCH).
 
 - [ ] Did I understand the _intent_, not just the instruction?
 - [ ] Did I verify the fix with `tsc`?
-- [ ] Is the UI consistent with "Royal Indigo"?
+- [ ] Is the UI consistent with Chainsaw Man theme (Blood Red #E62E2D)?
 - [ ] Did I update the TODO list?
