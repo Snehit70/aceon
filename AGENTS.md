@@ -13,9 +13,14 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 ## 2. Environment & Commands
 
-the port is 5550 understood ?
+**Port**: 5550
 
 **Package Manager**: `bun`
+
+**Convex Deployment**: 
+- **Local dev uses PRODUCTION database** (`prod:glad-marten-760`)
+- ⚠️ **DO NOT switch to dev deployment** - all real data is in production
+- Dev deployment (`dev:marvelous-lobster-114`) exists but is empty/unused
 
 | Action            | Command                        | Notes                               |
 | ----------------- | ------------------------------ | ----------------------------------- |
@@ -168,14 +173,14 @@ When placing text over background images, use this pattern for optimal readabili
 
 - User ID is `clerkId` (string), NOT Convex `_id`.
 
-### Current Implementation State (Jan 29, 2026)
+### Current Implementation State (Jan 31, 2026)
 
 **Recent Updates:**
-- **Schema Migration**: Removed dead fields (courseId, term, forumUrl, credits from courses; isPublic from videos)
-- **Simplified UI**: Bookmark/notes panels removed for cleaner experience
-- **Video Player**: Refactored to use direct YouTube IFrame API (no third-party dependencies)
-- **Progress Tracking**: Mark complete is now a toggle (can mark/unmark videos)
-- **Sidebar Toggle**: Brutalist hover effect styling
+- **Landing Page**: Removed "Weapons of Mass Construction" feature cards section
+- **Footer**: Slimmed down (reduced padding, border, removed decorative elements)
+- **Legal Pages**: Added `/privacy` and `/terms` pages with brutalist styling
+- **Hero Layout**: Uses `min-h-[calc(100dvh-67px)]` to fill viewport minus navbar
+- **Version Management**: Added semantic versioning process to AGENTS.md
 
 **Design System:**
 - **Background Images**: `bg-denji-power.jpg` and `bg-denji-demon.jpg` are rotated to landscape orientation
@@ -183,12 +188,33 @@ When placing text over background images, use this pattern for optimal readabili
 - **Mobile Support**: Responsive improvements completed for 375px+ devices
 - **Visibility Pattern**: Header uses opacity-60 background + via-black/70 gradient + backdrop-blur-sm + drop-shadow-lg text
 - **Button Pattern**: Subtle backgrounds (bg-white/5) with borders for visibility over images
+- **Dark Background**: Pure black (`#000000`) to prevent overscroll color mismatch
+- **Hero Height**: `100dvh - 67px` (navbar height) ensures footer is below fold on desktop
 
 **Branch Status:**
 - Working tree clean, up to date with origin/main
 - All merged branches cleaned up
 
-## 9. Checklist for "Sisyphus"
+## 9. Version Management
+
+This project follows Semantic Versioning (MAJOR.MINOR.PATCH).
+
+### When to Update Versions
+
+- **Patch (0.1.0 → 0.1.1)**: Bug fixes, typo corrections, minor tweaks
+- **Minor (0.1.0 → 0.2.0)**: New features, UI redesigns, significant improvements
+- **Major (0.9.0 → 1.0.0)**: Breaking changes, production-ready release
+
+### Process
+
+1. Complete changes and commit them
+2. Update version in `package.json`
+3. Commit version bump: `chore: bump version to X.Y.Z`
+
+**Current Version**: 0.2.0
+**Goal**: Reach 1.0.0 when production-ready.
+
+## 10. Checklist for "Sisyphus"
 
 - [ ] Did I understand the _intent_, not just the instruction?
 - [ ] Did I verify the fix with `tsc`?
