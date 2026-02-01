@@ -618,7 +618,7 @@ export default function LecturesPage() {
                   <Button 
                     variant="link" 
                     onClick={() => { setSearchQuery(""); setStatusFilter("all"); }} 
-                    className="mt-6 text-[#E62E2D] font-bold text-lg uppercase tracking-widest hover:text-white relative z-10"
+                    className="mt-6 min-h-[44px] inline-flex items-center text-[#E62E2D] font-bold text-lg uppercase tracking-widest hover:text-white relative z-10"
                   >
                     Clear Filters
                   </Button>
