@@ -68,11 +68,10 @@ export function Hero() {
           <Button 
             asChild 
             size="lg" 
-            className="relative h-20 px-12 overflow-hidden border-0 bg-[#E62E2D] text-black font-display text-3xl uppercase tracking-widest hover:bg-[#ff4443] hover:scale-105 transition-all shadow-[8px_8px_0px_0px_#ffffff] hover:shadow-[4px_4px_0px_0px_#ffffff] clip-corner before:absolute before:inset-0 before:bg-[url('/images/noise.svg')] before:opacity-20 before:mix-blend-overlay"
-            style={{ clipPath: "polygon(0% 0%, 100% 0%, 95% 50%, 100% 100%, 0% 100%, 5% 50%)" }}
+            className="group/btn relative h-20 px-12 overflow-hidden border-0 bg-[#E62E2D] text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out -skew-x-6 shadow-[6px_6px_0px_0px_#000] hover:skew-x-0 hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#000] before:absolute before:inset-0 before:bg-[url('/images/noise.svg')] before:opacity-20 before:mix-blend-overlay"
           >
             <Link href="/lectures">
-              Start_Hunt
+              <span className="inline-block skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">Start_Hunt</span>
             </Link>
           </Button>
 
@@ -81,10 +80,10 @@ export function Hero() {
                 asChild 
                 variant="outline"
                 size="lg" 
-                className="relative h-20 px-12 border-4 border-white bg-transparent text-white font-display text-3xl uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-[8px_8px_0px_0px_#E62E2D] hover:shadow-[4px_4px_0px_0px_#E62E2D]"
+                className="group/btn relative h-20 px-12 border-4 border-[#E62E2D] bg-black text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out skew-x-6 shadow-[6px_6px_0px_0px_#E62E2D] hover:skew-x-0 hover:bg-[#E62E2D] hover:border-[#E62E2D] hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#E62E2D]"
               >
                 <Link href="/lectures">
-                  My_Missions
+                  <span className="inline-block -skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">My_Missions</span>
                 </Link>
               </Button>
           ) : (
@@ -92,9 +91,9 @@ export function Hero() {
               <Button 
                 variant="outline"
                 size="lg" 
-                className="relative h-20 px-12 border-4 border-white bg-transparent text-white font-display text-3xl uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-[8px_8px_0px_0px_#E62E2D] hover:shadow-[4px_4px_0px_0px_#E62E2D] cursor-pointer"
+                className="group/btn relative h-20 px-12 border-4 border-[#E62E2D] bg-black text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out skew-x-6 shadow-[6px_6px_0px_0px_#E62E2D] hover:skew-x-0 hover:bg-[#E62E2D] hover:border-[#E62E2D] hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#E62E2D] cursor-pointer"
               >
-                Join_Bureau
+                <span className="inline-block -skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">Join_Bureau</span>
               </Button>
             </SignUpButton>
           )}
