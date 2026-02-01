@@ -471,7 +471,12 @@ export default function LecturesPage() {
           <TabsContent value="library" className="space-y-8 focus-visible:outline-none focus-visible:ring-0">
             {/* Course Library Section */}
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 w-full"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
                 <div className="relative w-full sm:w-80 group">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 group-focus-within:text-[#E62E2D] transition-colors" />
                   <Input
@@ -511,17 +516,23 @@ export default function LecturesPage() {
                     </Button>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Collapsible Level Sections */}
               <div className="space-y-4">
-                {(["foundation", "diploma", "degree"] as const).map((level) => {
+                {(["foundation", "diploma", "degree"] as const).map((level, index) => {
                   const courses = groupedCourses[level];
                   const isOpen = openSections[level];
                   const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
                   
                   return (
-                    <div key={level} className="border-2 border-border">
+                    <motion.div 
+                      key={level} 
+                      className="border-2 border-border"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: 0.1 + (index * 0.1) }}
+                    >
                       <button
                         id={`section-header-${level}`}
                         onClick={() => toggleSection(level)}
@@ -600,7 +611,7 @@ export default function LecturesPage() {
                           </p>
                         </div>
                       )}
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
