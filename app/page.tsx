@@ -11,7 +11,7 @@ export default function LandingPage() {
       <Hero />
 
       <footer className="border-t-4 border-black py-3 bg-[#E62E2D]">
-        <div className="container flex items-center justify-between gap-4 text-sm font-bold uppercase text-black">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-bold uppercase text-black">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-black text-white">
               <GraduationCap className="h-4 w-4" />
