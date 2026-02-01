@@ -87,20 +87,19 @@ export default function LecturesPage() {
     };
 
     filtered.forEach((course) => {
-      if (groups[course.level]) {
-        groups[course.level].push(course);
+      const courseLevelNormalized = course.level.toLowerCase();
+      if (groups[courseLevelNormalized]) {
+        groups[courseLevelNormalized].push(course);
       }
     });
 
     // Sort each group by progress (low to high)
     Object.keys(groups).forEach((level) => {
+      const groupLevelOrder = getLevelOrder(level);
+      const isPriorLevel = userLevelOrder > groupLevelOrder;
       groups[level].sort((a, b) => {
-        const levelA = getLevelOrder(a.level);
-        const levelB = getLevelOrder(b.level);
-        const isPriorA = userLevelOrder > levelA;
-        const isPriorB = userLevelOrder > levelB;
-        const progressA = isPriorA ? 100 : (coursesProgress?.[a._id] || 0);
-        const progressB = isPriorB ? 100 : (coursesProgress?.[b._id] || 0);
+        const progressA = isPriorLevel ? 100 : (coursesProgress?.[a._id] || 0);
+        const progressB = isPriorLevel ? 100 : (coursesProgress?.[b._id] || 0);
         return progressA - progressB;
       });
     });
@@ -478,7 +477,7 @@ export default function LecturesPage() {
                     variant="ghost"
                     onClick={() => setStatusFilter("all")}
                     className={cn(
-                      "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
+                      "capitalize whitespace-nowrap rounded-none border-2 px-4 h-11 font-bold tracking-wider transition-all",
                       statusFilter === "all"
                         ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
                         : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
@@ -493,7 +492,7 @@ export default function LecturesPage() {
                       variant="ghost"
                       onClick={() => setStatusFilter(statusFilter === filter ? "all" : filter)}
                       className={cn(
-                        "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
+                        "capitalize whitespace-nowrap rounded-none border-2 px-4 h-11 font-bold tracking-wider transition-all",
                         statusFilter === filter 
                           ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
                           : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
