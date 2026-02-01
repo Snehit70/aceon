@@ -13,9 +13,14 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 ## 2. Environment & Commands
 
-the port is 5550 understood ?
+**Port**: 5550
 
 **Package Manager**: `bun`
+
+**Convex Deployment**: 
+- **Local dev uses PRODUCTION database** (`prod:glad-marten-760`)
+- ⚠️ **DO NOT switch to dev deployment** - all real data is in production
+- Dev deployment (`dev:marvelous-lobster-114`) exists but is empty/unused
 
 | Action            | Command                        | Notes                               |
 | ----------------- | ------------------------------ | ----------------------------------- |
