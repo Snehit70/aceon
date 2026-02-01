@@ -8,7 +8,7 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft } from "lucide-react";
+import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -34,10 +34,14 @@ export default function LecturesPage() {
   );
   
   const [searchQuery, setSearchQuery] = useState("");
-  const [levelFilter, setLevelFilter] = useState<"all" | "foundation" | "diploma" | "degree">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "not-completed">("all");
   const [showProfileSheet, setShowProfileSheet] = useState(false);
   const [cachedCounts, setCachedCounts] = useState({ enrolled: 3, library: 8 });
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    foundation: false,
+    diploma: false,
+    degree: false,
+  });
 
   const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
@@ -57,25 +61,40 @@ export default function LecturesPage() {
 
   const userLevelOrder = profile?.level ? getLevelOrder(profile.level) : 0;
 
-  const filteredLibraryCourses = useMemo(() => {
-    return otherCourses
-      .filter((course) => {
-        const matchesSearch =
-          course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          course.code.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesLevel = levelFilter === "all" || course.level === levelFilter;
-        
-        const courseLevel = getLevelOrder(course.level);
-        const isPrior = userLevelOrder > courseLevel;
-        const progress = isPrior ? 100 : (coursesProgress?.[course._id] || 0);
-        const isCompleted = progress === 100;
-        const matchesStatus = statusFilter === "all" || 
-          (statusFilter === "completed" && isCompleted) ||
-          (statusFilter === "not-completed" && !isCompleted);
-        
-        return matchesSearch && matchesLevel && matchesStatus;
-      })
-      .sort((a, b) => {
+  // Group courses by level for collapsible sections
+  const groupedCourses = useMemo(() => {
+    const filtered = otherCourses.filter((course) => {
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.code.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const courseLevel = getLevelOrder(course.level);
+      const isPrior = userLevelOrder > courseLevel;
+      const progress = isPrior ? 100 : (coursesProgress?.[course._id] || 0);
+      const isCompleted = progress === 100;
+      const matchesStatus = statusFilter === "all" || 
+        (statusFilter === "completed" && isCompleted) ||
+        (statusFilter === "not-completed" && !isCompleted);
+      
+      return matchesSearch && matchesStatus;
+    });
+
+    // Group by level
+    const groups: Record<string, typeof filtered> = {
+      foundation: [],
+      diploma: [],
+      degree: [],
+    };
+
+    filtered.forEach((course) => {
+      if (groups[course.level]) {
+        groups[course.level].push(course);
+      }
+    });
+
+    // Sort each group by progress (low to high)
+    Object.keys(groups).forEach((level) => {
+      groups[level].sort((a, b) => {
         const levelA = getLevelOrder(a.level);
         const levelB = getLevelOrder(b.level);
         const isPriorA = userLevelOrder > levelA;
@@ -84,7 +103,14 @@ export default function LecturesPage() {
         const progressB = isPriorB ? 100 : (coursesProgress?.[b._id] || 0);
         return progressA - progressB;
       });
-  }, [otherCourses, searchQuery, levelFilter, statusFilter, coursesProgress, userLevelOrder]);
+    });
+
+    return groups;
+  }, [otherCourses, searchQuery, statusFilter, coursesProgress, userLevelOrder]);
+
+  const toggleSection = (level: string) => {
+    setOpenSections((prev) => ({ ...prev, [level]: !prev[level] }));
+  };
 
   // Force open profile sheet if no profile exists
   useEffect(() => {
@@ -436,116 +462,149 @@ export default function LecturesPage() {
 
           <TabsContent value="library" className="space-y-8 focus-visible:outline-none focus-visible:ring-0">
             {/* Course Library Section */}
-            <div className="space-y-8">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
-                  <div className="relative w-full sm:w-80 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 group-focus-within:text-[#E62E2D] transition-colors" />
-                    <Input
-                      placeholder="SEARCH_ARCHIVES..."
-                      className="pl-12 h-14 bg-black border-4 border-white rounded-none text-lg font-mono placeholder:text-neutral-600 focus-visible:ring-0 focus-visible:border-[#E62E2D] uppercase tracking-wider text-white transition-colors shadow-[4px_4px_0_0_#333]"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar items-center">
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="relative w-full sm:w-80 group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 group-focus-within:text-[#E62E2D] transition-colors" />
+                  <Input
+                    placeholder="SEARCH_ARCHIVES..."
+                    className="pl-12 h-14 bg-black border-4 border-white rounded-none text-lg font-mono placeholder:text-neutral-600 focus-visible:ring-0 focus-visible:border-[#E62E2D] uppercase tracking-wider text-white transition-colors shadow-[4px_4px_0_0_#333]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar items-center">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setStatusFilter("all")}
+                    className={cn(
+                      "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
+                      statusFilter === "all"
+                        ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
+                        : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
+                    )}
+                  >
+                    All
+                  </Button>
+                  <div className="w-px h-6 bg-neutral-700" />
+                  {(["completed", "not-completed"] as const).map((filter) => (
                     <Button
+                      key={filter}
                       variant="ghost"
-                      onClick={() => { setLevelFilter("all"); setStatusFilter("all"); }}
+                      onClick={() => setStatusFilter(statusFilter === filter ? "all" : filter)}
                       className={cn(
                         "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
-                        levelFilter === "all" && statusFilter === "all"
+                        statusFilter === filter 
                           ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
                           : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
                       )}
                     >
-                      All
+                      {filter === "not-completed" ? "In Progress" : filter}
                     </Button>
-                    <div className="w-px h-6 bg-neutral-700" />
-                    {(["foundation", "diploma", "degree"] as const).map((filter) => (
-                      <Button
-                        key={filter}
-                        variant="ghost"
-                        onClick={() => setLevelFilter(levelFilter === filter ? "all" : filter)}
-                        className={cn(
-                          "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
-                          levelFilter === filter 
-                            ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
-                            : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
-                        )}
-                      >
-                        {filter}
-                      </Button>
-                    ))}
-                    <div className="w-px h-6 bg-neutral-700" />
-                    {(["completed", "not-completed"] as const).map((filter) => (
-                      <Button
-                        key={filter}
-                        variant="ghost"
-                        onClick={() => setStatusFilter(statusFilter === filter ? "all" : filter)}
-                        className={cn(
-                          "capitalize whitespace-nowrap rounded-none border-2 px-4 h-10 font-bold tracking-wider transition-all",
-                          statusFilter === filter 
-                            ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
-                            : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
-                        )}
-                      >
-                        {filter === "not-completed" ? "In Progress" : filter}
-                      </Button>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Course Grid */}
-              <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {filteredLibraryCourses.map((course, index) => {
-                  const courseLevelOrder = getLevelOrder(course.level);
-                  const isPriorLevel = userLevelOrder > courseLevelOrder;
+              {/* Collapsible Level Sections */}
+              <div className="space-y-4">
+                {(["foundation", "diploma", "degree"] as const).map((level) => {
+                  const courses = groupedCourses[level];
+                  const isOpen = openSections[level];
+                  const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
                   
                   return (
-                  <motion.div
-                    key={course._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                  >
-                    <ChainsawCard
-                      id={course._id}
-                      href={`/lectures/${course._id}`}
-                      code={course.code}
-                      title={course.title}
-                      level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                      lectureCount={course.stats.lectureCount}
-                      totalDuration={course.stats.totalDurationFormatted}
-                      progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
-                      className={cn(
-                        "hover:opacity-100 transition-opacity",
-                        isPriorLevel ? "opacity-60 grayscale" : "opacity-100"
+                    <div key={level} className="border-2 border-border">
+                      <button
+                        onClick={() => toggleSection(level)}
+                        className={cn(
+                          "w-full flex items-center justify-between",
+                          "p-4 bg-secondary/5 hover:bg-secondary/10",
+                          "hover:border-primary transition-colors duration-200",
+                          "min-h-[56px]"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <ChevronRight className={cn(
+                            "w-5 h-5 text-primary transition-transform duration-200",
+                            isOpen && "rotate-90"
+                          )} />
+                          <span className="font-mono text-lg font-bold uppercase tracking-widest text-foreground">
+                            {levelLabel}
+                          </span>
+                        </div>
+                        <span className="font-mono text-sm text-muted-foreground uppercase tracking-wider">
+                          {courses.length} {courses.length === 1 ? "course" : "courses"}
+                        </span>
+                      </button>
+                      
+                      {isOpen && courses.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="p-4 border-t-2 border-border"
+                        >
+                          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {courses.map((course, index) => {
+                              const courseLevelOrder = getLevelOrder(course.level);
+                              const isPriorLevel = userLevelOrder > courseLevelOrder;
+                              
+                              return (
+                                <motion.div
+                                  key={course._id}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.3, delay: index * 0.03 }}
+                                >
+                                  <ChainsawCard
+                                    id={course._id}
+                                    href={`/lectures/${course._id}`}
+                                    code={course.code}
+                                    title={course.title}
+                                    level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                                    lectureCount={course.stats.lectureCount}
+                                    totalDuration={course.stats.totalDurationFormatted}
+                                    progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
+                                  />
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
                       )}
-                    />
-                  </motion.div>
-                )})}
-
-                {filteredLibraryCourses.length === 0 && (
-                  <div className="col-span-full relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
-<div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
-                    <Search className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
-                    <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Archives Found</h3>
-                    <p className="text-neutral-400 font-mono uppercase tracking-wide max-w-sm relative z-10">
-                      Try adjusting your search or filters.
-                    </p>
-                    <Button 
-                      variant="link" 
-                      onClick={() => { setSearchQuery(""); setLevelFilter("all"); }} 
-                      className="mt-6 text-[#E62E2D] font-bold text-lg uppercase tracking-widest hover:text-white relative z-10"
-                    >
-                        Clear Filters
-                    </Button>
-                  </div>
-                )}
+                      
+                      {isOpen && courses.length === 0 && (
+                        <div className="p-8 border-t-2 border-border text-center">
+                          <p className="font-mono text-sm text-muted-foreground uppercase tracking-wider">
+                            No {levelLabel} courses match your filters
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
+
+              {/* Empty state when all sections have no courses */}
+              {Object.values(groupedCourses).every(courses => courses.length === 0) && (
+                <div className="relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
+                  <Search className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
+                  <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Archives Found</h3>
+                  <p className="text-neutral-400 font-mono uppercase tracking-wide max-w-sm relative z-10">
+                    Try adjusting your search or filters.
+                  </p>
+                  <Button 
+                    variant="link" 
+                    onClick={() => { setSearchQuery(""); setStatusFilter("all"); }} 
+                    className="mt-6 text-[#E62E2D] font-bold text-lg uppercase tracking-widest hover:text-white relative z-10"
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
