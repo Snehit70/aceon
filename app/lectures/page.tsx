@@ -11,13 +11,21 @@ import Link from "next/link";
 import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ProfileSheet = dynamic(
   () => import("@/components/profile/profile-sheet").then((mod) => mod.ProfileSheet),
   { ssr: false }
 );
+
+type LevelKey = "foundation" | "diploma" | "degree";
+
+interface OpenSections {
+  foundation: boolean;
+  diploma: boolean;
+  degree: boolean;
+}
 
 export default function LecturesPage() {
   const { user } = useUser();
@@ -37,7 +45,7 @@ export default function LecturesPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "not-completed">("all");
   const [showProfileSheet, setShowProfileSheet] = useState(false);
   const [cachedCounts, setCachedCounts] = useState({ enrolled: 3, library: 8 });
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+  const [openSections, setOpenSections] = useState<OpenSections>({
     foundation: false,
     diploma: false,
     degree: false,
@@ -53,9 +61,10 @@ export default function LecturesPage() {
   }, [courses, enrolledCourseIds]);
 
   const getLevelOrder = (lvl: string) => {
-    if (lvl === "foundation") return 1;
-    if (lvl === "diploma") return 2;
-    if (lvl === "degree") return 3;
+    const normalized = lvl.toLowerCase();
+    if (normalized === "foundation") return 1;
+    if (normalized === "diploma") return 2;
+    if (normalized === "degree") return 3;
     return 0;
   };
 
@@ -107,7 +116,7 @@ export default function LecturesPage() {
     return groups;
   }, [otherCourses, searchQuery, statusFilter, coursesProgress, userLevelOrder]);
 
-  const toggleSection = (level: string) => {
+  const toggleSection = (level: LevelKey) => {
     setOpenSections((prev) => ({ ...prev, [level]: !prev[level] }));
   };
 
@@ -514,7 +523,10 @@ export default function LecturesPage() {
                   return (
                     <div key={level} className="border-2 border-border">
                       <button
+                        id={`section-header-${level}`}
                         onClick={() => toggleSection(level)}
+                        aria-expanded={isOpen}
+                        aria-controls={`section-panel-${level}`}
                         className={cn(
                           "w-full flex items-center justify-between",
                           "p-4 bg-secondary/5 hover:bg-secondary/10",
@@ -536,45 +548,53 @@ export default function LecturesPage() {
                         </span>
                       </button>
                       
-                      {isOpen && courses.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="p-4 border-t-2 border-border"
-                        >
-                          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {courses.map((course, index) => {
-                              const courseLevelOrder = getLevelOrder(course.level);
-                              const isPriorLevel = userLevelOrder > courseLevelOrder;
-                              
-                              return (
-                                <motion.div
-                                  key={course._id}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ duration: 0.3, delay: index * 0.03 }}
-                                >
-                                  <ChainsawCard
-                                    id={course._id}
-                                    href={`/lectures/${course._id}`}
-                                    code={course.code}
-                                    title={course.title}
-                                    level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                                    lectureCount={course.stats.lectureCount}
-                                    totalDuration={course.stats.totalDurationFormatted}
-                                    progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
-                                  />
-                                </motion.div>
-                              );
-                            })}
-                          </div>
-                        </motion.div>
-                      )}
+                      <AnimatePresence initial={false}>
+                        {isOpen && courses.length > 0 && (
+                          <motion.div
+                            id={`section-panel-${level}`}
+                            aria-labelledby={`section-header-${level}`}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="p-4 border-t-2 border-border overflow-hidden"
+                          >
+                            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                              {courses.map((course, index) => {
+                                const courseLevelOrder = getLevelOrder(course.level);
+                                const isPriorLevel = userLevelOrder > courseLevelOrder;
+                                
+                                return (
+                                  <motion.div
+                                    key={course._id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.03 }}
+                                  >
+                                    <ChainsawCard
+                                      id={course._id}
+                                      href={`/lectures/${course._id}`}
+                                      code={course.code}
+                                      title={course.title}
+                                      level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                                      lectureCount={course.stats.lectureCount}
+                                      totalDuration={course.stats.totalDurationFormatted}
+                                      progress={isPriorLevel ? 100 : (coursesProgress?.[course._id] || 0)}
+                                    />
+                                  </motion.div>
+                                );
+                              })}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                       
                       {isOpen && courses.length === 0 && (
-                        <div className="p-8 border-t-2 border-border text-center">
+                        <div 
+                          id={`section-panel-${level}`}
+                          aria-labelledby={`section-header-${level}`}
+                          className="p-8 border-t-2 border-border text-center"
+                        >
                           <p className="font-mono text-sm text-muted-foreground uppercase tracking-wider">
                             No {levelLabel} courses match your filters
                           </p>
