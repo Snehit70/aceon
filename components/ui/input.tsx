@@ -2,6 +2,21 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Input - Form text input element.
+ * 
+ * **Context**: Standard text input for forms and user data entry.
+ * Styled consistently with the design system and supports all HTML input types.
+ * 
+ * **Features**:
+ * - Full width by default.
+ * - Focus ring styling.
+ * - File input styling support.
+ * - Disabled state handling.
+ * 
+ * @param props - Standard HTML input props plus className.
+ * @returns Styled input element.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input

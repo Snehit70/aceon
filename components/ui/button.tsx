@@ -4,6 +4,27 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Button - Primary interactive element for user actions.
+ * 
+ * **Context**: The main clickable element used throughout the application.
+ * Supports multiple visual variants (default, outline, ghost, destructive, link)
+ * and sizes (xs, sm, default, lg, icon variants).
+ * 
+ * **Integrations**:
+ * - class-variance-authority: For type-safe variant management.
+ * - Radix UI Slot: For polymorphic rendering (can render as child component).
+ * 
+ * **Variants**:
+ * - `default`: Primary action button with solid background.
+ * - `outline`: Bordered button for secondary actions.
+ * - `ghost`: Transparent background, shows on hover.
+ * - `destructive`: Red-themed for dangerous actions.
+ * - `link`: Text-only with underline on hover.
+ * 
+ * @param props - Component props including variant, size, and asChild.
+ * @returns Styled button element.
+ */
 const buttonVariants = cva(
   "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none shadow-sm",
   {

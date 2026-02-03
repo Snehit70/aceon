@@ -5,6 +5,23 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Tabs - Tabbed navigation component.
+ *
+ * **Context**: Organizes content into multiple panels with a tabbed interface.
+ * Used for the "Enrolled_Missions" vs "Mission_Archives" tabs on the lectures page.
+ *
+ * **Integrations**:
+ * - Radix UI Tabs: Handles keyboard navigation, focus management, and accessibility.
+ *
+ * **Components**:
+ * - Tabs: Root container managing active tab state.
+ * - TabsList: Container for tab triggers.
+ * - TabsTrigger: Clickable tab button.
+ * - TabsContent: Panel shown when tab is active.
+ *
+ * @returns Tab navigation interface with content panels.
+ */
 const Tabs = TabsPrimitive.Root
 
 const TabsList = React.forwardRef<

@@ -8,6 +8,26 @@ import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Cancel01Icon } from "@hugeicons/core-free-icons"
 
+/**
+ * Sheet - Slide-out drawer component for secondary content.
+ * 
+ * **Context**: Displays content in a panel that slides in from any edge of the screen.
+ * Commonly used for mobile navigation, filters, or detailed views.
+ * 
+ * **Integrations**:
+ * - Radix UI Dialog: Handles accessibility, focus trapping, and animations.
+ * - Supports 4 slide directions: top, right, bottom, left.
+ * 
+ * **Components**:
+ * - Sheet: Root container.
+ * - SheetTrigger: Element that opens the sheet.
+ * - SheetContent: Main panel with close button.
+ * - SheetHeader/Footer: Layout sections.
+ * - SheetTitle/Description: Accessible headings.
+ * 
+ * @param props - Component props.
+ * @returns Sheet dialog component.
+ */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }

@@ -2,6 +2,24 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Card - Content container with header, content, and footer sections.
+ * 
+ * **Context**: Used to group related content in a contained box with consistent
+ * styling. Supports size variants and automatic padding adjustments.
+ * 
+ * **Components**:
+ * - Card: Main container with optional size variant.
+ * - CardHeader: Top section with title and description.
+ * - CardTitle: Heading text.
+ * - CardDescription: Secondary text.
+ * - CardContent: Main body content.
+ * - CardFooter: Bottom action area.
+ * - CardAction: Corner action element.
+ * 
+ * @param props - Component props including size variant.
+ * @returns Styled card container.
+ */
 function Card({
   className,
   size = "default",
