@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -8,6 +8,7 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
@@ -27,8 +28,9 @@ interface OpenSections {
   degree: boolean;
 }
 
-export default function LecturesPage() {
+function LecturesPageContent() {
   const { user } = useUser();
+  const searchParams = useSearchParams();
   const courses = useQuery(api.courses.listWithStats);
   const profile = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip");
   
@@ -50,6 +52,9 @@ export default function LecturesPage() {
     diploma: false,
     degree: false,
   });
+
+  const tabParam = searchParams.get("tab");
+  const defaultTab = tabParam === "library" || tabParam === "enrolled" ? tabParam : "enrolled";
 
   const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
@@ -320,7 +325,7 @@ export default function LecturesPage() {
         </div>
 
         {/* Tabs Layout */}
-        <Tabs defaultValue="enrolled" className="space-y-12">
+        <Tabs defaultValue={defaultTab} className="space-y-12">
           <TabsList className="bg-transparent border-b-4 border-neutral-800 p-0 w-full justify-start rounded-none h-auto gap-8">
             <TabsTrigger 
               value="enrolled" 
@@ -640,5 +645,13 @@ export default function LecturesPage() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function LecturesPage() {
+  return (
+    <Suspense fallback={null}>
+      <LecturesPageContent />
+    </Suspense>
   );
 }
