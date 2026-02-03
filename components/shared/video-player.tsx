@@ -61,6 +61,12 @@ let apiLoaded = false;
 let apiLoading = false;
 const apiReadyCallbacks: (() => void)[] = [];
 
+/**
+ * Helper to load the YouTube IFrame API script.
+ * Ensures the script is loaded only once and handles multiple concurrent requests.
+ * 
+ * @returns Promise that resolves when window.YT is available.
+ */
 function loadYouTubeAPI(): Promise<void> {
   return new Promise((resolve) => {
     if (apiLoaded && window.YT) {
@@ -86,6 +92,40 @@ function loadYouTubeAPI(): Promise<void> {
   });
 }
 
+/**
+ * VideoPlayer - A robust YouTube player wrapper using the IFrame Player API.
+ * 
+ * **Context**: core component for the lecture viewing experience. It replaces standard 
+ * iframe embeds to allow programmatic control, state tracking, and progress monitoring.
+ * 
+ * **Integrations**: 
+ * - YouTube IFrame API: For playback control and state events.
+ * - Convex: Progress updates are sent to backend via `onProgressUpdate` prop.
+ * 
+ * **State Management**:
+ * - Manages its own `YT.Player` instance lifecycle.
+ * - Tracks playback progress via 1s interval when playing.
+ * - Handles auto-cleanup of player instance on unmount or video change.
+ * - Exposes imperative handle (`seekTo`, `getCurrentTime`) for parent control.
+ * 
+ * **User Flow**:
+ * 1. User selects a video -> `videoId` prop changes.
+ * 2. Player initializes/reloads with new video.
+ * 3. `initialPosition` is used to resume where user left off.
+ * 4. While playing, `onProgressUpdate` fires every second.
+ * 5. When finished, `onEnded` triggers completion logic.
+ * 
+ * @param props - Component props.
+ * @param props.videoId - The YouTube video ID (e.g., "dQw4w9WgXcQ").
+ * @param props.title - Video title (used for accessibility/analytics).
+ * @param props.onEnded - Callback fired when video finishes.
+ * @param props.onProgressUpdate - Callback fired every second with playback stats.
+ * @param props.initialPosition - Start time in seconds (for resuming progress).
+ * @param props.theaterMode - Whether player is in expanded theater mode.
+ * @param props.onTheaterModeChange - Callback to toggle theater mode.
+ * @param ref - VideoPlayerRef for imperative seeking and time retrieval.
+ * @returns A responsive div containing the YouTube IFrame.
+ */
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
   ({ videoId, onEnded, onProgressUpdate, initialPosition = 0, theaterMode = false }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);

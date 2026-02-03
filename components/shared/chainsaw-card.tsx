@@ -18,6 +18,26 @@ export interface ChainsawCardProps {
   className?: string
 }
 
+/**
+ * ChainsawCard - A brutalist, themed card for the "Chainsaw Man" aesthetic.
+ * 
+ * **Context**: The primary card component for the main lectures dashboard.
+ * Designed to look like a "mission dossier" or tactical display.
+ * 
+ * **Style**: 
+ * - Hard edges (no rounded corners).
+ * - "Clip-corner" effect (CSS clip-path).
+ * - Hover effects: Translate/Slide animation with neon drop shadows.
+ * - Typography: Aggressive uppercase display fonts.
+ * 
+ * **User Flow**:
+ * - Displays "Target_Eliminated" for completed courses.
+ * - Displays "In_Progress" for active ones.
+ * - Hovering triggers a "pop-out" 3D effect.
+ * 
+ * @param props - Component props.
+ * @returns A highly styled, interactive course card.
+ */
 export function ChainsawCard({
   code,
   title,

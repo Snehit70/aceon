@@ -28,6 +28,32 @@ interface OpenSections {
   degree: boolean;
 }
 
+/**
+ * LecturesPageContent - Main dashboard for course discovery and progress tracking.
+ * 
+ * **Context**: This is the primary logged-in view for students. It serves two main purposes:
+ * 1. "Enrolled_Missions": Quick access to active courses and "Continue Watching" row.
+ * 2. "Mission_Archives": Full course library with search, filtering, and level-based grouping.
+ * 
+ * **Integrations**:
+ * - Convex: Fetches courses, user profile, progress, and "continue watching" history.
+ * - Clerk: Uses `useUser` for identity.
+ * - LocalStorage: Caches course counts to prevent layout shift during loading.
+ * - URL Params: Syncs active tab state via `?tab=` query param.
+ * 
+ * **State Management**:
+ * - Manages complex filtering logic (search query + status filter + level grouping).
+ * - Handles "continue watching" horizontal scroll state.
+ * - Controls the profile sheet visibility (auto-opens if user profile is missing).
+ * 
+ * **User Flow**:
+ * 1. User lands here after login.
+ * 2. Default view shows Enrolled courses + Resume Patrol row.
+ * 3. User can switch tabs to browse the full Library (Archives).
+ * 4. User can search/filter archives to find new courses.
+ * 
+ * @returns The main dashboard UI.
+ */
 function LecturesPageContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
@@ -648,6 +674,15 @@ function LecturesPageContent() {
   );
 }
 
+/**
+ * LecturesPage - Route wrapper for the lectures dashboard.
+ * 
+ * **Purpose**: Wraps the main content in a Suspense boundary to handle useSearchParams usage.
+ * This prevents de-opting to client-side rendering for the entire route and handles hydration 
+ * issues related to search parameters.
+ * 
+ * @returns Suspense-wrapped LecturesPageContent.
+ */
 export default function LecturesPage() {
   return (
     <Suspense fallback={null}>

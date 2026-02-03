@@ -5,6 +5,20 @@ import { Hero } from "@/components/landing/hero";
 import { GraduationCap } from "lucide-react";
 import packageJson from "@/package.json";
 
+/**
+ * LandingPage - Public marketing home page.
+ * 
+ * **Context**: The first page unauthenticated users see. 
+ * Authenticated users are redirected to `/lectures` via middleware (not client-side).
+ * 
+ * **Components**:
+ * - `Hero`: Main visual component with Chainsaw Man theme and "Start Hunt" CTA.
+ * - Footer: Links to legal pages and version info.
+ * 
+ * **Style**: Uses the brand's Blood Red (#E62E2D) and Black aesthetic.
+ * 
+ * @returns The landing page layout.
+ */
 export default function LandingPage() {
   return (
     <div className="flex flex-col w-full bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden">
