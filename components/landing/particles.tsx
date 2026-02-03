@@ -3,6 +3,20 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+/**
+ * Particles - Animated background particle effect.
+ * 
+ * **Context**: Visual background effect for the landing page hero section.
+ * Creates floating geometric shapes (triangles, squares) and "embers" (red dots)
+ * that drift upward to create atmosphere.
+ * 
+ * **Implementation**:
+ * - Uses Framer Motion for smooth animations.
+ * - Generates 20 random geometric particles and 5 ember particles.
+ * - Only renders on client-side to avoid hydration mismatches with random values.
+ * 
+ * @returns A full-screen particle animation layer.
+ */
 export const Particles = () => {
   const [mounted, setMounted] = useState(false);
   

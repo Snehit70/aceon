@@ -25,6 +25,34 @@ interface ProfileSheetProps {
   forceOpen?: boolean;
 }
 
+/**
+ * ProfileSheet - User profile configuration drawer.
+ * 
+ * **Context**: A slide-out drawer (Sheet) that allows users to configure their academic level
+ * (Foundation/Diploma/Degree) and manage their enrolled courses.
+ * 
+ * **Integrations**:
+ * - Convex: Fetches user profile, course list, and progress data.
+ * - Mutations: Updates user profile and marks courses as complete/incomplete.
+ * 
+ * **State Management**:
+ * - `level`: Current academic level selection.
+ * - `studyingCourseIds`: Courses marked as "currently studying".
+ * - `completedCourseIds`: Courses marked as "done" (auto-calculated from progress).
+ * - `showAllLevels`: Toggle to show courses from all levels vs. current level only.
+ * 
+ * **User Flow**:
+ * 1. User opens profile (or auto-opens on first login if `forceOpen`).
+ * 2. User selects their academic level (affects course filtering).
+ * 3. User marks courses as "Studying" or "Done".
+ * 4. On save, profile is updated and course completions are synced.
+ * 
+ * @param props - Component props.
+ * @param props.open - Whether the sheet is visible.
+ * @param props.onOpenChange - Callback when open state changes.
+ * @param props.forceOpen - If true, prevents closing (used for mandatory setup).
+ * @returns A slide-out profile configuration panel.
+ */
 const levels = [
   { 
     id: "foundation", 

@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * Loading - Global loading state fallback.
+ * 
+ * **Context**: Displayed while page content is being fetched or rendered.
+ * Used by Next.js when a route is loading (e.g., during data fetching).
+ * 
+ * **Visual**: Themed skeleton loader with the "Chainsaw Man" aesthetic.
+ * Features animated pulsing shapes and brutalist clip-corner styling.
+ * 
+ * @returns A full-screen loading animation.
+ */
 export default function Loading() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
