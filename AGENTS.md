@@ -157,6 +157,13 @@ When placing text over background images, use this pattern for optimal readabili
 - Course header with navigation
 - Touch targets: All buttons use `min-h-[44px]` for mobile accessibility
 
+**LecturesSkeleton** (`components/lectures/lectures-skeleton.tsx`)
+
+- Reusable loading state for lectures dashboard
+- Supports `mode="enrolled"` (Grid) and `mode="library"` (Accordion List)
+- Matches Chainsaw Man aesthetic (Halftone/Noise backgrounds)
+- Used in `app/lectures/page.tsx` with dynamic mode switching based on URL params
+
 **useMediaQuery Hook** (`hooks/use-media-query.ts`)
 
 - SSR-safe media query detection
