@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
  *
  * **Features**:
  * - Horizontal or vertical orientation.
- * - Decorative mode (hidden from screen readers).
+ * - Semantic by default (visible to screen readers), can be set to decorative.
  *
  * @param props - Component props including orientation.
  * @returns Styled divider line.
@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils"
 function Separator({
   className,
   orientation = "horizontal",
-  decorative = true,
+  decorative = false,
   ...props
 }: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
   return (
