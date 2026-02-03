@@ -18,6 +18,34 @@ import { LectureSidebar } from "@/components/lectures/lecture-sidebar";
 import { AutoplayOverlay } from "@/components/lectures/autoplay-overlay";
 import { LectureHeader } from "@/components/lectures/lecture-header";
 
+/**
+ * LecturePlayerPage - The core learning experience view.
+ * 
+ * **Context**: Renders the video player for a specific course, surrounded by navigation controls.
+ * It is a dynamic route `[subjectId]` where `subjectId` is the Convex course ID.
+ * 
+ * **Integrations**: 
+ * - Convex: 
+ *   - Fetches course details (`api.courses.get`).
+ *   - Fetches course content tree (`api.courses.getCourseContent`).
+ *   - Fetches and updates user progress (`api.progress.*`).
+ * - YouTube: Wraps `VideoPlayer` for content delivery.
+ * 
+ * **State Management**:
+ * - `selectedVideoId`: Tracks which video is currently active. Defaults to first incomplete video.
+ * - `theaterMode`: Toggles expanded video view.
+ * - `autoplay`: Handles countdown and auto-advance logic (`showAutoplayCountdown`, `autoplayCountdown`).
+ * - `isSidebarOpen`: Toggles the navigation sidebar (desktop only).
+ * 
+ * **User Flow**:
+ * 1. User enters route -> Page fetches course content.
+ * 2. Page auto-selects the first unwatched video ("Smart Resume").
+ * 3. User plays video -> Progress updates sent to Convex every 5s.
+ * 4. Video ends -> Autoplay overlay appears -> Auto-advances to next video after 10s.
+ * 5. User can manually navigate via Sidebar or "Mark Complete" header button.
+ * 
+ * @returns The main player layout with Sidebar and VideoPlayer.
+ */
 export default function LecturePlayerPage() {
   const { user } = useUser();
   const params = useParams();

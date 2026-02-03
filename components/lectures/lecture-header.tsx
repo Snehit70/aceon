@@ -13,6 +13,26 @@ interface LectureHeaderProps {
   onMarkComplete?: () => void;
 }
 
+/**
+ * LectureHeader - Top bar of the video player view.
+ * 
+ * **Context**: Displays current video metadata (title, week, duration) and primary user actions.
+ * 
+ * **Integrations**: 
+ * - Takes `onMarkComplete` callback to toggle video completion status via Convex.
+ * 
+ * **Style**: Implements the "Chainsaw Man" aesthetic with aggressive uppercase fonts, 
+ * neon accents, and brutalist spacing.
+ * 
+ * @param props - Component props.
+ * @param props.title - Title of the current video.
+ * @param props.weekTitle - Title of the week (e.g., "Week 1").
+ * @param props.duration - Duration in seconds (formatted to minutes).
+ * @param props.showUserActions - Whether to show the Mark Complete button.
+ * @param props.isCompleted - Current completion status.
+ * @param props.onMarkComplete - Callback to toggle completion.
+ * @returns A styled header with title and action buttons.
+ */
 export function LectureHeader({
   title,
   weekTitle,

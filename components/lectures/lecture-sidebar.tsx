@@ -25,6 +25,37 @@ export interface SidebarProps {
   onMarkCourseComplete?: () => void;
 }
 
+/**
+ * LectureSidebar - Navigation sidebar for the lecture viewing experience.
+ * 
+ * **Context**: Sits on the left side (or bottom sheet on mobile) of the lecture viewer.
+ * It displays the course structure (Weeks -> Videos) and tracks completion progress.
+ * 
+ * **Integrations**: 
+ * - Convex: Receives `progressData` to show read-only status (does not mutate directly).
+ * - Callbacks: `onVideoSelect`, `onMarkWeekComplete`, `onMarkCourseComplete` trigger mutations up the tree.
+ * 
+ * **State Management**:
+ * - Calculates `overallProgress`, `completedVideos`, and `totalVideos` derived from props.
+ * - Determines `activeWeekId` based on `currentVideoId` to auto-expand the correct accordion.
+ * 
+ * **User Flow**:
+ * 1. User sees course progress circle at top.
+ * 2. User expands a Week accordion.
+ * 3. User clicks a video to play -> `onVideoSelect`.
+ * 4. User can mark an entire Week or Course as complete via helper buttons.
+ * 
+ * @param props - Component props.
+ * @param props.courseTitle - Full title of the course.
+ * @param props.courseCode - Course code (e.g., "CS1001").
+ * @param props.content - Nested structure of Weeks and Videos.
+ * @param props.currentVideoId - Currently playing video ID (for highlighting).
+ * @param props.onVideoSelect - Callback when a video is clicked.
+ * @param props.progressData - Array of progress records from Convex.
+ * @param props.onMarkWeekComplete - Optional callback to bulk-complete a week.
+ * @param props.onMarkCourseComplete - Optional callback to bulk-complete the course.
+ * @returns A responsive sidebar with accordion navigation.
+ */
 export function LectureSidebar({ 
   courseTitle, 
   courseCode, 

@@ -26,6 +26,18 @@ export interface CourseCardProps {
   className?: string
 }
 
+/**
+ * CourseCard - A glassmorphic card for displaying course summary.
+ * 
+ * **Context**: Used in lists where a "cleaner" aesthetic is desired (e.g., standard course grids).
+ * Shows metadata like code, level, duration, and progress.
+ * 
+ * **Style**: Uses glassmorphism (backdrop-blur) and gradients. 
+ * This is the alternative to the more brutalist `ChainsawCard`.
+ * 
+ * @param props - Component props.
+ * @returns A Link wrapping a styled Card component.
+ */
 export function CourseCard({
   code,
   term,
