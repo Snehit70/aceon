@@ -175,21 +175,35 @@ When placing text over background images, use this pattern for optimal readabili
 
 ## 9. Version Management
 
-This project follows Semantic Versioning (MAJOR.MINOR.PATCH).
+This project follows Semantic Versioning (MAJOR.MINOR.PATCH) with **automatic version bumping**.
 
-### When to Update Versions
+### Automatic Version Bumping (GitHub Action)
 
-- **Patch (0.1.0 → 0.1.1)**: Bug fixes, typo corrections, minor tweaks
-- **Minor (0.1.0 → 0.2.0)**: New features, UI redesigns, significant improvements
-- **Major (0.9.0 → 1.0.0)**: Breaking changes, production-ready release
+A GitHub Action (`.github/workflows/version-bump.yml`) automatically bumps the version when PRs are merged to `main`:
 
-### Process
+| Commit Prefix | Bump Type | Example |
+|---------------|-----------|---------|
+| `fix:` | Patch | 0.3.0 → 0.3.1 |
+| `feat:` | Minor | 0.3.0 → 0.4.0 |
+| `feat!:` or `BREAKING CHANGE:` | Major | 0.3.0 → 1.0.0 |
+| `chore:`, `docs:`, `refactor:` | No bump | — |
 
-1. Complete changes and commit them
-2. Update version in `package.json`
-3. Commit version bump: `chore: bump version to X.Y.Z`
+The action:
+1. Triggers on push to `main` (after PR merge)
+2. Parses the commit message
+3. Determines bump type from conventional commit prefix
+4. Updates `package.json` version
+5. Commits with message `chore: bump version to X.Y.Z`
 
-**Current Version**: 0.2.0
+**⚠️ IMPORTANT: Use "Squash and merge"** when merging PRs. This makes the PR title become the commit message, which the action parses. Regular merge commits (`Merge pull request #...`) won't trigger version bumps.
+
+**No manual version bumping required** — just use proper PR titles with conventional commit prefixes.
+
+### Manual Override
+
+For special cases (e.g., release candidate), manually update `package.json` and commit with `chore: bump version to X.Y.Z` (the action skips these commits).
+
+**Current Version**: 0.3.0
 **Goal**: Reach 1.0.0 when production-ready.
 
 ## 10. Checklist for "Sisyphus"
