@@ -12,15 +12,20 @@ jobs:
   version-bump:
     runs-on: ubuntu-latest
     
-    # Skip if commit is already a version bump (prevents infinite loop)
-    if: "!startsWith(github.event.head_commit.message, 'chore: bump version')"
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      !startsWith(github.event.head_commit.message, 'chore: bump version')
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Setup Git
         run: |
@@ -29,22 +34,18 @@ jobs:
 
       - name: Determine Version Bump Type
         id: bump-type
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          
-          # Check for breaking change (major)
           if echo "$COMMIT_MSG" | grep -qE "(^feat!:|^fix!:|BREAKING CHANGE:)"; then
             echo "type=major" >> $GITHUB_OUTPUT
             echo "Detected: MAJOR (breaking change)"
-          # Check for feature (minor)
           elif echo "$COMMIT_MSG" | grep -qE "^feat(\(.+\))?:"; then
             echo "type=minor" >> $GITHUB_OUTPUT
             echo "Detected: MINOR (new feature)"
-          # Check for fix (patch)
           elif echo "$COMMIT_MSG" | grep -qE "^fix(\(.+\))?:"; then
             echo "type=patch" >> $GITHUB_OUTPUT
             echo "Detected: PATCH (bug fix)"
-          # No bump for other commit types (chore, docs, refactor, etc.)
           else
             echo "type=none" >> $GITHUB_OUTPUT
             echo "Detected: No version bump needed"

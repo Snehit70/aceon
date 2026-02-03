@@ -189,10 +189,11 @@ A GitHub Action (`.github/workflows/version-bump.yml`) automatically bumps the v
 | `chore:`, `docs:`, `refactor:` | No bump | — |
 
 The action:
-1. Parses the merge commit message
-2. Determines bump type from conventional commit prefix
-3. Updates `package.json` version
-4. Commits with message `chore: bump version to X.Y.Z`
+1. Triggers on push to `main` (after PR merge)
+2. Parses the commit message (use "Squash and merge" so PR title becomes commit message)
+3. Determines bump type from conventional commit prefix
+4. Updates `package.json` version
+5. Commits with message `chore: bump version to X.Y.Z`
 
 **No manual version bumping required** — just use proper commit prefixes.
 
