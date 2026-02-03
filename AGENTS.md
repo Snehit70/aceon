@@ -190,12 +190,14 @@ A GitHub Action (`.github/workflows/version-bump.yml`) automatically bumps the v
 
 The action:
 1. Triggers on push to `main` (after PR merge)
-2. Parses the commit message (use "Squash and merge" so PR title becomes commit message)
+2. Parses the commit message
 3. Determines bump type from conventional commit prefix
 4. Updates `package.json` version
 5. Commits with message `chore: bump version to X.Y.Z`
 
-**No manual version bumping required** — just use proper commit prefixes.
+**⚠️ IMPORTANT: Use "Squash and merge"** when merging PRs. This makes the PR title become the commit message, which the action parses. Regular merge commits (`Merge pull request #...`) won't trigger version bumps.
+
+**No manual version bumping required** — just use proper PR titles with conventional commit prefixes.
 
 ### Manual Override
 
