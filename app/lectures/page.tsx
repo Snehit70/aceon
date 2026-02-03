@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
-import { LecturesSkeleton } from "@/components/lectures/lectures-skeleton";
+import LecturesSkeleton from "@/components/lectures/lectures-skeleton";
 import dynamic from "next/dynamic";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
