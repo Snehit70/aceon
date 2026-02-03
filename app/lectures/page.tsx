@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -28,7 +28,7 @@ interface OpenSections {
   degree: boolean;
 }
 
-export default function LecturesPage() {
+function LecturesPageContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
   const courses = useQuery(api.courses.listWithStats);
@@ -645,5 +645,13 @@ export default function LecturesPage() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function LecturesPage() {
+  return (
+    <Suspense fallback={null}>
+      <LecturesPageContent />
+    </Suspense>
   );
 }
