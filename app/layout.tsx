@@ -32,6 +32,22 @@ export const metadata: Metadata = {
   description: "The ultimate companion for lecture notes, GPA calculation, and course conquest.",
 };
 
+/**
+ * RootLayout - Application root layout.
+ * 
+ * **Context**: Wraps all pages with global providers, fonts, and navigation.
+ * 
+ * **Integrations**:
+ * - Google Fonts: Loads Inter (sans), JetBrains Mono (mono), Anton (display), Rubik Glitch (glitch).
+ * - Providers: Wraps children with Convex, Clerk, and theme providers.
+ * - Navbar: Persistent navigation header.
+ * 
+ * **Style**: Sets up CSS variables for fonts and applies dark theme by default.
+ * 
+ * @param props - Layout props.
+ * @param props.children - Page content to render.
+ * @returns HTML document structure with providers.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

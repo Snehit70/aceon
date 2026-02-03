@@ -9,6 +9,26 @@ interface AutoplayOverlayProps {
   onPlayNow: () => void;
 }
 
+/**
+ * AutoplayOverlay - Countdown overlay for auto-advancing to next video.
+ * 
+ * **Context**: Appears when a video ends, giving users 10 seconds to cancel before
+ * automatically playing the next lecture in the sequence.
+ * 
+ * **User Flow**:
+ * 1. Video ends -> Overlay appears with 10s countdown.
+ * 2. User can "Cancel" to stay on current video, or "Play Now" to skip countdown.
+ * 3. If countdown reaches 0, next video auto-plays.
+ * 
+ * **Visual**: Dark overlay with circular countdown timer and next video title preview.
+ * 
+ * @param props - Component props.
+ * @param props.secondsRemaining - Current countdown value (0-10).
+ * @param props.nextVideoTitle - Title of the upcoming video.
+ * @param props.onCancel - Callback to cancel autoplay.
+ * @param props.onPlayNow - Callback to immediately play next video.
+ * @returns A centered overlay with countdown controls.
+ */
 export function AutoplayOverlay({ 
   secondsRemaining, 
   nextVideoTitle, 

@@ -8,6 +8,24 @@ import { useUser, SignUpButton } from "@clerk/nextjs";
 
 import { Particles } from "@/components/landing/particles";
 
+/**
+ * Hero - Landing page hero section with CTA buttons.
+ * 
+ * **Context**: The main visual entry point for new users. Features the "Chainsaw Man" 
+ * themed design with animated text, background effects, and primary CTAs.
+ * 
+ * **Integrations**:
+ * - Clerk: Uses `useUser` to show different CTAs for signed-in vs. anonymous users.
+ * - Particles: Renders animated background particles for visual effect.
+ * 
+ * **User Flow**:
+ * - Anonymous users see "Start_Hunt" (browse) and "Join_Bureau" (sign up).
+ * - Signed-in users see "Start_Hunt" and "My_Missions" (dashboard).
+ * 
+ * **Style**: Aggressive brutalist design with skewed buttons, text masks, and blood red accents.
+ * 
+ * @returns The hero section with animated content and CTAs.
+ */
 export function Hero() {
   const { isSignedIn } = useUser();
 

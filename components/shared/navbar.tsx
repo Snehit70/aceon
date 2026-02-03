@@ -5,6 +5,19 @@ import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { BookOpenIcon } from "lucide-react";
 
+/**
+ * Navbar - Global navigation header.
+ * 
+ * **Context**: Persistent header across all pages. Handles branding and authentication controls.
+ * 
+ * **Integrations**:
+ * - Clerk: Uses `SignedIn`/`SignedOut`/`SignInButton`/`UserButton` for auth state.
+ * 
+ * **Style**: Implements the "Chainsaw Man" aesthetic with blood red (#E62E2D) accents,
+ * textured background, and aggressive typography.
+ * 
+ * @returns A sticky navigation header with logo and auth controls.
+ */
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b-[3px] border-[#E62E2D] bg-black shadow-[0_4px_0_rgba(230,46,45,0.2)]">
