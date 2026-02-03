@@ -10,6 +10,26 @@ import { dark } from "@clerk/themes";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+/**
+ * Providers - Application-wide context providers wrapper.
+ * 
+ * **Context**: Wraps the entire app with necessary providers for auth, data, theming,
+ * and UI components. This is the root provider component used in layout.tsx.
+ * 
+ * **Integrations**:
+ * - Clerk: Authentication provider with custom dark theme styling.
+ * - Convex: Real-time data sync with Clerk auth integration.
+ * - ThemeProvider: Dark/light mode management via next-themes.
+ * - TooltipProvider: Global tooltip context for UI components.
+ * - Toaster: Toast notification system via sonner.
+ * 
+ * **Provider Hierarchy** (outer to inner):
+ * ClerkProvider → ConvexProviderWithClerk → ThemeProvider → TooltipProvider → Toaster
+ * 
+ * @param props - Component props.
+ * @param props.children - App content to wrap with providers.
+ * @returns Provider-wrapped application.
+ */
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider

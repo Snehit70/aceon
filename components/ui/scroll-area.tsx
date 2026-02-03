@@ -5,6 +5,22 @@ import { ScrollArea as ScrollAreaPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * ScrollArea - Custom scrollable container with styled scrollbar.
+ *
+ * **Context**: Wrapper for scrollable content with custom-styled scrollbars
+ * that match the design system. Used in sidebars, modals, and content areas.
+ *
+ * **Integrations**:
+ * - Radix UI ScrollArea: Provides custom scrollbar functionality.
+ *
+ * **Components**:
+ * - ScrollArea: Main container with overflow handling.
+ * - ScrollBar: Styled scrollbar (vertical or horizontal).
+ *
+ * @param props - Component props including children and className.
+ * @returns Scrollable container with custom scrollbar.
+ */
 function ScrollArea({
   className,
   children,

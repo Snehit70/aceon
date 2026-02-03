@@ -4,6 +4,23 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Badge - Status indicator and label component.
+ * 
+ * **Context**: Small inline element for displaying status, categories, or counts.
+ * Similar to Button but smaller and for non-interactive display.
+ * 
+ * **Variants**:
+ * - `default`: Primary colored badge.
+ * - `secondary`: Muted background.
+ * - `destructive`: Red-themed for warnings/errors.
+ * - `outline`: Bordered style.
+ * - `ghost`: Transparent with hover effect.
+ * - `link`: Text-only with underline.
+ * 
+ * @param props - Component props including variant and asChild.
+ * @returns Styled badge element.
+ */
 const badgeVariants = cva(
   "inline-flex items-center justify-center  border px-2 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1",
   {

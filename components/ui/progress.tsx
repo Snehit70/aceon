@@ -5,6 +5,18 @@ import { Progress as ProgressPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Progress - Linear progress indicator.
+ * 
+ * **Context**: Visual indicator for completion percentage (0-100).
+ * Used for course progress, upload status, or any measurable progress.
+ * 
+ * **Integrations**:
+ * - Radix UI Progress: Handles accessibility and value management.
+ * 
+ * @param props - Component props including value (0-100).
+ * @returns Horizontal progress bar.
+ */
 function Progress({
   className,
   value,
