@@ -1,0 +1,72 @@
+name: Auto Version Bump
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    
+    # Skip if commit is already a version bump (prevents infinite loop)
+    if: "!startsWith(github.event.head_commit.message, 'chore: bump version')"
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine Version Bump Type
+        id: bump-type
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          
+          # Check for breaking change (major)
+          if echo "$COMMIT_MSG" | grep -qE "(^feat!:|^fix!:|BREAKING CHANGE:)"; then
+            echo "type=major" >> $GITHUB_OUTPUT
+            echo "Detected: MAJOR (breaking change)"
+          # Check for feature (minor)
+          elif echo "$COMMIT_MSG" | grep -qE "^feat(\(.+\))?:"; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+            echo "Detected: MINOR (new feature)"
+          # Check for fix (patch)
+          elif echo "$COMMIT_MSG" | grep -qE "^fix(\(.+\))?:"; then
+            echo "type=patch" >> $GITHUB_OUTPUT
+            echo "Detected: PATCH (bug fix)"
+          # No bump for other commit types (chore, docs, refactor, etc.)
+          else
+            echo "type=none" >> $GITHUB_OUTPUT
+            echo "Detected: No version bump needed"
+          fi
+
+      - name: Bump Version
+        if: steps.bump-type.outputs.type != 'none'
+        run: |
+          BUMP_TYPE="${{ steps.bump-type.outputs.type }}"
+          
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # Bump version without creating git tag
+          npm version $BUMP_TYPE --no-git-tag-version
+          
+          # Get new version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "Bumped: $CURRENT_VERSION → $NEW_VERSION"
+          
+          # Commit and push
+          git add package.json
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push
