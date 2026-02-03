@@ -5,10 +5,23 @@ import { Separator as SeparatorPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Separator - Visual divider component.
+ *
+ * **Context**: Horizontal or vertical line to separate content sections.
+ * Used in menus, forms, and lists to create visual hierarchy.
+ *
+ * **Features**:
+ * - Horizontal or vertical orientation.
+ * - Semantic by default (visible to screen readers), can be set to decorative.
+ *
+ * @param props - Component props including orientation.
+ * @returns Styled divider line.
+ */
 function Separator({
   className,
   orientation = "horizontal",
-  decorative = true,
+  decorative = false,
   ...props
 }: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
   return (

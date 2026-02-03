@@ -149,7 +149,7 @@ function FieldSeparator({
       className={cn("-my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2 relative", className)}
       {...props}
     >
-      <Separator className="absolute inset-0 top-1/2" />
+      <Separator decorative className="absolute inset-0 top-1/2" />
       {children && (
         <span
           className="text-muted-foreground px-2 bg-background relative mx-auto block w-fit"
