@@ -5,6 +5,19 @@ import { Separator as SeparatorPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Separator - Visual divider component.
+ *
+ * **Context**: Horizontal or vertical line to separate content sections.
+ * Used in menus, forms, and lists to create visual hierarchy.
+ *
+ * **Features**:
+ * - Horizontal or vertical orientation.
+ * - Decorative mode (hidden from screen readers).
+ *
+ * @param props - Component props including orientation.
+ * @returns Styled divider line.
+ */
 function Separator({
   className,
   orientation = "horizontal",

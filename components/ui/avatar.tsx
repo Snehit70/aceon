@@ -5,6 +5,24 @@ import { Avatar as AvatarPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Avatar - User profile image component with fallback.
+ *
+ * **Context**: Displays user profile pictures with automatic fallback to initials
+ * when image fails to load. Supports multiple sizes and grouping.
+ *
+ * **Integrations**:
+ * - Radix UI Avatar: Handles image loading states and fallback.
+ *
+ * **Components**:
+ * - Avatar: Root container with size variants.
+ * - AvatarImage: The actual profile picture.
+ * - AvatarFallback: Shown when image fails or is loading.
+ * - AvatarBadge: Status indicator overlay.
+ * - AvatarGroup: Stacked avatars for multiple users.
+ *
+ * @returns Profile image component with fallback support.
+ */
 function Avatar({
   className,
   size = "default",

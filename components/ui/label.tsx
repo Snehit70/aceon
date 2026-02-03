@@ -5,6 +5,18 @@ import { Label as LabelPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Label - Form field label component.
+ *
+ * **Context**: Accessible label for form inputs. Automatically associates with
+ * input fields and supports disabled states.
+ *
+ * **Integrations**:
+ * - Radix UI Label: Handles accessibility and input association.
+ *
+ * @param props - Component props including htmlFor (associates with input ID).
+ * @returns Styled form label.
+ */
 function Label({
   className,
   ...props

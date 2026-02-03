@@ -2,6 +2,20 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Textarea - Multi-line text input component.
+ *
+ * **Context**: Form input for longer text content like descriptions, notes, or messages.
+ * Supports auto-resizing and all standard textarea features.
+ *
+ * **Features**:
+ * - Auto-resizing based on content.
+ * - Full form validation support.
+ * - Disabled state styling.
+ *
+ * @param props - Standard HTML textarea props.
+ * @returns Styled multi-line text input.
+ */
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

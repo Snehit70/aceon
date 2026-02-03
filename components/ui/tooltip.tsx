@@ -5,6 +5,23 @@ import { Tooltip as TooltipPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Tooltip - Hover information display component.
+ *
+ * **Context**: Shows additional information when hovering over an element.
+ * Used for icon buttons, truncated text, or any UI element needing explanation.
+ *
+ * **Integrations**:
+ * - Radix UI Tooltip: Handles positioning, animations, and accessibility.
+ *
+ * **Components**:
+ * - TooltipProvider: Global configuration (delay, etc.).
+ * - Tooltip: Root wrapper for trigger and content.
+ * - TooltipTrigger: Element that triggers the tooltip on hover.
+ * - TooltipContent: The popup content with arrow.
+ *
+ * @returns Hover-triggered information popup.
+ */
 function TooltipProvider({
   delayDuration = 0,
   ...props
