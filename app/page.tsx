@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Hero } from "@/components/landing/hero";
 import { GraduationCap } from "lucide-react";
+import packageJson from "@/package.json";
 
 export default function LandingPage() {
   return (
@@ -23,7 +24,9 @@ export default function LandingPage() {
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <a href="https://github.com/Snehit70" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
-          <p className="font-sans text-xs opacity-80 hidden sm:block">© {new Date().getFullYear()} Aceon</p>
+          <p className="font-sans text-xs opacity-80 hidden sm:block">
+            © {new Date().getFullYear()} Aceon • v{packageJson.version}
+          </p>
         </div>
       </footer>
     </div>
