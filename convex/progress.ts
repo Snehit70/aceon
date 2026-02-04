@@ -78,26 +78,16 @@ export const savePositionBeacon = mutation({
       )
       .first();
 
-    const now = Date.now();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        lastPosition: args.lastPosition,
-        lastWatchedAt: now,
-      });
-      return existing._id;
+    if (!existing) {
+      return null;
     }
 
-    return await ctx.db.insert("videoProgress", {
-      clerkId: args.clerkId,
-      videoId: args.videoId,
-      courseId: args.courseId,
-      progress: 0,
-      watchedSeconds: 0,
-      completed: false,
+    const now = Date.now();
+    await ctx.db.patch(existing._id, {
       lastPosition: args.lastPosition,
       lastWatchedAt: now,
     });
+    return existing._id;
   },
 });
 

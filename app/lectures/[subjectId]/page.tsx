@@ -274,13 +274,13 @@ function LecturePlayerPageContent() {
       
       const currentTime = playerRef.current.getCurrentTime();
       if (currentTime > 0) {
-        const data = JSON.stringify({
+        const blob = new Blob([JSON.stringify({
           clerkId: user.id,
           videoId: activeVideoId,
           courseId: subjectId,
           lastPosition: currentTime
-        });
-        navigator.sendBeacon('/api/save-progress', data);
+        })], { type: 'application/json' });
+        navigator.sendBeacon('/api/save-progress', blob);
       }
     };
 
