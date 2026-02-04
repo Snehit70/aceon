@@ -3,8 +3,8 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id, Doc } from "@/convex/_generated/dataModel";
-import { useParams } from "next/navigation";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useState, useRef, useCallback, useEffect, Suspense } from "react";
 import { Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -46,10 +46,13 @@ import { LectureHeader } from "@/components/lectures/lecture-header";
  * 
  * @returns The main player layout with Sidebar and VideoPlayer.
  */
-export default function LecturePlayerPage() {
+function LecturePlayerPageContent() {
   const { user } = useUser();
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const subjectId = params.subjectId as Id<"courses">;
+  const videoFromUrl = searchParams.get("v");
 
   const course = useQuery(api.courses.get, { id: subjectId });
   const content = useQuery(api.courses.getCourseContent, { courseId: subjectId });
@@ -117,28 +120,39 @@ export default function LecturePlayerPage() {
     }
   };
 
-  // Determine which video to show (selected or first incomplete, or first video)
+  // Helper to check if video exists in course content
+  const videoExistsInCourse = useCallback((videoId: string | null) => {
+    if (!content || !videoId) return false;
+    return content.some(week => week.videos.some(v => v._id === videoId));
+  }, [content]);
+
+  // Determine which video to show (URL param > selected > first incomplete > first video)
   let activeVideoId = selectedVideoId;
   if (!activeVideoId && content && content.length > 0) {
-    // Find first incomplete video
-    let firstIncompleteId: string | null = null;
-    let firstVideoId: string | null = null;
-    
-    for (const week of content) {
-      for (const video of week.videos) {
-        if (!firstVideoId) {
-          firstVideoId = video._id;
+    // Priority 1: URL param (if valid)
+    if (videoFromUrl && videoExistsInCourse(videoFromUrl)) {
+      activeVideoId = videoFromUrl;
+    } else {
+      // Priority 2: Find first incomplete video
+      let firstIncompleteId: string | null = null;
+      let firstVideoId: string | null = null;
+      
+      for (const week of content) {
+        for (const video of week.videos) {
+          if (!firstVideoId) {
+            firstVideoId = video._id;
+          }
+          const progress = progressData?.find(p => p.videoId === video._id);
+          if (!progress?.completed && !firstIncompleteId) {
+            firstIncompleteId = video._id;
+            break;
+          }
         }
-        const progress = progressData?.find(p => p.videoId === video._id);
-        if (!progress?.completed && !firstIncompleteId) {
-          firstIncompleteId = video._id;
-          break;
-        }
+        if (firstIncompleteId) break;
       }
-      if (firstIncompleteId) break;
+      
+      activeVideoId = firstIncompleteId || firstVideoId;
     }
-    
-    activeVideoId = firstIncompleteId || firstVideoId;
   }
   
   const isCurrentVideoCompleted = progressData?.find(
@@ -239,9 +253,14 @@ export default function LecturePlayerPage() {
     }
   }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
 
+  const updateUrlWithVideo = useCallback((videoId: string) => {
+    router.replace(`/lectures/${subjectId}?v=${videoId}`, { scroll: false });
+  }, [router, subjectId]);
+
   const handleVideoSelect = (id: string) => {
     cancelAutoplay();
     setSelectedVideoId(id);
+    updateUrlWithVideo(id);
     const savedProgress = progressData?.find((p: Doc<"videoProgress">) => p.videoId === id);
     if (savedProgress && savedProgress.lastPosition > 0) {
       setTimeout(() => {
@@ -251,6 +270,13 @@ export default function LecturePlayerPage() {
       }, 500);
     }
   };
+
+  // Sync URL with active video (for autoplay and initial load)
+  useEffect(() => {
+    if (activeVideoId && activeVideoId !== videoFromUrl) {
+      router.replace(`/lectures/${subjectId}?v=${activeVideoId}`, { scroll: false });
+    }
+  }, [activeVideoId, videoFromUrl, router, subjectId]);
 
   useEffect(() => {
     return () => {
@@ -441,6 +467,7 @@ export default function LecturePlayerPage() {
                   ref={playerRef}
                   videoId={currentVideo.youtubeId}
                   title={currentVideo.title}
+                  initialPosition={progressData?.find(p => p.videoId === activeVideoId)?.lastPosition ?? 0}
                   onProgressUpdate={handleProgressUpdate}
                   onEnded={handleVideoEnd}
                   theaterMode={theaterMode}
@@ -482,3 +509,10 @@ export default function LecturePlayerPage() {
   );
 }
 
+export default function LecturePlayerPage() {
+  return (
+    <Suspense fallback={null}>
+      <LecturePlayerPageContent />
+    </Suspense>
+  );
+}

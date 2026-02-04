@@ -153,6 +153,7 @@ export const markComplete = mutation({
       await ctx.db.patch(existing._id, {
         completed: newCompletedState,
         progress: newCompletedState ? 1 : existing.progress,
+        lastPosition: newCompletedState ? 0 : existing.lastPosition,
         lastWatchedAt: now,
       });
       return existing._id;

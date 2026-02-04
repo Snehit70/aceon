@@ -135,6 +135,14 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [isReady, setIsReady] = useState(false);
     const pendingSeekRef = useRef<number | null>(null);
     
+    // Capture initialPosition per video - only update when videoId changes
+    const initialPositionRef = useRef(initialPosition);
+    const lastVideoIdRef = useRef(videoId);
+    if (videoId !== lastVideoIdRef.current) {
+      initialPositionRef.current = initialPosition;
+      lastVideoIdRef.current = videoId;
+    }
+    
     const onEndedRef = useRef(onEnded);
     const onProgressUpdateRef = useRef(onProgressUpdate);
     
@@ -213,7 +221,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             iv_load_policy: 3,
             fs: 1,
             playsinline: 1,
-            start: Math.floor(initialPosition),
+            start: Math.floor(initialPositionRef.current),
           },
           events: {
             onReady: () => {
@@ -252,7 +260,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, initialPosition, startProgressTracking, stopProgressTracking]);
+    }, [videoId, startProgressTracking, stopProgressTracking]);
 
     return (
       <div
