@@ -253,11 +253,76 @@ function LecturePlayerPageContent() {
     }
   }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
 
+  // Save position immediately on pause (handles seek + pause)
+  const handlePause = useCallback((currentTime: number) => {
+    if (!user || !activeVideoId) return;
+    
+    updateProgress({
+      clerkId: user.id,
+      videoId: activeVideoId as Id<"videos">,
+      courseId: subjectId,
+      progress: currentVideo?.duration ? currentTime / currentVideo.duration : 0,
+      watchedSeconds: Math.floor(currentTime),
+      lastPosition: currentTime
+    }).catch(console.error);
+  }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
+
+  // Save position on page visibility change or unload (more reliable than beforeunload)
+  useEffect(() => {
+    const saveCurrentPosition = () => {
+      if (!user || !activeVideoId || !playerRef.current) return;
+      
+      const currentTime = playerRef.current.getCurrentTime();
+      if (currentTime > 0) {
+        const data = JSON.stringify({
+          clerkId: user.id,
+          videoId: activeVideoId,
+          courseId: subjectId,
+          lastPosition: currentTime
+        });
+        navigator.sendBeacon('/api/save-progress', data);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        saveCurrentPosition();
+      }
+    };
+
+    const handlePageHide = () => {
+      saveCurrentPosition();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [user, activeVideoId, subjectId]);
+
   const updateUrlWithVideo = useCallback((videoId: string) => {
     router.replace(`/lectures/${subjectId}?v=${videoId}`, { scroll: false });
   }, [router, subjectId]);
 
   const handleVideoSelect = (id: string) => {
+    // Save current position before switching videos
+    if (user && activeVideoId && playerRef.current) {
+      const currentTime = playerRef.current.getCurrentTime();
+      if (currentTime > 0) {
+        updateProgress({
+          clerkId: user.id,
+          videoId: activeVideoId as Id<"videos">,
+          courseId: subjectId,
+          progress: currentVideo?.duration ? currentTime / currentVideo.duration : 0,
+          watchedSeconds: Math.floor(currentTime),
+          lastPosition: currentTime
+        }).catch(console.error);
+      }
+    }
+    
     cancelAutoplay();
     setSelectedVideoId(id);
     updateUrlWithVideo(id);
@@ -469,6 +534,7 @@ function LecturePlayerPageContent() {
                   title={currentVideo.title}
                   initialPosition={progressData?.find(p => p.videoId === activeVideoId)?.lastPosition ?? 0}
                   onProgressUpdate={handleProgressUpdate}
+                  onPause={handlePause}
                   onEnded={handleVideoEnd}
                   theaterMode={theaterMode}
                   onTheaterModeChange={setTheaterMode}

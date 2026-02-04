@@ -63,6 +63,44 @@ export const updateProgress = mutation({
   },
 });
 
+export const savePositionBeacon = mutation({
+  args: {
+    clerkId: v.string(),
+    videoId: v.id("videos"),
+    courseId: v.id("courses"),
+    lastPosition: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("videoProgress")
+      .withIndex("by_user_video", (q) =>
+        q.eq("clerkId", args.clerkId).eq("videoId", args.videoId)
+      )
+      .first();
+
+    const now = Date.now();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        lastPosition: args.lastPosition,
+        lastWatchedAt: now,
+      });
+      return existing._id;
+    }
+
+    return await ctx.db.insert("videoProgress", {
+      clerkId: args.clerkId,
+      videoId: args.videoId,
+      courseId: args.courseId,
+      progress: 0,
+      watchedSeconds: 0,
+      completed: false,
+      lastPosition: args.lastPosition,
+      lastWatchedAt: now,
+    });
+  },
+});
+
 /**
  * Retrieves the progress for a specific video and user.
  *
