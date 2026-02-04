@@ -63,6 +63,34 @@ export const updateProgress = mutation({
   },
 });
 
+export const savePositionBeacon = mutation({
+  args: {
+    clerkId: v.string(),
+    videoId: v.id("videos"),
+    courseId: v.id("courses"),
+    lastPosition: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("videoProgress")
+      .withIndex("by_user_video", (q) =>
+        q.eq("clerkId", args.clerkId).eq("videoId", args.videoId)
+      )
+      .first();
+
+    if (!existing) {
+      return null;
+    }
+
+    const now = Date.now();
+    await ctx.db.patch(existing._id, {
+      lastPosition: args.lastPosition,
+      lastWatchedAt: now,
+    });
+    return existing._id;
+  },
+});
+
 /**
  * Retrieves the progress for a specific video and user.
  *
@@ -153,6 +181,7 @@ export const markComplete = mutation({
       await ctx.db.patch(existing._id, {
         completed: newCompletedState,
         progress: newCompletedState ? 1 : existing.progress,
+        lastPosition: newCompletedState ? 0 : existing.lastPosition,
         lastWatchedAt: now,
       });
       return existing._id;

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Search, Play, Clock, ArrowRight, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
+import { Search, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -33,23 +33,22 @@ interface OpenSections {
  * LecturesPageContent - Main dashboard for course discovery and progress tracking.
  * 
  * **Context**: This is the primary logged-in view for students. It serves two main purposes:
- * 1. "Enrolled_Missions": Quick access to active courses and "Continue Watching" row.
+ * 1. "Enrolled_Missions": Quick access to active/enrolled courses.
  * 2. "Mission_Archives": Full course library with search, filtering, and level-based grouping.
  * 
  * **Integrations**:
- * - Convex: Fetches courses, user profile, progress, and "continue watching" history.
+ * - Convex: Fetches courses, user profile, and progress data.
  * - Clerk: Uses `useUser` for identity.
  * - LocalStorage: Caches course counts to prevent layout shift during loading.
  * - URL Params: Syncs active tab state via `?tab=` query param.
  * 
  * **State Management**:
  * - Manages complex filtering logic (search query + status filter + level grouping).
- * - Handles "continue watching" horizontal scroll state.
  * - Controls the profile sheet visibility (auto-opens if user profile is missing).
  * 
  * **User Flow**:
  * 1. User lands here after login.
- * 2. Default view shows Enrolled courses + Resume Patrol row.
+ * 2. Default view shows Enrolled courses.
  * 3. User can switch tabs to browse the full Library (Archives).
  * 4. User can search/filter archives to find new courses.
  * 
@@ -61,10 +60,6 @@ function LecturesPageContent() {
   const courses = useQuery(api.courses.listWithStats);
   const profile = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip");
   
-  const continueWatching = useQuery(
-    api.progress.getContinueWatching,
-    user?.id ? { clerkId: user.id, limit: 10 } : "skip"
-  );
   const coursesProgress = useQuery(
     api.progress.getAllCoursesProgress,
     user?.id ? { clerkId: user.id } : "skip"
@@ -323,98 +318,6 @@ if (courses === undefined) {
               </div>
             )}
 
-            {/* Continue Watching - Horizontal Scroll */}
-            {user && continueWatching && continueWatching.length > 0 && (
-              <motion.div 
-                className="space-y-6 pt-12 border-t-4 border-neutral-900"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="flex items-center justify-between">
-                  <h2 className="text-3xl font-black tracking-tighter flex items-center gap-3 font-display uppercase drop-shadow-[2px_2px_0_#E62E2D] -rotate-1">
-                    <Play className="h-6 w-6 fill-current text-[#E62E2D]" /> Resume Patrol
-                  </h2>
-                </div>
-                
-                <div className="relative -mx-4 px-4 overflow-hidden">
-                  <div className="flex gap-6 overflow-x-auto pb-8 pt-4 snap-x snap-mandatory no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {continueWatching.map((item: NonNullable<typeof continueWatching>[number], index) => {
-                      if (!item.video || !item.course) return null;
-                      const progressPercent = Math.round(item.progress * 100);
-                      const remainingSecs = Math.max(0, item.video.duration - item.lastPosition);
-                      const remainingMins = Math.floor(remainingSecs / 60);
-                      
-                      return (
-                        <motion.div
-                          key={item._id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.4, delay: index * 0.1 }}
-                        >
-                          <Link 
-                            href={`/lectures/${item.courseId}`}
-                            className="flex-none w-[320px] snap-start group relative block"
-                          >
-                            <div className="border-4 border-white bg-black hover:border-[#E62E2D] transition-colors duration-200 shadow-[8px_8px_0px_0px_#333] hover:shadow-[12px_12px_0px_0px_#E62E2D] hover:-translate-y-2 clip-corner overflow-hidden">
-                              {/* Thumbnail Area */}
-                              <div className="relative h-44 bg-neutral-900 overflow-hidden border-b-4 border-white group-hover:border-[#E62E2D] transition-colors">
-                                {item.video.youtubeId ? (
-                                  /* eslint-disable-next-line @next/next/no-img-element */
-                                  <img 
-                                    src={`https://img.youtube.com/vi/${item.video.youtubeId}/mqdefault.jpg`} 
-                                    alt={item.video.title}
-                                    className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center bg-neutral-900">
-                                     <Play className="h-12 w-12 text-neutral-700" />
-                                  </div>
-                                )}
-                                
-                                {/* Play Overlay */}
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
-                                   <div className="bg-[#E62E2D] text-white p-3 border-2 border-black shadow-[4px_4px_0_0_black] transform rotate-3">
-                                      <Play className="h-6 w-6 fill-current" />
-                                   </div>
-                                </div>
-                                
-                                {/* Progress Bar at bottom of image */}
-                                <div className="absolute bottom-0 left-0 right-0 h-2 bg-black">
-                                  <div 
-                                    className="h-full bg-[#E62E2D]" 
-                                    style={{ width: `${progressPercent}%` }}
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="p-4 space-y-3 bg-black">
-                                <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider">
-                                  <span className="bg-white text-black px-2 py-0.5 font-bold transform -skew-x-12">
-                                    {item.course.code}
-                                  </span>
-                                  <span className="flex items-center gap-1 text-[#E62E2D]">
-                                      <Clock className="w-3 h-3" /> {remainingMins}m
-                                  </span>
-                                </div>
-                                
-                                <h3 className="font-display font-bold text-lg leading-tight line-clamp-2 text-white group-hover:text-[#E62E2D] transition-colors">
-                                  {item.video.title}
-                                </h3>
-                                
-                                 <div className="pt-2 flex items-center text-xs font-bold uppercase tracking-widest text-[#E62E2D] opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                                   Resume_Mission <ArrowRight className="ml-1 h-3 w-3" />
-                                 </div>
-                               </div>
-                             </div>
-                         </Link>
-                       </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </TabsContent>
 
           <TabsContent value="library" className="space-y-8 focus-visible:outline-none focus-visible:ring-0">

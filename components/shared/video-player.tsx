@@ -50,6 +50,7 @@ interface VideoPlayerProps {
   videoId: string;
   title: string;
   onEnded?: () => void;
+  onPause?: (currentTime: number) => void;
   onProgressUpdate?: (progress: { played: number; playedSeconds: number }) => void;
   initialPosition?: number;
   theaterMode?: boolean;
@@ -127,7 +128,7 @@ function loadYouTubeAPI(): Promise<void> {
  * @returns A responsive div containing the YouTube IFrame.
  */
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
-  ({ videoId, onEnded, onProgressUpdate, initialPosition = 0, theaterMode = false }, ref) => {
+  ({ videoId, onEnded, onPause, onProgressUpdate, initialPosition = 0, theaterMode = false }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<YTPlayer | null>(null);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -135,12 +136,25 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [isReady, setIsReady] = useState(false);
     const pendingSeekRef = useRef<number | null>(null);
     
+    // Capture initialPosition per video - only update when videoId changes
+    const initialPositionRef = useRef(initialPosition);
+    const lastVideoIdRef = useRef(videoId);
+    if (videoId !== lastVideoIdRef.current) {
+      initialPositionRef.current = initialPosition;
+      lastVideoIdRef.current = videoId;
+    }
+    
     const onEndedRef = useRef(onEnded);
+    const onPauseRef = useRef(onPause);
     const onProgressUpdateRef = useRef(onProgressUpdate);
     
     useEffect(() => {
       onEndedRef.current = onEnded;
     }, [onEnded]);
+    
+    useEffect(() => {
+      onPauseRef.current = onPause;
+    }, [onPause]);
     
     useEffect(() => {
       onProgressUpdateRef.current = onProgressUpdate;
@@ -213,7 +227,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             iv_load_policy: 3,
             fs: 1,
             playsinline: 1,
-            start: Math.floor(initialPosition),
+            start: Math.floor(initialPositionRef.current),
           },
           events: {
             onReady: () => {
@@ -230,6 +244,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 startProgressTracking();
               } else {
                 stopProgressTracking();
+              }
+
+              if (state === window.YT.PlayerState.PAUSED && playerRef.current) {
+                const currentTime = playerRef.current.getCurrentTime();
+                onPauseRef.current?.(currentTime);
               }
 
               if (state === window.YT.PlayerState.ENDED) {
@@ -252,7 +271,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, initialPosition, startProgressTracking, stopProgressTracking]);
+    }, [videoId, startProgressTracking, stopProgressTracking]);
 
     return (
       <div
