@@ -28,8 +28,6 @@ Aceon is an academic companion app for IITM BS Degree students.
 | **Lint**          | `bun run lint`                 | Run ESLint                          |
 | **Type Check**    | `bun x tsc --noEmit`           | Verify TypeScript types             |
 | **Build**         | `bun run build`                | Production build                    |
-| **Test (E2E)**    | `bun x playwright test`        | Run all E2E tests                   |
-| **Test (Single)** | `bun x playwright test <file>` | Run specific test file              |
 | **Convex**        | `bun x convex dev`             | Run backend dev server              |
 
 ## 3. Workflow & Git
@@ -181,9 +179,8 @@ When placing text over background images, use this pattern for optimal readabili
 
 ## 7. Testing Strategy
 
-- **Unit**: Jest (if setup) or vitest.
-- **E2E**: Playwright for critical flows (Auth, Video Playback).
 - **Manual**: Verify "Happy Path" before finishing task.
+- **Note**: Automated tests removed for now. Will add when needed.
 
 ## 8. Known Issues / Context
 
