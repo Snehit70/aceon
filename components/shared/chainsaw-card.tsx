@@ -76,7 +76,7 @@ export function ChainsawCard({
               </h3>
               {subtitle && (
                 <p className="font-mono text-xs text-muted-foreground uppercase tracking-tight truncate">
-                  // {subtitle}
+                  {"// "}{subtitle}
                 </p>
               )}
             </div>

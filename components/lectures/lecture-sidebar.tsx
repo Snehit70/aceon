@@ -179,7 +179,6 @@ export function LectureSidebar({
                       week.videos.map((video) => {
                         const progress = getProgress(video._id);
                         const isCompleted = progress?.completed;
-                        const isInProgress = progress && !progress.completed && (progress.progress > 0 || progress.watchedSeconds > 0);
                         
                         return (
                           <Button

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import path from 'path';
 
@@ -134,7 +135,7 @@ async function main() {
         Object.assign(enrichedLessons, existingData.lessons);
         console.log(`🔄 Resuming... Loaded ${Object.keys(enrichedLessons).length} existing lessons.`);
       }
-    } catch (e) {
+    } catch (err) {
       console.warn('⚠️ Could not parse existing file, starting fresh.');
     }
   }

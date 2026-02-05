@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
 
 const token = fs.readFileSync("secret_token.txt", "utf-8").trim();

@@ -211,7 +211,7 @@ function LecturePlayerPageContent() {
         });
       }, 1000);
     }
-  }, [findNextVideo]);
+  }, [findNextVideo, setShowAutoplayCountdown, setAutoplayCountdown, setSelectedVideoId]);
 
   const cancelAutoplay = useCallback(() => {
     if (countdownIntervalRef.current) {
@@ -220,7 +220,7 @@ function LecturePlayerPageContent() {
     }
     setShowAutoplayCountdown(false);
     setAutoplayCountdown(10);
-  }, []);
+  }, [setShowAutoplayCountdown, setAutoplayCountdown]);
 
   const playNextNow = useCallback(() => {
     const nextVideoId = findNextVideo();
@@ -228,7 +228,7 @@ function LecturePlayerPageContent() {
       cancelAutoplay();
       setSelectedVideoId(nextVideoId);
     }
-  }, [findNextVideo, cancelAutoplay]);
+  }, [findNextVideo, cancelAutoplay, setSelectedVideoId]);
 
   const handleProgressUpdate = useCallback((progress: { played: number; playedSeconds: number }) => {
     const played = typeof progress.played === 'number' && !isNaN(progress.played) ? progress.played : 0;
@@ -251,7 +251,7 @@ function LecturePlayerPageContent() {
         lastPosition: playedSeconds
       }).catch(console.error);
     }
-  }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
+  }, [user, activeVideoId, subjectId, updateProgress, currentVideo, setCurrentTime]);
 
   // Save position immediately on pause (handles seek + pause)
   const handlePause = useCallback((currentTime: number) => {

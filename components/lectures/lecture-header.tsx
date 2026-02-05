@@ -46,7 +46,7 @@ export function LectureHeader({
       <div className="flex-1 min-w-0">
         <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-wide text-white drop-shadow-md truncate">{title}</h1>
         <p className="text-sm font-mono text-white/80 uppercase tracking-widest mt-1">
-          {weekTitle} <span className="text-primary mx-2">//</span> {Math.floor(duration / 60)} min
+          {weekTitle} <span className="text-primary mx-2">{"//"}</span> {Math.floor(duration / 60)} min
         </p>
       </div>
       
