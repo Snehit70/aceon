@@ -58,9 +58,10 @@ backups/
 # Tooling
 .brv/
 
-# Playwright
+# Playwright artifacts (kept for safety even after test removal)
 /playwright-report/
 /test-results/
+
 secret_token.txt
 dev.log
 
