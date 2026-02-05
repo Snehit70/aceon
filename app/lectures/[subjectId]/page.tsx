@@ -2,9 +2,9 @@
 
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id, Doc } from "@/convex/_generated/dataModel";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useState, useRef, useCallback, useEffect, Suspense } from "react";
+import { Id } from "@/convex/_generated/dataModel";
+import { useParams, useSearchParams } from "next/navigation";
+import { useState, useRef, useCallback, Suspense, useEffect } from "react";
 import { Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,10 @@ import { useUser } from "@clerk/nextjs";
 import { LectureSidebar } from "@/components/lectures/lecture-sidebar";
 import { AutoplayOverlay } from "@/components/lectures/autoplay-overlay";
 import { LectureHeader } from "@/components/lectures/lecture-header";
+
+import { useVideoProgress } from "@/hooks/use-video-progress";
+import { useAutoplay } from "@/hooks/use-autoplay";
+import { useVideoNavigation } from "@/hooks/use-video-navigation";
 
 /**
  * LecturePlayerPage - The core learning experience view.
@@ -32,9 +36,10 @@ import { LectureHeader } from "@/components/lectures/lecture-header";
  * - YouTube: Wraps `VideoPlayer` for content delivery.
  * 
  * **State Management**:
- * - `selectedVideoId`: Tracks which video is currently active. Defaults to first incomplete video.
+ * - `useVideoNavigation`: Tracks which video is currently active, URL sync, navigation.
+ * - `useVideoProgress`: Handles progress saving (throttled, immediate, beacon).
+ * - `useAutoplay`: Handles countdown and auto-advance logic.
  * - `theaterMode`: Toggles expanded video view.
- * - `autoplay`: Handles countdown and auto-advance logic (`showAutoplayCountdown`, `autoplayCountdown`).
  * - `isSidebarOpen`: Toggles the navigation sidebar (desktop only).
  * 
  * **User Flow**:
@@ -50,7 +55,6 @@ function LecturePlayerPageContent() {
   const { user } = useUser();
   const params = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const subjectId = params.subjectId as Id<"courses">;
   const videoFromUrl = searchParams.get("v");
 
@@ -62,31 +66,59 @@ function LecturePlayerPageContent() {
     user ? { clerkId: user.id, courseId: subjectId } : "skip"
   );
 
-  const updateProgress = useMutation(api.progress.updateProgress);
-  
-  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  
-  const [currentTime, setCurrentTime] = useState(0);
   const [theaterMode, setTheaterMode] = useState(false);
-  const [showAutoplayCountdown, setShowAutoplayCountdown] = useState(false);
-  const [autoplayCountdown, setAutoplayCountdown] = useState(10);
-  
-
   
   const playerRef = useRef<VideoPlayerRef>(null);
-  const lastProgressUpdate = useRef<number>(0);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const videoSelectRef = useRef<(id: string) => void>(() => {});
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
   const markCourseComplete = useMutation(api.progress.markCourseComplete);
+
+  const handleAutoplay = useCallback((nextVideoId: string) => {
+    videoSelectRef.current(nextVideoId);
+  }, []);
+
+  const autoplay = useAutoplay({
+    onAutoplay: handleAutoplay,
+  });
+
+  const progress = useVideoProgress({
+    userId: user?.id,
+    videoId: null,
+    courseId: subjectId,
+    videoDuration: 0,
+    playerRef,
+  });
+
+  const navigation = useVideoNavigation({
+    content,
+    progressData,
+    videoFromUrl,
+    courseId: subjectId,
+    playerRef,
+    onSaveProgress: progress.saveCurrentPosition,
+    onCancelAutoplay: autoplay.cancelAutoplay,
+  });
+
+  useEffect(() => {
+    videoSelectRef.current = navigation.handleVideoSelect;
+  }, [navigation.handleVideoSelect]);
+
+  const progressWithVideo = useVideoProgress({
+    userId: user?.id,
+    videoId: navigation.activeVideoId,
+    courseId: subjectId,
+    videoDuration: navigation.currentVideo?.duration ?? 0,
+    playerRef,
+  });
   
   const handleMarkComplete = async () => {
-    if (!user || !activeVideoId) return;
+    if (!user || !navigation.activeVideoId) return;
     try {
       await markComplete({
-        videoId: activeVideoId as Id<"videos">,
+        videoId: navigation.activeVideoId as Id<"videos">,
         clerkId: user.id,
         courseId: subjectId,
       });
@@ -120,236 +152,28 @@ function LecturePlayerPageContent() {
     }
   };
 
-  // Helper to check if video exists in course content
-  const videoExistsInCourse = useCallback((videoId: string | null) => {
-    if (!content || !videoId) return false;
-    return content.some(week => week.videos.some(v => v._id === videoId));
-  }, [content]);
-
-  // Determine which video to show (URL param > selected > first incomplete > first video)
-  let activeVideoId = selectedVideoId;
-  if (!activeVideoId && content && content.length > 0) {
-    // Priority 1: URL param (if valid)
-    if (videoFromUrl && videoExistsInCourse(videoFromUrl)) {
-      activeVideoId = videoFromUrl;
-    } else {
-      // Priority 2: Find first incomplete video
-      let firstIncompleteId: string | null = null;
-      let firstVideoId: string | null = null;
-      
-      for (const week of content) {
-        for (const video of week.videos) {
-          if (!firstVideoId) {
-            firstVideoId = video._id;
-          }
-          const progress = progressData?.find(p => p.videoId === video._id);
-          if (!progress?.completed && !firstIncompleteId) {
-            firstIncompleteId = video._id;
-            break;
-          }
-        }
-        if (firstIncompleteId) break;
-      }
-      
-      activeVideoId = firstIncompleteId || firstVideoId;
+  const handleVideoEnd = useCallback(() => {
+    const nextVideoId = navigation.findNextVideo();
+    if (nextVideoId) {
+      autoplay.startCountdown(nextVideoId);
     }
-  }
-  
-  const isCurrentVideoCompleted = progressData?.find(
-    (p) => p.videoId === activeVideoId
-  )?.completed;
+  }, [navigation, autoplay]);
 
-  // Helper to find video in content structure
-  const findVideo = (id: string | null) => {
+  const handlePlayNextNow = useCallback(() => {
+    const nextVideoId = navigation.findNextVideo();
+    if (nextVideoId) {
+      autoplay.playNextNow(nextVideoId);
+    }
+  }, [navigation, autoplay]);
+
+  const findVideo = useCallback((id: string | null) => {
     if (!content || !id) return null;
     for (const week of content) {
       const video = week.videos.find(v => v._id === id);
       if (video) return { ...video, weekTitle: week.title, weekOrder: week.order };
     }
     return null;
-  };
-
-  const currentVideo = findVideo(activeVideoId);
-
-  const findNextVideo = useCallback(() => {
-    if (!content || !activeVideoId) return null;
-    
-    let foundCurrent = false;
-    for (const week of content) {
-      for (let i = 0; i < week.videos.length; i++) {
-        if (foundCurrent) {
-          return week.videos[i]._id;
-        }
-        if (week.videos[i]._id === activeVideoId) {
-          foundCurrent = true;
-          if (i < week.videos.length - 1) {
-            return week.videos[i + 1]._id;
-          }
-        }
-      }
-    }
-    return null;
-  }, [content, activeVideoId]);
-
-  const handleVideoEnd = useCallback(() => {
-    const nextVideoId = findNextVideo();
-    if (nextVideoId) {
-      setShowAutoplayCountdown(true);
-      setAutoplayCountdown(10);
-      
-      countdownIntervalRef.current = setInterval(() => {
-        setAutoplayCountdown((prev) => {
-          if (prev <= 1) {
-            if (countdownIntervalRef.current) {
-              clearInterval(countdownIntervalRef.current);
-            }
-            setShowAutoplayCountdown(false);
-            setSelectedVideoId(nextVideoId);
-            return 10;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-  }, [findNextVideo, setShowAutoplayCountdown, setAutoplayCountdown, setSelectedVideoId]);
-
-  const cancelAutoplay = useCallback(() => {
-    if (countdownIntervalRef.current) {
-      clearInterval(countdownIntervalRef.current);
-      countdownIntervalRef.current = null;
-    }
-    setShowAutoplayCountdown(false);
-    setAutoplayCountdown(10);
-  }, [setShowAutoplayCountdown, setAutoplayCountdown]);
-
-  const playNextNow = useCallback(() => {
-    const nextVideoId = findNextVideo();
-    if (nextVideoId) {
-      cancelAutoplay();
-      setSelectedVideoId(nextVideoId);
-    }
-  }, [findNextVideo, cancelAutoplay, setSelectedVideoId]);
-
-  const handleProgressUpdate = useCallback((progress: { played: number; playedSeconds: number }) => {
-    const played = typeof progress.played === 'number' && !isNaN(progress.played) ? progress.played : 0;
-    const playedSeconds = typeof progress.playedSeconds === 'number' && !isNaN(progress.playedSeconds) ? progress.playedSeconds : 0;
-
-    setCurrentTime(playedSeconds);
-    
-    if (!user || !activeVideoId || !currentVideo) return;
-
-    const now = Date.now();
-    if (now - lastProgressUpdate.current >= 5000) { 
-      lastProgressUpdate.current = now;
-      
-      updateProgress({
-        clerkId: user.id,
-        videoId: activeVideoId as Id<"videos">,
-        courseId: subjectId,
-        progress: played,
-        watchedSeconds: Math.floor(playedSeconds),
-        lastPosition: playedSeconds
-      }).catch(console.error);
-    }
-  }, [user, activeVideoId, subjectId, updateProgress, currentVideo, setCurrentTime]);
-
-  // Save position immediately on pause (handles seek + pause)
-  const handlePause = useCallback((currentTime: number) => {
-    if (!user || !activeVideoId) return;
-    
-    updateProgress({
-      clerkId: user.id,
-      videoId: activeVideoId as Id<"videos">,
-      courseId: subjectId,
-      progress: currentVideo?.duration ? currentTime / currentVideo.duration : 0,
-      watchedSeconds: Math.floor(currentTime),
-      lastPosition: currentTime
-    }).catch(console.error);
-  }, [user, activeVideoId, subjectId, updateProgress, currentVideo]);
-
-  // Save position on page visibility change or unload (more reliable than beforeunload)
-  useEffect(() => {
-    const saveCurrentPosition = () => {
-      if (!user || !activeVideoId || !playerRef.current) return;
-      
-      const currentTime = playerRef.current.getCurrentTime();
-      if (currentTime > 0) {
-        const blob = new Blob([JSON.stringify({
-          clerkId: user.id,
-          videoId: activeVideoId,
-          courseId: subjectId,
-          lastPosition: currentTime
-        })], { type: 'application/json' });
-        navigator.sendBeacon('/api/save-progress', blob);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        saveCurrentPosition();
-      }
-    };
-
-    const handlePageHide = () => {
-      saveCurrentPosition();
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('pagehide', handlePageHide);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('pagehide', handlePageHide);
-    };
-  }, [user, activeVideoId, subjectId]);
-
-  const updateUrlWithVideo = useCallback((videoId: string) => {
-    router.replace(`/lectures/${subjectId}?v=${videoId}`, { scroll: false });
-  }, [router, subjectId]);
-
-  const handleVideoSelect = (id: string) => {
-    // Save current position before switching videos
-    if (user && activeVideoId && playerRef.current) {
-      const currentTime = playerRef.current.getCurrentTime();
-      if (currentTime > 0) {
-        updateProgress({
-          clerkId: user.id,
-          videoId: activeVideoId as Id<"videos">,
-          courseId: subjectId,
-          progress: currentVideo?.duration ? currentTime / currentVideo.duration : 0,
-          watchedSeconds: Math.floor(currentTime),
-          lastPosition: currentTime
-        }).catch(console.error);
-      }
-    }
-    
-    cancelAutoplay();
-    setSelectedVideoId(id);
-    updateUrlWithVideo(id);
-    const savedProgress = progressData?.find((p: Doc<"videoProgress">) => p.videoId === id);
-    if (savedProgress && savedProgress.lastPosition > 0) {
-      setTimeout(() => {
-        if (playerRef.current) {
-          playerRef.current.seekTo(savedProgress.lastPosition);
-        }
-      }, 500);
-    }
-  };
-
-  // Sync URL with active video (for autoplay and initial load)
-  useEffect(() => {
-    if (activeVideoId && activeVideoId !== videoFromUrl) {
-      router.replace(`/lectures/${subjectId}?v=${activeVideoId}`, { scroll: false });
-    }
-  }, [activeVideoId, videoFromUrl, router, subjectId]);
-
-  useEffect(() => {
-    return () => {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-  }, []);
+  }, [content]);
 
   if (course === undefined || content === undefined) {
     return (
@@ -440,8 +264,8 @@ function LecturePlayerPageContent() {
             courseTitle={course.title}
             courseCode={course.code}
             content={content}
-            currentVideoId={activeVideoId}
-            onVideoSelect={handleVideoSelect}
+            currentVideoId={navigation.activeVideoId}
+            onVideoSelect={navigation.handleVideoSelect}
             progressData={progressData}
             onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
             onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
@@ -491,15 +315,15 @@ function LecturePlayerPageContent() {
                 courseTitle={course.title}
                 courseCode={course.code}
                 content={content}
-                currentVideoId={activeVideoId}
-                onVideoSelect={handleVideoSelect}
+                currentVideoId={navigation.activeVideoId}
+                onVideoSelect={navigation.handleVideoSelect}
                 progressData={progressData}
                 onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
                 onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
               />
             </SheetContent>
           </Sheet>
-          <span className="font-semibold truncate">{currentVideo?.title || cleanCourseTitle(course.title)}</span>
+          <span className="font-semibold truncate">{navigation.currentVideo?.title || cleanCourseTitle(course.title)}</span>
         </div>
 
         <div className={cn(
@@ -518,34 +342,34 @@ function LecturePlayerPageContent() {
             </Link>
           </Button>
 
-          {currentVideo ? (
+          {navigation.currentVideo ? (
             <div className="space-y-4">
               <div className="relative">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30 rounded-t-lg overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-300 ease-out"
-                    style={{ width: `${currentVideo.duration > 0 ? (currentTime / currentVideo.duration) * 100 : 0}%` }}
+                    style={{ width: `${navigation.currentVideo.duration > 0 ? (progressWithVideo.currentTime / navigation.currentVideo.duration) * 100 : 0}%` }}
                   />
                 </div>
                 
                 <VideoPlayer 
                   ref={playerRef}
-                  videoId={currentVideo.youtubeId}
-                  title={currentVideo.title}
-                  initialPosition={progressData?.find(p => p.videoId === activeVideoId)?.lastPosition ?? 0}
-                  onProgressUpdate={handleProgressUpdate}
-                  onPause={handlePause}
+                  videoId={navigation.currentVideo.youtubeId}
+                  title={navigation.currentVideo.title}
+                  initialPosition={progressData?.find(p => p.videoId === navigation.activeVideoId)?.lastPosition ?? 0}
+                  onProgressUpdate={progressWithVideo.handleProgressUpdate}
+                  onPause={progressWithVideo.handlePause}
                   onEnded={handleVideoEnd}
                   theaterMode={theaterMode}
                   onTheaterModeChange={setTheaterMode}
                 />
 
-                {showAutoplayCountdown && findNextVideo() && (
+                {autoplay.showCountdown && navigation.findNextVideo() && (
                   <AutoplayOverlay 
-                    secondsRemaining={autoplayCountdown}
-                    nextVideoTitle={findVideo(findNextVideo())?.title}
-                    onCancel={cancelAutoplay}
-                    onPlayNow={playNextNow}
+                    secondsRemaining={autoplay.countdown}
+                    nextVideoTitle={findVideo(navigation.findNextVideo())?.title}
+                    onCancel={autoplay.cancelAutoplay}
+                    onPlayNow={handlePlayNextNow}
                   />
                 )}
               </div>
@@ -553,11 +377,11 @@ function LecturePlayerPageContent() {
 
 
               <LectureHeader 
-                title={currentVideo.title}
-                weekTitle={currentVideo.weekTitle}
-                duration={currentVideo.duration}
+                title={navigation.currentVideo.title}
+                weekTitle={navigation.currentVideo.weekTitle}
+                duration={navigation.currentVideo.duration}
                 showUserActions={!!user}
-                isCompleted={isCurrentVideoCompleted}
+                isCompleted={navigation.isCurrentVideoCompleted}
                 onMarkComplete={handleMarkComplete}
               />
 
