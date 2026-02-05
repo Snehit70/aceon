@@ -71,6 +71,7 @@ function LecturePlayerPageContent() {
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const videoSelectRef = useRef<(id: string) => void>(() => {});
+  const saveProgressRef = useRef<(() => void) | null>(null);
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
@@ -84,21 +85,13 @@ function LecturePlayerPageContent() {
     onAutoplay: handleAutoplay,
   });
 
-  const progress = useVideoProgress({
-    userId: user?.id,
-    videoId: null,
-    courseId: subjectId,
-    videoDuration: 0,
-    playerRef,
-  });
-
   const navigation = useVideoNavigation({
     content,
     progressData,
     videoFromUrl,
     courseId: subjectId,
     playerRef,
-    onSaveProgress: progress.saveCurrentPosition,
+    onSaveProgressRef: saveProgressRef,
     onCancelAutoplay: autoplay.cancelAutoplay,
   });
 
@@ -113,6 +106,10 @@ function LecturePlayerPageContent() {
     videoDuration: navigation.currentVideo?.duration ?? 0,
     playerRef,
   });
+
+  useEffect(() => {
+    saveProgressRef.current = progressWithVideo.saveCurrentPosition;
+  }, [progressWithVideo.saveCurrentPosition]);
   
   const handleMarkComplete = async () => {
     if (!user || !navigation.activeVideoId) return;

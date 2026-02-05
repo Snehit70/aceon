@@ -30,7 +30,7 @@ export function useAutoplay({
     pendingVideoRef.current = null;
     setShowCountdown(false);
     setCountdown(10);
-  }, []);
+  }, [setShowCountdown, setCountdown]);
 
   const startCountdown = useCallback(
     (nextVideoId: string) => {
@@ -56,7 +56,7 @@ export function useAutoplay({
         });
       }, 1000);
     },
-    [onAutoplay]
+    [onAutoplay, setShowCountdown, setCountdown]
   );
 
   const playNextNow = useCallback(

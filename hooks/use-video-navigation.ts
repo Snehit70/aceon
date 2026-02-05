@@ -34,7 +34,7 @@ export interface UseVideoNavigationOptions {
   videoFromUrl: string | null;
   courseId: Id<"courses">;
   playerRef: React.RefObject<VideoPlayerRef | null>;
-  onSaveProgress: () => void;
+  onSaveProgressRef: React.RefObject<(() => void) | null>;
   onCancelAutoplay: () => void;
 }
 
@@ -52,7 +52,7 @@ export function useVideoNavigation({
   videoFromUrl,
   courseId,
   playerRef,
-  onSaveProgress,
+  onSaveProgressRef,
   onCancelAutoplay,
 }: UseVideoNavigationOptions): UseVideoNavigationReturn {
   const router = useRouter();
@@ -139,7 +139,7 @@ export function useVideoNavigation({
 
   const handleVideoSelect = useCallback(
     (id: string) => {
-      onSaveProgress();
+      onSaveProgressRef.current?.();
       onCancelAutoplay();
       setSelectedVideoId(id);
       updateUrlWithVideo(id);
@@ -155,7 +155,7 @@ export function useVideoNavigation({
         }, 500);
       }
     },
-    [onSaveProgress, onCancelAutoplay, updateUrlWithVideo, progressData, playerRef]
+    [onSaveProgressRef, onCancelAutoplay, updateUrlWithVideo, progressData, playerRef]
   );
 
   useEffect(() => {
