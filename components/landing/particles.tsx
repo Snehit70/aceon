@@ -3,6 +3,27 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  yTo: number;
+  scaleTo: number;
+  rotateTo: number;
+  duration: number;
+  delay: number;
+  size: number;
+}
+
+interface Ember {
+  id: number;
+  x: number;
+  xOffset: number;
+  duration: number;
+  delay: number;
+  size: number;
+}
+
 /**
  * Particles - Animated background particle effect.
  * 
@@ -18,26 +39,8 @@ import { motion } from "framer-motion";
  * @returns A full-screen particle animation layer.
  */
 export const Particles = () => {
-  const [particles, setParticles] = useState<Array<{
-    id: number;
-    x: number;
-    y: number;
-    yTo: number;
-    scaleTo: number;
-    rotateTo: number;
-    duration: number;
-    delay: number;
-    size: number;
-  }>>([]);
-
-  const [embers, setEmbers] = useState<Array<{
-    id: number;
-    x: number;
-    xOffset: number;
-    duration: number;
-    delay: number;
-    size: number;
-  }>>([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [embers, setEmbers] = useState<Ember[]>([]);
   
   // Only run on client to avoid hydration mismatch with random values
   useEffect(() => {

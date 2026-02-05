@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any -- Scraper handles dynamic GraphQL/JSON structures */
 import fs from 'fs';
 import path from 'path';
 
