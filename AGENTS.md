@@ -88,6 +88,15 @@ Aceon is an academic companion app for IITM BS Degree students.
 - **Mutations**: `export const name = mutation({ args: {...}, handler: async (ctx, args) => {...} })`
 - **Auth**: Check `ctx.auth.getUserIdentity()` or pass `clerkId`.
 
+### React Best Practices (Modern)
+
+- **Hydration Safety**:
+  - Use `useId()` for stable IDs (never `Math.random()` in render).
+  - Defer random values (e.g. particles) to `useEffect` to ensure server/client match.
+- **React Compiler**:
+  - Include **ALL** used variables in dependency arrays (`useCallback`, `useMemo`), even state setters.
+  - Avoid mutating refs during render. Use **derived state** pattern (`useState` with condition) instead.
+
 ## 5. Specific Guidelines
 
 - **Mobile First**: Always ensure responsive design (Sheet for sidebar on mobile).
