@@ -24,7 +24,6 @@ Built with a focus on performance and real-time capabilities:
 - **Backend**: [Convex](https://convex.dev/) - Chosen for its real-time database capabilities and seamless TypeScript integration.
 - **Auth**: [Clerk](https://clerk.com/) - Secure, drop-in authentication.
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
-- **Testing**: [Playwright](https://playwright.dev/) for E2E reliability.
 - **Runtime**: [Bun](https://bun.sh/) for fast package management and script execution.
 
 ## Getting Started
