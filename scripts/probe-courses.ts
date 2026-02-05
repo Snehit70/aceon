@@ -32,8 +32,8 @@ async function probe() {
             break; // Stop after first success
         }
       }
-    } catch (e: any) {
-      console.error("Error:", e.message);
+    } catch (e: unknown) {
+      console.error("Error:", e instanceof Error ? e.message : String(e));
     }
   }
 }

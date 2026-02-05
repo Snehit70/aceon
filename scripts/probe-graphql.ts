@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Dev script: GraphQL introspection response shapes are dynamic */
 import fs from "fs";
 
 const token = fs.readFileSync("secret_token.txt", "utf-8").trim();
@@ -61,8 +62,8 @@ async function probe() {
       fs.writeFileSync("data_graphql_schema.json", JSON.stringify(data, null, 2));
     }
 
-  } catch (e: any) {
-    console.error("Error:", e.message);
+  } catch (e: unknown) {
+    console.error("Error:", e instanceof Error ? e.message : String(e));
   }
 }
 

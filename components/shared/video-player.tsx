@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState } from "react";
+import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState, useId } from "react";
 import { cn } from "@/lib/utils";
 import LandscapeHint from "./landscape-hint";
 
@@ -132,16 +132,17 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const containerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<YTPlayer | null>(null);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-    const playerIdRef = useRef(`yt-player-${Math.random().toString(36).slice(2, 9)}`);
+    const uniqueId = useId();
+    const playerIdRef = useRef(`yt-player-${uniqueId.replace(/:/g, '')}`);
     const [isReady, setIsReady] = useState(false);
     const pendingSeekRef = useRef<number | null>(null);
     
-    // Capture initialPosition per video - only update when videoId changes
-    const initialPositionRef = useRef(initialPosition);
-    const lastVideoIdRef = useRef(videoId);
-    if (videoId !== lastVideoIdRef.current) {
-      initialPositionRef.current = initialPosition;
-      lastVideoIdRef.current = videoId;
+    // Derived state to track initial position for the current video
+    // This allows us to ignore initialPosition prop updates unless videoId changes
+    const [videoState, setVideoState] = useState({ videoId, initialPosition });
+    
+    if (videoState.videoId !== videoId) {
+      setVideoState({ videoId, initialPosition });
     }
     
     const onEndedRef = useRef(onEnded);
@@ -227,7 +228,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             iv_load_policy: 3,
             fs: 1,
             playsinline: 1,
-            start: Math.floor(initialPositionRef.current),
+            start: Math.floor(videoState.initialPosition),
           },
           events: {
             onReady: () => {
@@ -271,7 +272,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, startProgressTracking, stopProgressTracking]);
+    }, [videoId, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
 
     return (
       <div

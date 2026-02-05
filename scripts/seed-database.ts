@@ -49,7 +49,7 @@ async function seed() {
   console.log(`Found ${coursesIndex.length} courses in index.`);
 
   for (const courseIndex of coursesIndex) {
-    const { code, id, title } = courseIndex;
+    const { code, title } = courseIndex;
 
     // Construct filename
     // Note: The file naming seems to be data_course:_[code].json based on previous ls

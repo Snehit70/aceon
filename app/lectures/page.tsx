@@ -162,6 +162,7 @@ function LecturesPageContent() {
       const cached = localStorage.getItem('aceon_course_counts');
       if (cached) {
         try {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setCachedCounts(JSON.parse(cached));
         } catch {
         }
@@ -176,6 +177,7 @@ function LecturesPageContent() {
         library: otherCourses.length
       };
       localStorage.setItem('aceon_course_counts', JSON.stringify(counts));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCachedCounts(counts);
     }
   }, [courses, enrolledCourses.length, otherCourses.length]);
@@ -239,9 +241,9 @@ if (courses === undefined) {
                 <p className="text-base sm:text-lg text-neutral-200 font-mono uppercase tracking-widest">
                   {profile?.level ? (
                     <span className="flex items-center gap-2">
-                      <span className="text-[#E62E2D]">///</span> 
+                      <span className="text-[#E62E2D]">{"///"}</span> 
                       {profile.level} Threat Level 
-                      <span className="text-[#E62E2D]">///</span>
+                      <span className="text-[#E62E2D]">{"///"}</span>
                       Status: Active Duty
                     </span>
                   ) : (

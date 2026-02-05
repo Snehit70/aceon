@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Crosshair } from "lucide-react";
 import { motion } from "framer-motion";
 import { useUser, SignUpButton } from "@clerk/nextjs";
 

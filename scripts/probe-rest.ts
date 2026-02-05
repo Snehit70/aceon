@@ -20,8 +20,8 @@ async function probe() {
         console.log("Failed. Headers:", res.headers);
     }
 
-  } catch (e: any) {
-    console.error("Error:", e.message);
+  } catch (e: unknown) {
+    console.error("Error:", e instanceof Error ? e.message : String(e));
   }
 }
 

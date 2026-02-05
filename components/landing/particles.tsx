@@ -3,6 +3,27 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  yTo: number;
+  scaleTo: number;
+  rotateTo: number;
+  duration: number;
+  delay: number;
+  size: number;
+}
+
+interface Ember {
+  id: number;
+  x: number;
+  xOffset: number;
+  duration: number;
+  delay: number;
+  size: number;
+}
+
 /**
  * Particles - Animated background particle effect.
  * 
@@ -18,69 +39,90 @@ import { motion } from "framer-motion";
  * @returns A full-screen particle animation layer.
  */
 export const Particles = () => {
-  const [mounted, setMounted] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [embers, setEmbers] = useState<Ember[]>([]);
   
   // Only run on client to avoid hydration mismatch with random values
   useEffect(() => {
-    setMounted(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setParticles([...Array(20)].map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      yTo: Math.random() * -100,
+      scaleTo: Math.random() * 2 + 0.5,
+      rotateTo: Math.random() * 360,
+      duration: Math.random() * 10 + 10,
+      delay: Math.random() * 5,
+      size: Math.random() * 10 + 2,
+    })));
+
+    setEmbers([...Array(5)].map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      xOffset: (Math.random() - 0.5) * 20,
+      duration: Math.random() * 15 + 10,
+      delay: Math.random() * 5,
+      size: Math.random() * 4 + 2,
+    })));
   }, []);
 
-  if (!mounted) return null;
+  if (particles.length === 0) return null;
 
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((p, i) => (
         <motion.div
-          key={i}
+          key={p.id}
           className="absolute bg-white/10"
           initial={{
-            x: Math.random() * 100 + "vw",
-            y: Math.random() * 100 + "vh",
+            x: p.x + "vw",
+            y: p.y + "vh",
             opacity: 0,
             scale: 0,
           }}
           animate={{
-            y: [null, Math.random() * -100 + "vh"],
+            y: [null, p.yTo + "vh"],
             opacity: [0, 0.8, 0],
-            scale: [0, Math.random() * 2 + 0.5, 0],
-            rotate: [0, Math.random() * 360],
+            scale: [0, p.scaleTo, 0],
+            rotate: [0, p.rotateTo],
           }}
           transition={{
-            duration: Math.random() * 10 + 10,
+            duration: p.duration,
             repeat: Infinity,
             ease: "linear",
-            delay: Math.random() * 5,
+            delay: p.delay,
           }}
           style={{
-            width: Math.random() * 10 + 2 + "px",
-            height: Math.random() * 10 + 2 + "px",
+            width: p.size + "px",
+            height: p.size + "px",
             clipPath: i % 2 === 0 ? "polygon(50% 0%, 0% 100%, 100% 100%)" : "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", // Triangles and squares
           }}
         />
       ))}
-      {[...Array(5)].map((_, i) => (
+      {embers.map((e) => (
         <motion.div
-          key={`ember-${i}`}
+          key={`ember-${e.id}`}
           className="absolute bg-[#E62E2D]/40"
           initial={{
-            x: Math.random() * 100 + "vw",
+            x: e.x + "vw",
             y: 110 + "vh",
             opacity: 0,
           }}
           animate={{
             y: -10 + "vh",
-            x: (Math.random() - 0.5) * 20 + "vw",
+            x: e.xOffset + "vw",
             opacity: [0, 1, 0],
           }}
           transition={{
-            duration: Math.random() * 15 + 10,
+            duration: e.duration,
             repeat: Infinity,
             ease: "easeOut",
-            delay: Math.random() * 5,
+            delay: e.delay,
           }}
           style={{
-            width: Math.random() * 4 + 2 + "px",
-            height: Math.random() * 4 + 2 + "px",
+            width: e.size + "px",
+            height: e.size + "px",
             borderRadius: "50%",
           }}
         />
