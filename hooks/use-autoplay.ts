@@ -34,6 +34,10 @@ export function useAutoplay({
 
   const startCountdown = useCallback(
     (nextVideoId: string) => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
       pendingVideoRef.current = nextVideoId;
       setShowCountdown(true);
       setCountdown(10);
