@@ -34,7 +34,7 @@ export default function NotFound() {
         <Button
           asChild
           variant="outline"
-          className="flex-1 rounded-none border-destructive/50 text-destructive hover:bg-destructive/10 hover:border-destructive hover:text-destructive group"
+          className="flex-1 rounded-none border-destructive/50 text-destructive hover:bg-destructive/10 hover:border-destructive hover:text-destructive group min-h-[44px]"
         >
           <Link href="/">
             <Home className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
@@ -44,7 +44,7 @@ export default function NotFound() {
         <Button
           asChild
           variant="secondary"
-          className="flex-1 rounded-none bg-secondary/80 hover:bg-secondary text-secondary-foreground group"
+          className="flex-1 rounded-none bg-secondary/80 hover:bg-secondary text-secondary-foreground group min-h-[44px]"
         >
           <Link href="/lectures">
             <Search className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />

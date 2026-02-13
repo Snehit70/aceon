@@ -25,7 +25,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html>
+    <html lang="en">
       <body className="bg-black text-foreground antialiased overflow-hidden">
         <StripedBackground />
         <main className="relative flex min-h-screen flex-col items-center justify-center p-4 z-10">

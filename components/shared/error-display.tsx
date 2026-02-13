@@ -29,7 +29,7 @@ export function ErrorDisplay({
             variant="ghost"
             size="icon"
             onClick={reset}
-            className="h-6 w-6 hover:bg-destructive/20 hover:text-destructive rounded-none ml-auto"
+            className="h-6 w-6 hover:bg-destructive/20 hover:text-destructive rounded-none ml-auto min-h-[44px] min-w-[44px]"
           >
             <RefreshCcw className="h-3 w-3" />
             <span className="sr-only">Retry</span>
@@ -68,7 +68,7 @@ export function ErrorDisplay({
           <Button
             onClick={reset}
             variant="outline"
-            className="group relative overflow-hidden rounded-none border-destructive/50 text-destructive hover:bg-destructive/10 hover:border-destructive hover:text-destructive transition-all duration-300 min-w-[140px]"
+            className="group relative overflow-hidden rounded-none border-destructive/50 text-destructive hover:bg-destructive/10 hover:border-destructive hover:text-destructive transition-all duration-300 min-w-[140px] min-h-[44px]"
           >
             <span className="relative z-10 flex items-center gap-2 font-display tracking-wide uppercase">
               <RefreshCcw className="h-4 w-4 group-hover:rotate-180 transition-transform duration-500" />

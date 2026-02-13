@@ -24,7 +24,7 @@ export default function LectureError({
 
   return (
     <div className="relative flex h-full w-full items-center justify-center p-8 bg-black">
-      <StripedBackground />
+      <StripedBackground scoped={true} />
       <div className="relative z-10">
         <ErrorDisplay
           title="SIGNAL LOST"
