@@ -1,26 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import { ErrorDisplay } from "@/components/shared/error-display";
+import { StripedBackground } from "@/components/shared/striped-background";
 
 /**
- * Error - Global error boundary fallback.
- * 
- * **Context**: Catches unhandled errors in the React component tree and displays
- * a user-friendly error message instead of crashing the app.
- * 
- * **User Flow**:
- * 1. Error occurs in any component -> This boundary catches it.
- * 2. User sees error message with "Try again" button.
- * 3. Clicking "Try again" calls `reset()` to attempt recovery.
- * 
- * **Logging**: Errors are logged to console for debugging.
- * 
- * @param props - Error boundary props.
- * @param props.error - The error object with optional digest string.
- * @param props.reset - Callback to reset the error boundary and retry.
- * @returns Error UI with retry button.
+ * Error - Root error boundary fallback.
+ *
+ * **Context**: Catches errors in the root component tree.
+ * **Design**: Uses the reusable Chainsaw Man themed ErrorDisplay.
  */
 export default function Error({
   error,
@@ -34,17 +22,16 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4">
-      <div className="flex items-center gap-2 text-destructive">
-        <AlertCircle className="h-6 w-6" />
-        <h2 className="text-xl font-semibold">Something went wrong</h2>
+    <main className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center p-4 bg-black">
+      <StripedBackground />
+      <div className="relative z-10">
+        <ErrorDisplay
+          title="SYSTEM MALFUNCTION"
+          message="An unexpected error occurred in the component tree."
+          error={error}
+          reset={reset}
+        />
       </div>
-      <p className="text-muted-foreground max-w-md text-center">
-        An unexpected error occurred. Please try again.
-      </p>
-      <Button onClick={reset} variant="outline">
-        Try again
-      </Button>
-    </div>
+    </main>
   );
 }
