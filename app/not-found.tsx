@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Ghost, Home, Search } from "lucide-react";
+import { StripedBackground } from "@/components/shared/striped-background";
 
 /**
  * NotFound - Custom 404 Page
@@ -10,14 +11,15 @@ import { Ghost, Home, Search } from "lucide-react";
  */
 export default function NotFound() {
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 p-4 text-center">
-      <div className="relative">
-        {/* Animated background pulse */}
+    <div className="relative flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 p-4 text-center overflow-hidden bg-black">
+      <StripedBackground />
+      
+      <div className="relative z-10">
         <div className="absolute inset-0 animate-ping opacity-10 bg-destructive rounded-full" />
         <Ghost className="h-24 w-24 text-destructive animate-pulse" strokeWidth={1} />
       </div>
 
-      <div className="space-y-2 max-w-md">
+      <div className="space-y-2 max-w-md relative z-10">
         <h2 className="text-4xl font-display font-black tracking-wider text-destructive uppercase drop-shadow-[0_2px_0_rgba(0,0,0,1)]">
           CONTRACT VOID
         </h2>
@@ -28,7 +30,7 @@ export default function NotFound() {
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs">
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs relative z-10">
         <Button
           asChild
           variant="outline"

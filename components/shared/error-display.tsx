@@ -40,8 +40,8 @@ export function ErrorDisplay({
   }
 
   return (
-    <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-none border-2 border-destructive bg-black/95 backdrop-blur-md p-6 shadow-2xl shadow-destructive/10">
-      <div className="pointer-events-none absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+    <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-none border-2 border-destructive bg-[#0a0a0a]/95 backdrop-blur-md p-6 shadow-2xl shadow-destructive/10">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[repeating-linear-gradient(45deg,#E62E2D_0,#E62E2D_2px,transparent_0,transparent_12px)]" />
       
       <div className="relative z-10 flex flex-col items-center text-center space-y-6">
         <div className="relative">

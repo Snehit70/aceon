@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/components/shared/error-display";
+import { StripedBackground } from "@/components/shared/striped-background";
 
 /**
  * GlobalError - Root layout error boundary.
@@ -26,7 +27,8 @@ export default function GlobalError({
   return (
     <html>
       <body className="bg-black text-foreground antialiased overflow-hidden">
-        <main className="flex min-h-screen flex-col items-center justify-center p-4">
+        <StripedBackground />
+        <main className="relative flex min-h-screen flex-col items-center justify-center p-4 z-10">
           <ErrorDisplay
             title="CRITICAL SYSTEM FAILURE"
             message="The application core has encountered an unrecoverable error."

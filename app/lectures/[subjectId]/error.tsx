@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { ErrorDisplay } from "@/components/shared/error-display";
+import { StripedBackground } from "@/components/shared/striped-background";
 
 /**
  * LectureError - Isolated error boundary for lecture player.
@@ -22,13 +23,16 @@ export default function LectureError({
   }, [error]);
 
   return (
-    <div className="flex h-full w-full items-center justify-center p-8">
-      <ErrorDisplay
-        title="SIGNAL LOST"
-        message="Failed to load lecture data. The transmission was interrupted."
-        error={error}
-        reset={reset}
-      />
+    <div className="relative flex h-full w-full items-center justify-center p-8 bg-black">
+      <StripedBackground />
+      <div className="relative z-10">
+        <ErrorDisplay
+          title="SIGNAL LOST"
+          message="Failed to load lecture data. The transmission was interrupted."
+          error={error}
+          reset={reset}
+        />
+      </div>
     </div>
   );
 }
