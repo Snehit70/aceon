@@ -27,9 +27,8 @@ export function ErrorDisplay({
         {reset && (
           <Button
             variant="ghost"
-            size="icon"
             onClick={reset}
-            className="h-6 w-6 hover:bg-destructive/20 hover:text-destructive rounded-none ml-auto min-h-[44px] min-w-[44px]"
+            className="hover:bg-destructive/20 hover:text-destructive rounded-none ml-auto min-h-[44px] min-w-[44px]"
           >
             <RefreshCcw className="h-3 w-3" />
             <span className="sr-only">Retry</span>
