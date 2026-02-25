@@ -26,6 +26,25 @@ export default function GlobalError({
 
   return (
     <html lang="en">
+      <head>
+        <style>{`
+          :root {
+            --background: #000000;
+            --foreground: #fafafa;
+            --destructive: #E62E2D;
+            --muted-foreground: #a1a1aa;
+          }
+          body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--foreground);
+          }
+          .text-foreground { color: var(--foreground); }
+          .text-destructive { color: var(--destructive); }
+          .text-muted-foreground { color: var(--muted-foreground); }
+          .bg-black { background-color: #000000; }
+          .border-destructive { border-color: var(--destructive); }
+        `}</style>
+      </head>
       <body className="bg-black text-foreground antialiased overflow-hidden">
         <StripedBackground />
         <main className="relative flex min-h-screen flex-col items-center justify-center p-4 z-10">
