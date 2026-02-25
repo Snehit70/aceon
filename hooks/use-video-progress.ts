@@ -117,6 +117,9 @@ export function useVideoProgress({
    */
   const saveCurrentPosition = useCallback(() => {
     if (!userId || !videoId || !playerRef.current) return;
+    
+    // Guard against YouTube API not being ready yet
+    if (typeof playerRef.current.getCurrentTime !== "function") return;
 
     const time = playerRef.current.getCurrentTime();
     if (time > 0) {
