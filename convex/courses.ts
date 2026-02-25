@@ -17,39 +17,42 @@ export const list = query({
  * Lists all courses with aggregated statistics.
  * Calculates total lecture count and duration for each course.
  *
+ * **Performance**: Fetches all videos once and aggregates in-memory
+ * instead of N+1 queries per course.
+ *
  * @returns A list of courses with an added `stats` object containing `lectureCount`, `totalDurationSeconds`, and `totalDurationFormatted`.
  */
 export const listWithStats = query({
   args: {},
   handler: async (ctx) => {
-    const courses = await ctx.db.query("courses").collect();
+    const [courses, allVideos] = await Promise.all([
+      ctx.db.query("courses").collect(),
+      ctx.db.query("videos").collect(),
+    ]);
 
-    const coursesWithStats = await Promise.all(
-      courses.map(async (course) => {
-        const videos = await ctx.db
-          .query("videos")
-          .withIndex("by_course", (q) => q.eq("courseId", course._id))
-          .collect();
+    const statsByCourse = new Map<string, { count: number; seconds: number }>();
+    for (const video of allVideos) {
+      const stats = statsByCourse.get(video.courseId) || { count: 0, seconds: 0 };
+      stats.count++;
+      stats.seconds += video.duration || 0;
+      statsByCourse.set(video.courseId, stats);
+    }
 
-        const totalVideos = videos.length;
-        const totalSeconds = videos.reduce((sum, video) => sum + (video.duration || 0), 0);
+    return courses.map((course) => {
+      const stats = statsByCourse.get(course._id) || { count: 0, seconds: 0 };
+      const hours = Math.floor(stats.seconds / 3600);
+      const minutes = Math.floor((stats.seconds % 3600) / 60);
+      const formatted = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const formatted = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-
-        return {
-          ...course,
-          stats: {
-            lectureCount: totalVideos,
-            totalDurationSeconds: totalSeconds,
-            totalDurationFormatted: formatted,
-          },
-        };
-      })
-    );
-
-    return coursesWithStats;
+      return {
+        ...course,
+        stats: {
+          lectureCount: stats.count,
+          totalDurationSeconds: stats.seconds,
+          totalDurationFormatted: formatted,
+        },
+      };
+    });
   },
 });
 
@@ -122,41 +125,47 @@ export const getVideos = query({
  * Retrieves the full content structure of a course.
  * Includes all weeks and their associated videos.
  *
+ * **Performance**: Fetches weeks and videos in parallel, then groups
+ * videos by weekId in-memory instead of N+1 queries per week.
+ *
  * @param args.courseId - The ID of the course.
  * @returns A list of weeks, each containing a `videos` array.
  */
 export const getCourseContent = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
-    const weeks = await ctx.db
-      .query("weeks")
-      .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
-      .collect();
+    const [weeks, allVideos] = await Promise.all([
+      ctx.db
+        .query("weeks")
+        .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
+        .collect(),
+      ctx.db
+        .query("videos")
+        .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
+        .collect(),
+    ]);
 
     weeks.sort((a, b) => a.order - b.order);
 
-    const weeksWithVideos = await Promise.all(
-      weeks.map(async (week) => {
-        const videos = await ctx.db
-          .query("videos")
-          .withIndex("by_week", (q) => q.eq("weekId", week._id))
-          .collect();
+    const videosByWeek = new Map<string, typeof allVideos>();
+    for (const video of allVideos) {
+      const weekVideos = videosByWeek.get(video.weekId) || [];
+      weekVideos.push(video);
+      videosByWeek.set(video.weekId, weekVideos);
+    }
 
-        videos.sort((a, b) => a.order - b.order);
-
-        return {
-          ...week,
-          videos,
-        };
-      })
-    );
-
-    return weeksWithVideos;
+    return weeks.map((week) => ({
+      ...week,
+      videos: (videosByWeek.get(week._id) || []).sort((a, b) => a.order - b.order),
+    }));
   },
 });
 
 /**
  * Searches for lectures by title across all videos.
+ *
+ * **Performance**: Batch fetches unique courses and weeks instead of
+ * N+1 queries per video result.
  *
  * @param args.searchQuery - The text to search for in video titles.
  * @param args.limit - Optional limit on the number of results (default: 20).
@@ -178,19 +187,26 @@ export const searchLectures = query({
       .withSearchIndex("search_title", (q) => q.search("title", searchTerm))
       .take(limit);
 
-    const results = await Promise.all(
-      matchingVideos.map(async (video) => {
-        const course = await ctx.db.get(video.courseId);
-        const week = await ctx.db.get(video.weekId);
-        return {
-          ...video,
-          course,
-          week,
-        };
-      })
-    );
+    if (matchingVideos.length === 0) return [];
 
-    return results.filter((r) => r.course && r.week);
+    const courseIds = [...new Set(matchingVideos.map((v) => v.courseId))];
+    const weekIds = [...new Set(matchingVideos.map((v) => v.weekId))];
+
+    const [courses, weeks] = await Promise.all([
+      Promise.all(courseIds.map((id) => ctx.db.get(id))),
+      Promise.all(weekIds.map((id) => ctx.db.get(id))),
+    ]);
+
+    const courseMap = new Map(courses.filter(Boolean).map((c) => [c!._id, c]));
+    const weekMap = new Map(weeks.filter(Boolean).map((w) => [w!._id, w]));
+
+    return matchingVideos
+      .map((video) => ({
+        ...video,
+        course: courseMap.get(video.courseId),
+        week: weekMap.get(video.weekId),
+      }))
+      .filter((r) => r.course && r.week);
   },
 });
 
