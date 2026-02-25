@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, GraduationCap, BookOpen, Sprout } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ProfileSheetProps {
   open: boolean;
@@ -193,11 +194,17 @@ export function ProfileSheet({ open, onOpenChange, forceOpen = false }: ProfileS
       const failures = results.filter(r => r.status === 'rejected');
       if (failures.length > 0) {
         console.warn(`${failures.length} course status updates failed:`, failures);
+        toast.error("Some course updates failed", {
+          description: "Your profile was saved, but some course statuses couldn't be updated",
+        });
       }
       
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to save profile", error);
+      toast.error("Failed to save profile", {
+        description: "Please try again",
+      });
     } finally {
       setIsSaving(false);
     }

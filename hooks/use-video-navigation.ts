@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Id, Doc } from "@/convex/_generated/dataModel";
 import { VideoPlayerRef } from "@/components/shared/video-player";
+import { toast } from "sonner";
 
 type Week = {
   _id: Id<"weeks">;
@@ -57,6 +58,7 @@ export function useVideoNavigation({
 }: UseVideoNavigationOptions): UseVideoNavigationReturn {
   const router = useRouter();
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const hasShownInvalidUrlToast = useRef(false);
 
   const videoExistsInCourse = useCallback(
     (videoId: string | null) => {
@@ -67,10 +69,16 @@ export function useVideoNavigation({
   );
 
   let activeVideoId = selectedVideoId;
+  let invalidUrlDetected = false;
   if (!activeVideoId && content && content.length > 0) {
     if (videoFromUrl && videoExistsInCourse(videoFromUrl)) {
       activeVideoId = videoFromUrl;
     } else {
+      // If there was a URL param but it's invalid, flag it
+      if (videoFromUrl && !videoExistsInCourse(videoFromUrl)) {
+        invalidUrlDetected = true;
+      }
+      
       let firstIncompleteId: string | null = null;
       let firstVideoId: string | null = null;
 
@@ -91,6 +99,17 @@ export function useVideoNavigation({
       activeVideoId = firstIncompleteId || firstVideoId;
     }
   }
+  
+  // Show toast for invalid URL video ID (only once per mount)
+  useEffect(() => {
+    if (invalidUrlDetected && !hasShownInvalidUrlToast.current) {
+      hasShownInvalidUrlToast.current = true;
+      toast.error("Video not found", {
+        description: "The requested video doesn't exist in this course. Showing first available video.",
+        id: "invalid-video-url", // Deduplicate
+      });
+    }
+  }, [invalidUrlDetected]);
 
   const isCurrentVideoCompleted = progressData?.find(
     (p) => p.videoId === activeVideoId
