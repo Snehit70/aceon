@@ -69,16 +69,10 @@ export function useVideoNavigation({
   );
 
   let activeVideoId = selectedVideoId;
-  let invalidUrlDetected = false;
   if (!activeVideoId && content && content.length > 0) {
     if (videoFromUrl && videoExistsInCourse(videoFromUrl)) {
       activeVideoId = videoFromUrl;
     } else {
-      // If there was a URL param but it's invalid, flag it
-      if (videoFromUrl && !videoExistsInCourse(videoFromUrl)) {
-        invalidUrlDetected = true;
-      }
-      
       let firstIncompleteId: string | null = null;
       let firstVideoId: string | null = null;
 
@@ -102,14 +96,14 @@ export function useVideoNavigation({
   
   // Show toast for invalid URL video ID (only once per mount)
   useEffect(() => {
-    if (invalidUrlDetected && !hasShownInvalidUrlToast.current) {
+    if (videoFromUrl && !videoExistsInCourse(videoFromUrl) && content && content.length > 0 && !hasShownInvalidUrlToast.current) {
       hasShownInvalidUrlToast.current = true;
       toast.error("Video not found", {
         description: "The requested video doesn't exist in this course. Showing first available video.",
-        id: "invalid-video-url", // Deduplicate
+        id: "invalid-video-url",
       });
     }
-  }, [invalidUrlDetected]);
+  }, [videoFromUrl, videoExistsInCourse, content]);
 
   const isCurrentVideoCompleted = progressData?.find(
     (p) => p.videoId === activeVideoId
