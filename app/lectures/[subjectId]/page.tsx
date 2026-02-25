@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, notFound } from "next/navigation";
 import { useState, useRef, useCallback, Suspense, useEffect } from "react";
 import { Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn, cleanCourseTitle } from "@/lib/utils";
+import { toast } from "sonner";
 
 import { useUser } from "@clerk/nextjs";
 
@@ -121,6 +122,9 @@ function LecturePlayerPageContent() {
       });
     } catch (error) {
       console.error("Failed to mark complete", error);
+      toast.error("Failed to mark video complete", {
+        description: "Please try again",
+      });
     }
   };
   
@@ -134,6 +138,9 @@ function LecturePlayerPageContent() {
       });
     } catch (error) {
       console.error("Failed to mark week complete", error);
+      toast.error("Failed to mark week complete", {
+        description: "Please try again",
+      });
     }
   };
   
@@ -146,6 +153,9 @@ function LecturePlayerPageContent() {
       });
     } catch (error) {
       console.error("Failed to mark course complete", error);
+      toast.error("Failed to mark course complete", {
+        description: "Please try again",
+      });
     }
   };
 
@@ -242,7 +252,7 @@ function LecturePlayerPageContent() {
   }
 
   if (course === null) {
-    return <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10">Course not found</div>;
+    notFound();
   }
 
   return (

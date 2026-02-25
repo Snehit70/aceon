@@ -5,6 +5,7 @@ import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "sonner";
+import { AlertTriangle, CheckCircle, Info, AlertOctagon } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { dark } from "@clerk/themes";
 
@@ -65,7 +66,33 @@ export function Providers({ children }: { children: React.ReactNode }) {
         >
           <TooltipProvider delayDuration={0}>
             {children}
-            <Toaster position="bottom-right" />
+            <Toaster 
+              position="bottom-right"
+              theme="dark"
+              closeButton
+              duration={5000}
+              toastOptions={{
+                unstyled: true,
+                classNames: {
+                  toast: "group flex items-start gap-3 w-full p-4 bg-[#0a0a0a]/95 backdrop-blur-md border-2 border-destructive/50 shadow-[4px_4px_0px_0px_rgba(230,46,45,0.3)]",
+                  title: "text-sm font-display font-bold tracking-wide uppercase text-foreground",
+                  description: "text-xs font-mono text-muted-foreground mt-1",
+                  actionButton: "bg-destructive text-destructive-foreground px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-destructive/90 transition-colors",
+                  cancelButton: "bg-muted text-muted-foreground px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-muted/80 transition-colors",
+                  closeButton: "!relative !top-0 !right-0 !left-auto !transform-none !bg-transparent !border-0 !p-1 !text-muted-foreground !hover:text-destructive !transition-colors [&>svg]:!h-4 [&>svg]:!w-4",
+                  error: "!border-destructive !shadow-[4px_4px_0px_0px_rgba(230,46,45,0.5)]",
+                  success: "!border-[#2BFF00]/50 !shadow-[4px_4px_0px_0px_rgba(43,255,0,0.3)]",
+                  warning: "!border-yellow-500/50 !shadow-[4px_4px_0px_0px_rgba(234,179,8,0.3)]",
+                  info: "!border-blue-500/50 !shadow-[4px_4px_0px_0px_rgba(59,130,246,0.3)]",
+                },
+              }}
+              icons={{
+                error: <AlertOctagon className="h-5 w-5 text-destructive shrink-0" />,
+                success: <CheckCircle className="h-5 w-5 text-[#2BFF00] shrink-0" />,
+                warning: <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />,
+                info: <Info className="h-5 w-5 text-blue-500 shrink-0" />,
+              }}
+            />
           </TooltipProvider>
         </ThemeProvider>
       </ConvexProviderWithClerk>

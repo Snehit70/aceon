@@ -2,9 +2,7 @@
 
 ## 1. Project Overview
 
-** never push any code you can only commit and never push even if the user asks you to do that
-
-
+\*\* never push any code you can only commit and never push even if the user asks you to do that
 
 Aceon is an academic companion app for IITM BS Degree students.
 **Stack**: Next.js 16 (App Router), React 19, Convex (BaaS), Clerk (Auth), Tailwind 4, Shadcn UI.
@@ -17,18 +15,19 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 **Package Manager**: `bun`
 
-**Convex Deployment**: 
+**Convex Deployment**:
+
 - **Local dev uses PRODUCTION database** (`prod:glad-marten-760`)
 - ⚠️ **DO NOT switch to dev deployment** - all real data is in production
 - Dev deployment (`dev:marvelous-lobster-114`) exists but is empty/unused
 
-| Action            | Command                        | Notes                               |
-| ----------------- | ------------------------------ | ----------------------------------- |
-| **Dev Server**    | `bun run dev`                  | Starts Next.js + Convex (auto-push) |
-| **Lint**          | `bun run lint`                 | Run ESLint                          |
-| **Type Check**    | `bun x tsc --noEmit`           | Verify TypeScript types             |
-| **Build**         | `bun run build`                | Production build                    |
-| **Convex**        | `bun x convex dev`             | Run backend dev server              |
+| Action         | Command              | Notes                               |
+| -------------- | -------------------- | ----------------------------------- |
+| **Dev Server** | `bun run dev`        | Starts Next.js + Convex (auto-push) |
+| **Lint**       | `bun run lint`       | Run ESLint                          |
+| **Type Check** | `bun x tsc --noEmit` | Verify TypeScript types             |
+| **Build**      | `bun run build`      | Production build                    |
+| **Convex**     | `bun x convex dev`   | Run backend dev server              |
 
 ## 3. Workflow & Git
 
@@ -194,14 +193,15 @@ This project follows Semantic Versioning (MAJOR.MINOR.PATCH) with **automatic ve
 
 A GitHub Action (`.github/workflows/version-bump.yml`) automatically bumps the version when PRs are merged to `main`:
 
-| Commit Prefix | Bump Type | Example |
-|---------------|-----------|---------|
-| `fix:` | Patch | 0.3.0 → 0.3.1 |
-| `feat:` | Minor | 0.3.0 → 0.4.0 |
-| `feat!:` or `BREAKING CHANGE:` | Major | 0.3.0 → 1.0.0 |
-| `chore:`, `docs:`, `refactor:` | No bump | — |
+| Commit Prefix                  | Bump Type | Example       |
+| ------------------------------ | --------- | ------------- |
+| `fix:`                         | Patch     | 0.3.0 → 0.3.1 |
+| `feat:`                        | Minor     | 0.3.0 → 0.4.0 |
+| `feat!:` or `BREAKING CHANGE:` | Major     | 0.3.0 → 1.0.0 |
+| `chore:`, `docs:`, `refactor:` | No bump   | —             |
 
 The action:
+
 1. Triggers on push to `main` (after PR merge)
 2. Parses the commit message
 3. Determines bump type from conventional commit prefix
