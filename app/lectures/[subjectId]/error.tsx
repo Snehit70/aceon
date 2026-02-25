@@ -29,16 +29,12 @@ export default function LectureError({
   }, [error]);
 
   // Detect if this is an invalid course ID error (Convex throws when ID format is invalid)
-  // Convex ID validation errors have specific patterns - avoid matching unrelated errors
+  // Convex ID validation errors have specific patterns - use backtick format for specificity
   const errorString = `${error.message || ""} ${error.stack || ""}`.toLowerCase();
   const isInvalidIdError = 
-    (errorString.includes("courses:get") && (
-      errorString.includes("id") || 
-      errorString.includes("invalid") ||
-      errorString.includes("validation")
-    )) ||
-    errorString.includes("document not found") ||
-    errorString.includes("id does not match");
+    errorString.includes("invalid `id`") || // Convex validator error format
+    (errorString.includes("courses:get") && errorString.includes("validator")) ||
+    /id.*does not match.*format/i.test(errorString);
 
   // Show "Course Not Found" UI for invalid ID errors
   if (isInvalidIdError) {
