@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ErrorDisplayProps {
   title?: string;
@@ -8,6 +9,11 @@ interface ErrorDisplayProps {
   error?: Error;
   reset?: () => void;
   minimal?: boolean;
+  /** Secondary navigation link (e.g., "Return to Lectures") */
+  secondaryAction?: {
+    label: string;
+    href: string;
+  };
 }
 
 export function ErrorDisplay({
@@ -16,6 +22,7 @@ export function ErrorDisplay({
   error,
   reset,
   minimal = false,
+  secondaryAction,
 }: ErrorDisplayProps) {
   if (minimal) {
     return (
@@ -63,18 +70,31 @@ export function ErrorDisplay({
           )}
         </div>
 
-        {reset && (
-          <Button
-            onClick={reset}
-            variant="outline"
-            className="group relative overflow-hidden rounded-none border-destructive/50 text-destructive hover:bg-destructive/10 hover:border-destructive hover:text-destructive transition-all duration-300 min-w-[140px] min-h-[44px]"
-          >
-            <span className="relative z-10 flex items-center gap-2 font-display tracking-wide uppercase">
-              <RefreshCcw className="h-4 w-4 group-hover:rotate-180 transition-transform duration-500" />
-              Reboot System
-            </span>
-          </Button>
-        )}
+        <div className="flex flex-col sm:flex-row gap-3">
+          {reset && (
+            <Button
+              onClick={reset}
+              variant="outline"
+              className="group relative overflow-hidden rounded-none border-destructive/50 text-destructive hover:bg-destructive/10 hover:border-destructive hover:text-destructive transition-all duration-300 min-w-[140px] min-h-[44px]"
+            >
+              <span className="relative z-10 flex items-center gap-2 font-display tracking-wide uppercase">
+                <RefreshCcw className="h-4 w-4 group-hover:rotate-180 transition-transform duration-500" />
+                Reboot System
+              </span>
+            </Button>
+          )}
+          {secondaryAction && (
+            <Button
+              asChild
+              variant="secondary"
+              className="rounded-none bg-secondary/80 hover:bg-secondary text-secondary-foreground min-h-[44px]"
+            >
+              <Link href={secondaryAction.href}>
+                {secondaryAction.label}
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="absolute top-0 left-0 h-4 w-4 border-t-2 border-l-2 border-destructive" />
