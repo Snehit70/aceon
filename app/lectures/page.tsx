@@ -508,7 +508,7 @@ if (courses === undefined) {
  */
 export default function LecturesPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LecturesSkeleton mode="enrolled" />}>
       <LecturesPageContent />
     </Suspense>
   );

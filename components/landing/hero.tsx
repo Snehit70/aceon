@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useUser, SignUpButton } from "@clerk/nextjs";
@@ -31,8 +32,15 @@ export function Hero() {
   return (
     <section className="relative flex min-h-[calc(100dvh-67px)] flex-col items-center justify-center overflow-hidden px-4 py-12 md:py-24 text-center">
       <div className="absolute inset-0 z-0 select-none bg-black">
-        <div 
-            className="absolute inset-0 bg-[url('/images/hero-bg-chainsaw.jpg')] bg-cover bg-center opacity-50 mix-blend-luminosity grayscale contrast-125" 
+        <Image
+          src="/images/hero-bg-chainsaw.webp"
+          alt=""
+          fill
+          priority
+          className="object-cover opacity-50 mix-blend-luminosity grayscale contrast-125"
+          sizes="100vw"
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAAABAAAAAAAAAAAA"
         />
         <div className="absolute inset-0 bg-[url('/images/noise.svg')] opacity-40 mix-blend-overlay" />
         <div className="absolute inset-0 bg-[#E62E2D]/10 mix-blend-overlay" />

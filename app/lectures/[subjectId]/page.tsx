@@ -18,6 +18,7 @@ import { useUser } from "@clerk/nextjs";
 import { LectureSidebar } from "@/components/lectures/lecture-sidebar";
 import { AutoplayOverlay } from "@/components/lectures/autoplay-overlay";
 import { LectureHeader } from "@/components/lectures/lecture-header";
+import LecturePlayerSkeleton from "@/components/lectures/lecture-player-skeleton";
 
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useAutoplay } from "@/hooks/use-autoplay";
@@ -408,7 +409,7 @@ function LecturePlayerPageContent() {
 
 export default function LecturePlayerPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LecturePlayerSkeleton />}>
       <LecturePlayerPageContent />
     </Suspense>
   );
