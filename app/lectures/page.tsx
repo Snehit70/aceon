@@ -242,7 +242,7 @@ if (courses === undefined) {
                   {profile?.level ? (
                     <span className="flex items-center gap-2">
                       <span className="text-[#E62E2D]">{"///"}</span> 
-                      {profile.level} Threat Level 
+                      Threat Level: {profile.level.charAt(0).toUpperCase() + profile.level.slice(1)} 
                       <span className="text-[#E62E2D]">{"///"}</span>
                       Status: Active Duty
                     </span>
