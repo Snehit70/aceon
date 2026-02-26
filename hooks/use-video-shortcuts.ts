@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 
 interface UseVideoShortcutsOptions {
@@ -12,10 +12,6 @@ interface UseVideoShortcutsOptions {
 const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
 export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: UseVideoShortcutsOptions) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [playbackRate, setPlaybackRateState] = useState(1);
-  
   const currentRateIndexRef = useRef(0);
 
   useEffect(() => {
@@ -43,10 +39,8 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           if (!player) return;
           if (player.isPlaying()) {
             player.pause();
-            setIsPlaying(false);
           } else {
             player.play();
-            setIsPlaying(true);
           }
           break;
         }
@@ -100,10 +94,8 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           if (!player) return;
           if (player.isMuted()) {
             player.unmute();
-            setIsMuted(false);
           } else {
             player.mute();
-            setIsMuted(true);
           }
           break;
         }
@@ -116,7 +108,6 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           if (player?.setPlaybackRate) {
             player.setPlaybackRate(newRate);
           }
-          setPlaybackRateState(newRate);
           break;
         }
         case "-":
@@ -128,7 +119,6 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           if (player?.setPlaybackRate) {
             player.setPlaybackRate(newRate);
           }
-          setPlaybackRateState(newRate);
           break;
         }
       }
@@ -136,17 +126,5 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [playerRef, containerRef]);
-
-  useEffect(() => {
-    if (!playerRef.current) return;
-    setIsPlaying(playerRef.current.isPlaying());
-    setIsMuted(playerRef.current.isMuted());
-  }, [playerRef]);
-
-  return {
-    isPlaying,
-    isMuted,
-    playbackRate,
-  };
+  }, [playerRef, containerRef, enabled]);
 }
