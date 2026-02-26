@@ -229,10 +229,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         return playerRef.current?.getPlaybackRate() ?? 1;
       },
       setPlaybackRate: (rate: number) => {
+        // Always store pending rate - apply when ready or store for later
+        pendingPlaybackRateRef.current = rate;
         if (isReady && playerRef.current) {
           playerRef.current.setPlaybackRate(rate);
-        } else {
-          pendingPlaybackRateRef.current = rate;
         }
       },
     }), [isReady]);

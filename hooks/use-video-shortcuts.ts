@@ -103,10 +103,13 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
         case "=": {
           e.preventDefault();
           e.stopPropagation();
+          console.log("[+] pressed, player:", player?.setPlaybackRate);
           currentRateIndexRef.current = (currentRateIndexRef.current + 1) % PLAYBACK_RATES.length;
           const newRate = PLAYBACK_RATES[currentRateIndexRef.current];
+          console.log("[+] setting rate to:", newRate);
           if (player?.setPlaybackRate) {
             player.setPlaybackRate(newRate);
+            console.log("[+] rate set");
           }
           break;
         }
@@ -114,10 +117,13 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
         case "_": {
           e.preventDefault();
           e.stopPropagation();
+          console.log("[-] pressed, player:", player?.setPlaybackRate);
           currentRateIndexRef.current = (currentRateIndexRef.current - 1 + PLAYBACK_RATES.length) % PLAYBACK_RATES.length;
           const newRate = PLAYBACK_RATES[currentRateIndexRef.current];
+          console.log("[-] setting rate to:", newRate);
           if (player?.setPlaybackRate) {
             player.setPlaybackRate(newRate);
+            console.log("[-] rate set");
           }
           break;
         }
