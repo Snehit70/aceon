@@ -295,16 +295,22 @@ function LecturePlayerPageContent() {
       </AnimatePresence>
 
       {/* Sidebar Toggle Button (When Closed) */}
-      {!isSidebarOpen && (
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="hidden md:flex items-center gap-2 fixed left-4 top-20 z-50 h-10 px-3 bg-black/90 border border-white/10 hover:border-primary hover:bg-black backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[3px_3px_0px_0px_#E62E2D] group transition-all duration-200"
-          title="Open Course Navigation"
-        >
-          <HugeiconsIcon icon={Menu02Icon} className="h-5 w-5 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
-          <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">Menu</span>
-        </button>
-      )}
+      <AnimatePresence>
+        {!isSidebarOpen && (
+          <motion.button
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            onClick={() => setIsSidebarOpen(true)}
+            className="hidden md:flex items-center gap-2 fixed left-4 top-20 z-50 h-10 px-3 bg-black/90 border border-white/10 hover:border-primary hover:bg-black backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[3px_3px_0px_0px_#E62E2D] group transition-all duration-200"
+            title="Open Course Navigation"
+          >
+            <HugeiconsIcon icon={Menu02Icon} className="h-5 w-5 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
+            <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">Menu</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-black overflow-y-auto relative transition-all duration-300 ease-in-out">
