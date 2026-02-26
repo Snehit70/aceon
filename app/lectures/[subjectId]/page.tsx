@@ -83,7 +83,7 @@ function LecturePlayerPageContent() {
   const saveProgressRef = useRef<(() => void) | null>(null);
 
   // Keyboard shortcuts for play/pause and seek
-  useVideoShortcuts({ playerRef, containerRef: videoContainerRef });
+  useVideoShortcuts({ playerRef, containerRef: videoContainerRef, enabled: !showShortcutsHelp });
 
   // Toggle shortcuts help with ?
   useEffect(() => {

@@ -6,11 +6,12 @@ import type { VideoPlayerRef } from "@/components/shared/video-player";
 interface UseVideoShortcutsOptions {
   playerRef: React.RefObject<VideoPlayerRef | null>;
   containerRef?: React.RefObject<HTMLDivElement | null>;
+  enabled?: boolean;
 }
 
 const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
-export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcutsOptions) {
+export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: UseVideoShortcutsOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRateState] = useState(1);
@@ -22,6 +23,8 @@ export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcuts
     const containerRefCopy = containerRef;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!enabled) return;
+
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
