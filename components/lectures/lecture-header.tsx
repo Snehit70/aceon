@@ -63,15 +63,21 @@ export function LectureHeader({
                 : "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/50"
             )}
           >
-            <motion.div
-              key={isCompleted ? "completed" : "incomplete"}
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 500, damping: 25 }}
-            >
-              <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
-            </motion.div>
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={isCompleted ? "completed" : "incomplete"}
+                initial={isCompleted ? { scale: 0.5, opacity: 0 } : { opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={isCompleted 
+                  ? { type: "spring", stiffness: 500, damping: 25 }
+                  : { duration: 0.15 }
+                }
+              >
+                <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
+              </motion.div>
+            </AnimatePresence>
+            <AnimatePresence mode="wait" initial={false}>
               <motion.span
                 key={isCompleted ? "completed" : "incomplete"}
                 initial={{ opacity: 0, y: 5 }}
