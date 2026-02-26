@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 
 interface UseVideoShortcutsOptions {
@@ -11,11 +11,8 @@ interface UseVideoShortcutsOptions {
 const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
 export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcutsOptions) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [playbackRate, setPlaybackRateState] = useState(1);
-  
   const currentRateIndexRef = useRef(0);
+  const hasInitializedRateRef = useRef(false);
 
   useEffect(() => {
     const playerRefCopy = playerRef;
@@ -40,10 +37,8 @@ export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcuts
           if (!player) return;
           if (player.isPlaying()) {
             player.pause();
-            setIsPlaying(false);
           } else {
             player.play();
-            setIsPlaying(true);
           }
           break;
         }
@@ -97,10 +92,8 @@ export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcuts
           if (!player) return;
           if (player.isMuted()) {
             player.unmute();
-            setIsMuted(false);
           } else {
             player.mute();
-            setIsMuted(true);
           }
           break;
         }
@@ -108,26 +101,40 @@ export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcuts
         case "=": {
           e.preventDefault();
           e.stopPropagation();
-          // Cycle playback rate up
+          // Sync with actual player rate on first press
+          if (!hasInitializedRateRef.current && player?.getPlaybackRate) {
+            const rate = player.getPlaybackRate();
+            const index = PLAYBACK_RATES.indexOf(rate);
+            if (index !== -1) {
+              currentRateIndexRef.current = index;
+            }
+            hasInitializedRateRef.current = true;
+          }
           currentRateIndexRef.current = (currentRateIndexRef.current + 1) % PLAYBACK_RATES.length;
           const newRateUp = PLAYBACK_RATES[currentRateIndexRef.current];
           if (player?.setPlaybackRate) {
             player.setPlaybackRate(newRateUp);
           }
-          setPlaybackRateState(newRateUp);
           break;
         }
         case "-":
         case "_": {
           e.preventDefault();
           e.stopPropagation();
-          // Cycle playback rate down
+          // Sync with actual player rate on first press
+          if (!hasInitializedRateRef.current && player?.getPlaybackRate) {
+            const rate = player.getPlaybackRate();
+            const index = PLAYBACK_RATES.indexOf(rate);
+            if (index !== -1) {
+              currentRateIndexRef.current = index;
+            }
+            hasInitializedRateRef.current = true;
+          }
           currentRateIndexRef.current = (currentRateIndexRef.current - 1 + PLAYBACK_RATES.length) % PLAYBACK_RATES.length;
           const newRateDown = PLAYBACK_RATES[currentRateIndexRef.current];
           if (player?.setPlaybackRate) {
             player.setPlaybackRate(newRateDown);
           }
-          setPlaybackRateState(newRateDown);
           break;
         }
       }
@@ -137,15 +144,5 @@ export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcuts
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [playerRef, containerRef]);
 
-  useEffect(() => {
-    if (!playerRef.current) return;
-    setIsPlaying(playerRef.current.isPlaying());
-    setIsMuted(playerRef.current.isMuted());
-  }, [playerRef]);
-
-  return {
-    isPlaying,
-    isMuted,
-    playbackRate,
-  };
+  return {};
 }
