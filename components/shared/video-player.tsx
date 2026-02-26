@@ -43,6 +43,8 @@ interface YTPlayer {
   isMuted: () => boolean;
   mute: () => void;
   unMute: () => void;
+  setPlaybackRate: (rate: number) => void;
+  getPlaybackRate: () => number;
   destroy: () => void;
 }
 
@@ -57,6 +59,8 @@ export interface VideoPlayerRef {
   isMuted: () => boolean;
   mute: () => void;
   unmute: () => void;
+  getPlaybackRate: () => number;
+  setPlaybackRate: (rate: number) => void;
 }
 
 interface VideoPlayerProps {
@@ -220,6 +224,14 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           playerRef.current.unMute();
         }
       },
+      getPlaybackRate: () => {
+        return playerRef.current?.getPlaybackRate() ?? 1;
+      },
+      setPlaybackRate: (rate: number) => {
+        if (isReady && playerRef.current) {
+          playerRef.current.setPlaybackRate(rate);
+        }
+      },
     }), [isReady]);
 
     const startProgressTracking = useCallback(() => {
@@ -277,6 +289,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             fs: 1,
             playsinline: 1,
             start: Math.floor(videoState.initialPosition),
+            disablekb: 1,
           },
           events: {
             onReady: () => {

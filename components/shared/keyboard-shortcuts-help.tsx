@@ -13,6 +13,10 @@ const shortcuts = [
   { key: "Space", action: "Play / Pause" },
   { key: "←", action: "Seek backward 10s" },
   { key: "→", action: "Seek forward 10s" },
+  { key: "↑", action: "Volume up" },
+  { key: "↓", action: "Volume down" },
+  { key: "+", action: "Speed up" },
+  { key: "-", action: "Speed down" },
   { key: "F", action: "Toggle fullscreen" },
   { key: "M", action: "Mute / Unmute" },
   { key: "?", action: "Show this help" },
@@ -71,7 +75,7 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
 
             {/* Shortcuts list */}
             <div className="space-y-2">
-              {shortcuts.map((shortcut, idx) => (
+              {shortcuts.map((shortcut) => (
                 <div 
                   key={shortcut.key} 
                   className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-colors"

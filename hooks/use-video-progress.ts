@@ -119,9 +119,10 @@ export function useVideoProgress({
     if (!userId || !videoId || !playerRef.current) return;
     
     // Guard against YouTube API not being ready yet
-    if (typeof playerRef.current.getCurrentTime !== "function") return;
+    const player = playerRef.current as VideoPlayerRef;
+    if (!player?.getCurrentTime || typeof player.getCurrentTime !== "function") return;
 
-    const time = playerRef.current.getCurrentTime();
+    const time = player.getCurrentTime();
     if (time > 0) {
       updateProgress({
         clerkId: userId,
@@ -142,7 +143,10 @@ export function useVideoProgress({
     const saveViaBeacon = () => {
       if (!userId || !videoId || !playerRef.current) return;
 
-      const time = playerRef.current.getCurrentTime();
+      const player = playerRef.current as VideoPlayerRef;
+      if (!player?.getCurrentTime || typeof player.getCurrentTime !== "function") return;
+
+      const time = player.getCurrentTime();
       if (time > 0) {
         const blob = new Blob(
           [
