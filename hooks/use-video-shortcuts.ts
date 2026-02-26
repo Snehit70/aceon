@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 
 interface UseVideoShortcutsOptions {
   playerRef: React.RefObject<VideoPlayerRef | null>;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export function useVideoShortcuts({ playerRef }: UseVideoShortcutsOptions) {
+export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcutsOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const isFullscreenRef = useRef(false);
 
   const togglePlayPause = useCallback(() => {
     if (!playerRef.current) return;
@@ -31,6 +33,22 @@ export function useVideoShortcuts({ playerRef }: UseVideoShortcutsOptions) {
     if (!playerRef.current) return;
     playerRef.current.seekTo(playerRef.current.getCurrentTime() + seconds);
   }, [playerRef]);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (!containerRef?.current) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current.requestFullscreen();
+        isFullscreenRef.current = true;
+      } else {
+        await document.exitFullscreen();
+        isFullscreenRef.current = false;
+      }
+    } catch (err) {
+      console.error("Fullscreen error:", err);
+    }
+  }, [containerRef]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -59,12 +77,18 @@ export function useVideoShortcuts({ playerRef }: UseVideoShortcutsOptions) {
           e.stopPropagation();
           seekForward();
           break;
+        case "f":
+        case "F":
+          e.preventDefault();
+          e.stopPropagation();
+          toggleFullscreen();
+          break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [togglePlayPause, seekBackward, seekForward]);
+  }, [togglePlayPause, seekBackward, seekForward, toggleFullscreen]);
 
   // Sync isPlaying state from player
   useEffect(() => {
@@ -77,5 +101,6 @@ export function useVideoShortcuts({ playerRef }: UseVideoShortcutsOptions) {
     togglePlayPause,
     seekBackward,
     seekForward,
+    toggleFullscreen,
   };
 }

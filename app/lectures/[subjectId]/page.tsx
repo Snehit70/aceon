@@ -76,11 +76,12 @@ function LecturePlayerPageContent() {
   const [theaterMode, setTheaterMode] = useState(false);
   
   const playerRef = useRef<VideoPlayerRef>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoSelectRef = useRef<(id: string) => void>(() => {});
   const saveProgressRef = useRef<(() => void) | null>(null);
 
   // Keyboard shortcuts for play/pause and seek
-  useVideoShortcuts({ playerRef });
+  useVideoShortcuts({ playerRef, containerRef: videoContainerRef });
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
@@ -374,7 +375,7 @@ function LecturePlayerPageContent() {
 
           {navigation.currentVideo ? (
             <div className="space-y-4">
-              <div className="relative">
+              <div className="relative" ref={videoContainerRef}>
                 <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30 rounded-t-lg overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-300 ease-out"
