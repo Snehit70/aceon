@@ -8,6 +8,7 @@ import { useState, useRef, useCallback, Suspense, useEffect } from "react";
 import { Menu, ArrowLeft } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Menu02Icon } from "@hugeicons/core-free-icons";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
@@ -261,27 +262,37 @@ function LecturePlayerPageContent() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
       {/* Desktop Sidebar */}
-      {isSidebarOpen && (
-        <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative transition-all">
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="absolute top-3 right-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
-            title="Close Sidebar"
+      <AnimatePresence initial={false}>
+        {isSidebarOpen && (
+          <motion.aside
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 320, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className="hidden md:flex border-r bg-background flex-col shrink-0 relative overflow-hidden"
           >
-            <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
-          </button>
-          <LectureSidebar
-            courseTitle={course.title}
-            courseCode={course.code}
-            content={content}
-            currentVideoId={navigation.activeVideoId}
-            onVideoSelect={navigation.handleVideoSelect}
-            progressData={progressData}
-            onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
-            onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
-          />
-        </aside>
-      )}
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="absolute top-3 right-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
+              title="Close Sidebar"
+            >
+              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
+            </button>
+            <div className="w-80">
+              <LectureSidebar
+                courseTitle={course.title}
+                courseCode={course.code}
+                content={content}
+                currentVideoId={navigation.activeVideoId}
+                onVideoSelect={navigation.handleVideoSelect}
+                progressData={progressData}
+                onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
+                onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
+              />
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* Sidebar Toggle Button (When Closed) */}
       {!isSidebarOpen && (
