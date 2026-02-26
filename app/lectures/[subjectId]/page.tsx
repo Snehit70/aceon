@@ -88,7 +88,7 @@ function LecturePlayerPageContent() {
   // Toggle shortcuts help with ?
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "?") {
+      if (e.key === "?" || (e.shiftKey && e.key === "/")) {
         e.preventDefault();
         setShowShortcutsHelp((prev) => !prev);
       }
