@@ -11,6 +11,12 @@ interface UseVideoShortcutsOptions {
 const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
 export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcutsOptions) {
+  // Note: These state variables track keyboard-initiated actions only.
+  // They are not required for functionality but may be used by callers for UI feedback.
+  // We don't sync with YouTube's player state because:
+  // 1. YouTube already shows playback rate in its UI
+  // 2. Users can change rate via YouTube's gear menu - we don't need to track that
+  // 3. Our +/- keys cycle through a known set of rates starting from 1
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRateState] = useState(1);
