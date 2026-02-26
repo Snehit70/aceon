@@ -44,6 +44,9 @@ interface YTPlayer {
 export interface VideoPlayerRef {
   seekTo: (seconds: number) => void;
   getCurrentTime: () => number;
+  play: () => void;
+  pause: () => void;
+  isPlaying: () => boolean;
 }
 
 interface VideoPlayerProps {
@@ -171,6 +174,20 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       },
       getCurrentTime: () => {
         return playerRef.current?.getCurrentTime() ?? 0;
+      },
+      play: () => {
+        if (isReady && playerRef.current) {
+          playerRef.current.playVideo();
+        }
+      },
+      pause: () => {
+        if (isReady && playerRef.current) {
+          playerRef.current.pauseVideo();
+        }
+      },
+      isPlaying: () => {
+        if (!playerRef.current) return false;
+        return playerRef.current.getPlayerState() === window.YT.PlayerState.PLAYING;
       },
     }), [isReady]);
 

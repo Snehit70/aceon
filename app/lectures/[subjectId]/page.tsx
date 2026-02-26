@@ -26,6 +26,7 @@ import LecturePlayerSkeleton from "@/components/lectures/lecture-player-skeleton
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useAutoplay } from "@/hooks/use-autoplay";
 import { useVideoNavigation } from "@/hooks/use-video-navigation";
+import { useVideoShortcuts } from "@/hooks/use-video-shortcuts";
 
 /**
  * LecturePlayerPage - The core learning experience view.
@@ -77,6 +78,9 @@ function LecturePlayerPageContent() {
   const playerRef = useRef<VideoPlayerRef>(null);
   const videoSelectRef = useRef<(id: string) => void>(() => {});
   const saveProgressRef = useRef<(() => void) | null>(null);
+
+  // Keyboard shortcuts for play/pause and seek
+  useVideoShortcuts({ playerRef });
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
