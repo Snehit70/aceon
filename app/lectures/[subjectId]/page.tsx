@@ -27,6 +27,7 @@ import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useAutoplay } from "@/hooks/use-autoplay";
 import { useVideoNavigation } from "@/hooks/use-video-navigation";
 import { useVideoShortcuts } from "@/hooks/use-video-shortcuts";
+import { KeyboardShortcutsHelp } from "@/components/shared/keyboard-shortcuts-help";
 
 /**
  * LecturePlayerPage - The core learning experience view.
@@ -74,6 +75,7 @@ function LecturePlayerPageContent() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [theaterMode, setTheaterMode] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -82,6 +84,18 @@ function LecturePlayerPageContent() {
 
   // Keyboard shortcuts for play/pause and seek
   useVideoShortcuts({ playerRef, containerRef: videoContainerRef });
+
+  // Toggle shortcuts help with ?
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "?" || (e.shiftKey && e.key === "/")) {
+        e.preventDefault();
+        setShowShortcutsHelp((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
@@ -425,6 +439,11 @@ function LecturePlayerPageContent() {
             </div>
           )}
         </div>
+
+        <KeyboardShortcutsHelp 
+          isOpen={showShortcutsHelp} 
+          onClose={() => setShowShortcutsHelp(false)} 
+        />
       </main>
     </div>
   );
