@@ -153,6 +153,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const playerIdRef = useRef(`yt-player-${uniqueId.replace(/:/g, '')}`);
     const [isReady, setIsReady] = useState(false);
     const pendingSeekRef = useRef<number | null>(null);
+    const pendingPlaybackRateRef = useRef<number | null>(null);
     
     // Derived state to track initial position for the current video
     // This allows us to ignore initialPosition prop updates unless videoId changes
@@ -230,6 +231,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       setPlaybackRate: (rate: number) => {
         if (isReady && playerRef.current) {
           playerRef.current.setPlaybackRate(rate);
+        } else {
+          pendingPlaybackRateRef.current = rate;
         }
       },
     }), [isReady]);
@@ -297,6 +300,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               if (pendingSeekRef.current !== null && playerRef.current) {
                 playerRef.current.seekTo(pendingSeekRef.current, true);
                 pendingSeekRef.current = null;
+              }
+              if (pendingPlaybackRateRef.current !== null && playerRef.current) {
+                playerRef.current.setPlaybackRate(pendingPlaybackRateRef.current);
+                pendingPlaybackRateRef.current = null;
               }
             },
             onStateChange: (event) => {
