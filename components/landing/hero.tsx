@@ -90,38 +90,37 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-12 flex flex-col gap-6 sm:flex-row items-center"
         >
-          <Button 
-            asChild 
-            size="lg" 
-            className="group/btn relative h-20 px-12 overflow-hidden border-0 bg-[#E62E2D] text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out -skew-x-6 shadow-[6px_6px_0px_0px_#000] hover:skew-x-0 hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#000] before:absolute before:inset-0 before:bg-[url('/images/noise.svg')] before:opacity-20 before:mix-blend-overlay"
-          >
-            <Link href="/lectures?tab=library">
-              <span className="inline-block skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">Start_Hunt</span>
-            </Link>
-          </Button>
-
           {isSignedIn ? (
-             <Button 
-                asChild 
-                variant="outline"
-                size="lg" 
-                className="group/btn relative h-20 px-12 border-4 border-[#E62E2D] bg-black text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out skew-x-6 shadow-[6px_6px_0px_0px_#E62E2D] hover:skew-x-0 hover:bg-[#E62E2D] hover:border-[#E62E2D] hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#E62E2D]"
-              >
-                <Link href="/lectures?tab=enrolled">
-                  <span className="inline-block -skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">My_Missions</span>
-                </Link>
-              </Button>
+            <Button 
+              asChild 
+              size="lg" 
+              className="group/btn relative h-20 px-12 overflow-hidden border-0 bg-[#E62E2D] text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out -skew-x-6 shadow-[6px_6px_0px_0px_#000] hover:skew-x-0 hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#000] before:absolute before:inset-0 before:bg-[url('/images/noise.svg')] before:opacity-20 before:mix-blend-overlay"
+            >
+              <Link href="/lectures?tab=enrolled">
+                <span className="inline-block skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">My_Missions</span>
+              </Link>
+            </Button>
           ) : (
             <SignUpButton mode="modal">
               <Button 
-                variant="outline"
                 size="lg" 
-                className="group/btn relative h-20 px-12 border-4 border-[#E62E2D] bg-black text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out skew-x-6 shadow-[6px_6px_0px_0px_#E62E2D] hover:skew-x-0 hover:bg-[#E62E2D] hover:border-[#E62E2D] hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#E62E2D] cursor-pointer"
+                className="group/btn relative h-20 px-12 overflow-hidden border-0 bg-[#E62E2D] text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out -skew-x-6 shadow-[6px_6px_0px_0px_#000] hover:skew-x-0 hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#000] before:absolute before:inset-0 before:bg-[url('/images/noise.svg')] before:opacity-20 before:mix-blend-overlay cursor-pointer"
               >
-                <span className="inline-block -skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">Join_Bureau</span>
+                <span className="inline-block skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">Join_Bureau</span>
               </Button>
             </SignUpButton>
           )}
+
+          <Button 
+            asChild 
+            variant="outline"
+            size="lg" 
+            className="group/btn relative h-20 px-12 border-4 border-[#E62E2D] bg-black text-white font-display text-3xl uppercase tracking-widest transition-all duration-200 ease-out skew-x-6 shadow-[6px_6px_0px_0px_#E62E2D] hover:skew-x-0 hover:bg-[#E62E2D] hover:border-[#E62E2D] hover:shadow-[8px_8px_0px_0px_#000] hover:-translate-y-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#E62E2D]"
+          >
+            <Link href="/lectures?tab=library">
+              <span className="inline-block -skew-x-6 group-hover/btn:skew-x-0 transition-transform duration-200">Start_Hunt</span>
+            </Link>
+          </Button>
         </motion.div>
       </div>
     </section>

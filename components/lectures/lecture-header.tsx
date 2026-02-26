@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -52,19 +53,50 @@ export function LectureHeader({
       
       {showUserActions && (
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            size="lg"
-            onClick={onMarkComplete}
-            className={cn(
-              "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 transition-all",
-              isCompleted 
-                ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-2 border-green-500/40" 
-                : "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/50"
-            )}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
           >
-            <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
-            {isCompleted ? "Completed" : "Mark Complete"}
-          </Button>
+            <Button
+              size="lg"
+              onClick={onMarkComplete}
+              className={cn(
+                "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 min-w-[160px] transition-all",
+                isCompleted 
+                  ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-2 border-green-500/40" 
+                  : "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/50"
+              )}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  layout
+                  key={isCompleted ? "completed" : "incomplete"}
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  transition={isCompleted 
+                    ? { type: "spring", stiffness: 400, damping: 30 }
+                    : { duration: 0.15 }
+                  }
+                >
+                  <CheckCircle2 className={cn("h-4 w-4", isCompleted && "text-green-500")} />
+                </motion.div>
+              </AnimatePresence>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  layout
+                  key={isCompleted ? "completed" : "incomplete"}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  {isCompleted ? "Marked Done" : "Mark as Done"}
+                </motion.span>
+              </AnimatePresence>
+            </Button>
+          </motion.div>
         </div>
       )}
     </div>
