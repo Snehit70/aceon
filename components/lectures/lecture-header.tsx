@@ -85,7 +85,7 @@ export function LectureHeader({
                 exit={{ opacity: 0, y: -5 }}
                 transition={{ duration: 0.15 }}
               >
-                {isCompleted ? "Completed" : "Mark Complete"}
+                {isCompleted ? "Marked Done" : "Mark as Done"}
               </motion.span>
             </AnimatePresence>
           </Button>
