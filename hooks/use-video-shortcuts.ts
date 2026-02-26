@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 
 interface UseVideoShortcutsOptions {
@@ -10,49 +10,13 @@ interface UseVideoShortcutsOptions {
 
 export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcutsOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const isFullscreenRef = useRef(false);
+  const [isMuted, setIsMuted] = useState(false);
 
-  const togglePlayPause = useCallback(() => {
-    if (!playerRef.current) return;
-
-    if (isPlaying) {
-      playerRef.current.pause();
-    } else {
-      playerRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  }, [playerRef, isPlaying]);
-
-  const seekBackward = useCallback((seconds: number = 10) => {
-    if (!playerRef.current) return;
-    const currentTime = playerRef.current.getCurrentTime();
-    playerRef.current.seekTo(Math.max(0, currentTime - seconds));
-  }, [playerRef]);
-
-  const seekForward = useCallback((seconds: number = 10) => {
-    if (!playerRef.current) return;
-    playerRef.current.seekTo(playerRef.current.getCurrentTime() + seconds);
-  }, [playerRef]);
-
-  const toggleFullscreen = useCallback(async () => {
-    if (!containerRef?.current) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await containerRef.current.requestFullscreen();
-        isFullscreenRef.current = true;
-      } else {
-        await document.exitFullscreen();
-        isFullscreenRef.current = false;
-      }
-    } catch (err) {
-      console.error("Fullscreen error:", err);
-    }
-  }, [containerRef]);
+  const playerRefCopy = playerRef;
+  const containerRefCopy = containerRef;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
@@ -61,46 +25,79 @@ export function useVideoShortcuts({ playerRef, containerRef }: UseVideoShortcuts
         return;
       }
 
+      const player = playerRefCopy.current;
+      const container = containerRefCopy?.current;
+
       switch (e.key) {
-        case " ":
+        case " ": {
           e.preventDefault();
           e.stopPropagation();
-          togglePlayPause();
+          if (!player) return;
+          if (player.isPlaying()) {
+            player.pause();
+            setIsPlaying(false);
+          } else {
+            player.play();
+            setIsPlaying(true);
+          }
           break;
-        case "ArrowLeft":
+        }
+        case "ArrowLeft": {
           e.preventDefault();
           e.stopPropagation();
-          seekBackward();
+          if (!player) return;
+          const currentTime = player.getCurrentTime();
+          player.seekTo(Math.max(0, currentTime - 10));
           break;
-        case "ArrowRight":
+        }
+        case "ArrowRight": {
           e.preventDefault();
           e.stopPropagation();
-          seekForward();
+          if (!player) return;
+          player.seekTo(player.getCurrentTime() + 10);
           break;
+        }
         case "f":
-        case "F":
+        case "F": {
           e.preventDefault();
           e.stopPropagation();
-          toggleFullscreen();
+          if (!container) return;
+          if (!document.fullscreenElement) {
+            container.requestFullscreen().catch(console.error);
+          } else {
+            document.exitFullscreen().catch(console.error);
+          }
           break;
+        }
+        case "m":
+        case "M": {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!player) return;
+          if (player.isMuted()) {
+            player.unmute();
+            setIsMuted(false);
+          } else {
+            player.mute();
+            setIsMuted(true);
+          }
+          break;
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [togglePlayPause, seekBackward, seekForward, toggleFullscreen]);
+  }, [playerRefCopy, containerRefCopy]);
 
-  // Sync isPlaying state from player
   useEffect(() => {
     if (!playerRef.current) return;
     setIsPlaying(playerRef.current.isPlaying());
+    setIsMuted(playerRef.current.isMuted());
   }, [playerRef]);
 
   return {
     isPlaying,
-    togglePlayPause,
-    seekBackward,
-    seekForward,
-    toggleFullscreen,
+    isMuted,
   };
 }

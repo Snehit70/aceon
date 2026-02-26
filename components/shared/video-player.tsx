@@ -38,6 +38,11 @@ interface YTPlayer {
   getCurrentTime: () => number;
   getDuration: () => number;
   getPlayerState: () => number;
+  getVolume: () => number;
+  setVolume: (volume: number) => void;
+  isMuted: () => boolean;
+  mute: () => void;
+  unMute: () => void;
   destroy: () => void;
 }
 
@@ -47,6 +52,11 @@ export interface VideoPlayerRef {
   play: () => void;
   pause: () => void;
   isPlaying: () => boolean;
+  getVolume: () => number;
+  setVolume: (volume: number) => void;
+  isMuted: () => boolean;
+  mute: () => void;
+  unmute: () => void;
 }
 
 interface VideoPlayerProps {
@@ -188,6 +198,27 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       isPlaying: () => {
         if (!playerRef.current) return false;
         return playerRef.current.getPlayerState() === window.YT.PlayerState.PLAYING;
+      },
+      getVolume: () => {
+        return playerRef.current?.getVolume() ?? 100;
+      },
+      setVolume: (volume: number) => {
+        if (isReady && playerRef.current) {
+          playerRef.current.setVolume(volume);
+        }
+      },
+      isMuted: () => {
+        return playerRef.current?.isMuted() ?? false;
+      },
+      mute: () => {
+        if (isReady && playerRef.current) {
+          playerRef.current.mute();
+        }
+      },
+      unmute: () => {
+        if (isReady && playerRef.current) {
+          playerRef.current.unMute();
+        }
       },
     }), [isReady]);
 
