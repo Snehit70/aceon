@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 
 interface UseVideoShortcutsOptions {
@@ -11,8 +12,28 @@ interface UseVideoShortcutsOptions {
 
 const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
+/**
+ * Find the index of the current rate in PLAYBACK_RATES array.
+ * If rate is not in array (e.g., user set via YouTube UI), find closest.
+ */
+function findRateIndex(rate: number): number {
+  const exactIndex = PLAYBACK_RATES.indexOf(rate);
+  if (exactIndex !== -1) return exactIndex;
+  
+  // Find closest rate
+  let closestIndex = 0;
+  let closestDiff = Math.abs(PLAYBACK_RATES[0] - rate);
+  for (let i = 1; i < PLAYBACK_RATES.length; i++) {
+    const diff = Math.abs(PLAYBACK_RATES[i] - rate);
+    if (diff < closestDiff) {
+      closestDiff = diff;
+      closestIndex = i;
+    }
+  }
+  return closestIndex;
+}
+
 export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: UseVideoShortcutsOptions) {
-  const currentRateIndexRef = useRef(0);
 
   useEffect(() => {
     const playerRefCopy = playerRef;
@@ -103,13 +124,17 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
         case "=": {
           e.preventDefault();
           e.stopPropagation();
-          console.log("[+] pressed, player:", player?.setPlaybackRate);
-          currentRateIndexRef.current = (currentRateIndexRef.current + 1) % PLAYBACK_RATES.length;
-          const newRate = PLAYBACK_RATES[currentRateIndexRef.current];
-          console.log("[+] setting rate to:", newRate);
-          if (player?.setPlaybackRate) {
+          if (!player) return;
+          
+          // Always read actual rate from player (handles YouTube UI changes, video switches)
+          const currentRate = player.getPlaybackRate();
+          const currentIndex = findRateIndex(currentRate);
+          const nextIndex = Math.min(currentIndex + 1, PLAYBACK_RATES.length - 1);
+          const newRate = PLAYBACK_RATES[nextIndex];
+          
+          if (newRate !== currentRate) {
             player.setPlaybackRate(newRate);
-            console.log("[+] rate set");
+            toast.success(`Playback speed: ${newRate}x`, { duration: 1500 });
           }
           break;
         }
@@ -117,20 +142,25 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
         case "_": {
           e.preventDefault();
           e.stopPropagation();
-          console.log("[-] pressed, player:", player?.setPlaybackRate);
-          currentRateIndexRef.current = (currentRateIndexRef.current - 1 + PLAYBACK_RATES.length) % PLAYBACK_RATES.length;
-          const newRate = PLAYBACK_RATES[currentRateIndexRef.current];
-          console.log("[-] setting rate to:", newRate);
-          if (player?.setPlaybackRate) {
+          if (!player) return;
+          
+          // Always read actual rate from player (handles YouTube UI changes, video switches)
+          const currentRate = player.getPlaybackRate();
+          const currentIndex = findRateIndex(currentRate);
+          const nextIndex = Math.max(currentIndex - 1, 0);
+          const newRate = PLAYBACK_RATES[nextIndex];
+          
+          if (newRate !== currentRate) {
             player.setPlaybackRate(newRate);
-            console.log("[-] rate set");
+            toast.success(`Playback speed: ${newRate}x`, { duration: 1500 });
           }
           break;
         }
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    // Use capture phase to intercept events before any iframe can steal them
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [playerRef, containerRef, enabled]);
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState, useId } from "react";
 import { cn } from "@/lib/utils";
+import { Play, Pause } from "lucide-react";
 import LandscapeHint from "./landscape-hint";
 
 // YouTube IFrame API types
@@ -152,8 +153,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const uniqueId = useId();
     const playerIdRef = useRef(`yt-player-${uniqueId.replace(/:/g, '')}`);
     const [isReady, setIsReady] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [showPlayIndicator, setShowPlayIndicator] = useState(false);
     const pendingSeekRef = useRef<number | null>(null);
     const pendingPlaybackRateRef = useRef<number | null>(null);
+    const playIndicatorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     
     // Derived state to track initial position for the current video
     // This allows us to ignore initialPosition prop updates unless videoId changes
@@ -262,6 +266,39 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
     }, []);
 
+    /**
+     * Handle click on the overlay to toggle play/pause.
+     * This prevents the iframe from receiving focus while still controlling playback.
+     */
+    const handleOverlayClick = useCallback(() => {
+      if (!isReady || !playerRef.current) return;
+      
+      const state = playerRef.current.getPlayerState();
+      if (state === window.YT.PlayerState.PLAYING) {
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
+      
+      // Show brief play/pause indicator
+      setShowPlayIndicator(true);
+      if (playIndicatorTimeoutRef.current) {
+        clearTimeout(playIndicatorTimeoutRef.current);
+      }
+      playIndicatorTimeoutRef.current = setTimeout(() => {
+        setShowPlayIndicator(false);
+      }, 500);
+    }, [isReady]);
+
+    // Cleanup play indicator timeout on unmount
+    useEffect(() => {
+      return () => {
+        if (playIndicatorTimeoutRef.current) {
+          clearTimeout(playIndicatorTimeoutRef.current);
+        }
+      };
+    }, []);
+
     useEffect(() => {
       let mounted = true;
 
@@ -303,15 +340,17 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               }
               if (pendingPlaybackRateRef.current !== null && playerRef.current) {
                 playerRef.current.setPlaybackRate(pendingPlaybackRateRef.current);
-                pendingPlaybackRateRef.current = null;
+                // Don't clear - keep as "preferred rate" for subsequent video changes
               }
             },
             onStateChange: (event) => {
               const state = event.data;
 
               if (state === window.YT.PlayerState.PLAYING) {
+                setIsPlaying(true);
                 startProgressTracking();
               } else {
+                setIsPlaying(false);
                 stopProgressTracking();
               }
 
@@ -349,10 +388,37 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           theaterMode ? "z-50 scale-100" : "z-0"
         )}
       >
+        {/* YouTube iframe container */}
         <div
           ref={containerRef}
           className="absolute inset-0 z-10 [&>div]:w-full [&>div]:h-full [&>iframe]:w-full [&>iframe]:h-full"
         />
+        
+        {/* Transparent click overlay - intercepts clicks to prevent iframe focus */}
+        <button
+          type="button"
+          onClick={handleOverlayClick}
+          className="absolute inset-0 z-20 cursor-pointer bg-transparent border-none outline-none focus:outline-none"
+          aria-label={isPlaying ? "Pause video" : "Play video"}
+          tabIndex={-1}
+        />
+        
+        {/* Play/Pause indicator - shows briefly on click */}
+        <div
+          className={cn(
+            "absolute inset-0 z-30 flex items-center justify-center pointer-events-none transition-opacity duration-200",
+            showPlayIndicator ? "opacity-100" : "opacity-0"
+          )}
+        >
+          <div className="w-20 h-20 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
+            {isPlaying ? (
+              <Pause className="w-10 h-10 text-white" fill="white" />
+            ) : (
+              <Play className="w-10 h-10 text-white ml-1" fill="white" />
+            )}
+          </div>
+        </div>
+        
         <LandscapeHint isReady={isReady} />
       </div>
     );
