@@ -77,13 +77,17 @@ export default function ProgressBar({
     [getTimeFromPosition, onSeek]
   );
 
-  // Handle dragging
+  // Handle dragging - seek only on mouseup for performance
+  // Visual preview updates during drag, actual seek happens on release
+  // This prevents overwhelming the YouTube API with rapid seek calls
+  const dragTimeRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!isDragging) return;
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
       const time = getTimeFromPosition(e.clientX);
-      onSeek(time);
+      dragTimeRef.current = time; // Store for mouseup, don't seek yet
       if (barRef.current) {
         const rect = barRef.current.getBoundingClientRect();
         const position = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -93,6 +97,11 @@ export default function ProgressBar({
     };
 
     const handleGlobalMouseUp = () => {
+      // Seek to final position only on mouse release
+      if (dragTimeRef.current !== null) {
+        onSeek(dragTimeRef.current);
+        dragTimeRef.current = null;
+      }
       setIsDragging(false);
       setHoverTime(null);
     };

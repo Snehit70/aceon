@@ -10,6 +10,9 @@ interface UseVideoShortcutsOptions {
   enabled?: boolean;
 }
 
+// Playback rates: 1x to 2x range for lecture content
+// +/= increases rate (clamped at 2x), -/_ decreases rate (clamped at 1x)
+// Intentionally starts at 1x - this is the default for new videos
 const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
 /**
