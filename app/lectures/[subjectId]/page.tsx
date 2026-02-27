@@ -26,6 +26,8 @@ import LecturePlayerSkeleton from "@/components/lectures/lecture-player-skeleton
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useAutoplay } from "@/hooks/use-autoplay";
 import { useVideoNavigation } from "@/hooks/use-video-navigation";
+import { useVideoShortcuts } from "@/hooks/use-video-shortcuts";
+import { KeyboardShortcutsHelp } from "@/components/shared/keyboard-shortcuts-help";
 
 /**
  * LecturePlayerPage - The core learning experience view.
@@ -73,10 +75,27 @@ function LecturePlayerPageContent() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [theaterMode, setTheaterMode] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
   
   const playerRef = useRef<VideoPlayerRef>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoSelectRef = useRef<(id: string) => void>(() => {});
   const saveProgressRef = useRef<(() => void) | null>(null);
+
+  // Keyboard shortcuts for play/pause and seek
+  useVideoShortcuts({ playerRef, containerRef: videoContainerRef, enabled: !showShortcutsHelp });
+
+  // Toggle shortcuts help with ?
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "?") {
+        e.preventDefault();
+        setShowShortcutsHelp((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
@@ -370,7 +389,7 @@ function LecturePlayerPageContent() {
 
           {navigation.currentVideo ? (
             <div className="space-y-4">
-              <div className="relative">
+              <div className="relative" ref={videoContainerRef}>
                 <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30 rounded-t-lg overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-300 ease-out"
@@ -420,6 +439,11 @@ function LecturePlayerPageContent() {
             </div>
           )}
         </div>
+
+        <KeyboardShortcutsHelp 
+          isOpen={showShortcutsHelp} 
+          onClose={() => setShowShortcutsHelp(false)} 
+        />
       </main>
     </div>
   );
