@@ -297,7 +297,7 @@ function LecturePlayerPageContent() {
             >
               <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
             </button>
-            <div className="w-80">
+            <div className="w-80 h-full">
               <LectureSidebar
                 courseTitle={course.title}
                 courseCode={course.code}
