@@ -10,10 +10,9 @@ import PlaybackSpeed from "./playback-speed";
 
 interface PlayerControlsProps {
   playerRef: React.RefObject<VideoPlayerRef | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   isPlaying: boolean;
   isReady: boolean;
-  theaterMode?: boolean;
-  onTheaterModeChange?: (enabled: boolean) => void;
   onPlayPause: () => void;
 }
 
@@ -41,10 +40,9 @@ function formatTime(seconds: number): string {
  */
 export default function PlayerControls({
   playerRef,
+  containerRef,
   isPlaying,
   isReady,
-  theaterMode = false,
-  onTheaterModeChange,
   onPlayPause,
 }: PlayerControlsProps) {
   const [currentTime, setCurrentTime] = useState(0);
@@ -169,9 +167,27 @@ export default function PlayerControls({
     [playerRef]
   );
 
-  const handleTheaterToggle = useCallback(() => {
-    onTheaterModeChange?.(!theaterMode);
-  }, [theaterMode, onTheaterModeChange]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Track fullscreen state changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const handleFullscreenToggle = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(console.error);
+    } else {
+      document.exitFullscreen().catch(console.error);
+    }
+  }, [containerRef]);
 
   return (
     <div
@@ -232,21 +248,19 @@ export default function PlayerControls({
             onRateChange={handlePlaybackRateChange}
           />
 
-          {/* Theater mode toggle */}
-          {onTheaterModeChange && (
-            <button
-              type="button"
-              onClick={handleTheaterToggle}
-              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
-              aria-label={theaterMode ? "Exit theater mode" : "Theater mode"}
-            >
-              {theaterMode ? (
-                <Minimize className="w-5 h-5 text-white" />
-              ) : (
-                <Maximize className="w-5 h-5 text-white" />
-              )}
-            </button>
-          )}
+          {/* Fullscreen toggle */}
+          <button
+            type="button"
+            onClick={handleFullscreenToggle}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
+            aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          >
+            {isFullscreen ? (
+              <Minimize className="w-5 h-5 text-white" />
+            ) : (
+              <Maximize className="w-5 h-5 text-white" />
+            )}
+          </button>
         </div>
       </div>
     </div>

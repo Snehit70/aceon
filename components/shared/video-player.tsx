@@ -73,8 +73,6 @@ interface VideoPlayerProps {
   onPause?: (currentTime: number) => void;
   onProgressUpdate?: (progress: { played: number; playedSeconds: number }) => void;
   initialPosition?: number;
-  theaterMode?: boolean;
-  onTheaterModeChange?: (enabled: boolean) => void;
 }
 
 // Track if API script is loaded
@@ -142,14 +140,13 @@ function loadYouTubeAPI(): Promise<void> {
  * @param props.onEnded - Callback fired when video finishes.
  * @param props.onProgressUpdate - Callback fired every second with playback stats.
  * @param props.initialPosition - Start time in seconds (for resuming progress).
- * @param props.theaterMode - Whether player is in expanded theater mode.
- * @param props.onTheaterModeChange - Callback to toggle theater mode.
  * @param ref - VideoPlayerRef for imperative seeking and time retrieval.
  * @returns A responsive div containing the YouTube IFrame.
  */
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
-  ({ videoId, onEnded, onPause, onProgressUpdate, initialPosition = 0, theaterMode = false, onTheaterModeChange }, ref) => {
+  ({ videoId, onEnded, onPause, onProgressUpdate, initialPosition = 0 }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const iframeContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<YTPlayer | null>(null);
     const internalRef = useRef<VideoPlayerRef | null>(null);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -336,7 +333,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           playerRef.current = null;
         }
 
-        const container = containerRef.current;
+        const container = iframeContainerRef.current;
         if (!container) return;
 
         container.innerHTML = `<div id="${playerIdRef.current}"></div>`;
@@ -407,14 +404,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
     return (
       <div
-        className={cn(
-          "relative w-full aspect-video max-h-[50vh] sm:max-h-none overflow-hidden bg-black transition-all duration-500 group",
-          theaterMode ? "z-50 scale-100" : "z-0"
-        )}
+        ref={containerRef}
+        className="relative w-full aspect-video max-h-[50vh] sm:max-h-none overflow-hidden bg-black transition-all duration-500 group"
       >
         {/* YouTube iframe container */}
         <div
-          ref={containerRef}
+          ref={iframeContainerRef}
           className="absolute inset-0 z-10 [&>div]:w-full [&>div]:h-full [&>iframe]:w-full [&>iframe]:h-full"
         />
         
@@ -454,10 +449,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         {/* Custom player controls */}
         <PlayerControls
           playerRef={internalRef}
+          containerRef={containerRef}
           isPlaying={isPlaying}
           isReady={isReady}
-          theaterMode={theaterMode}
-          onTheaterModeChange={onTheaterModeChange}
           onPlayPause={handleOverlayClick}
         />
         

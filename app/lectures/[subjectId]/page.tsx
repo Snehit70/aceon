@@ -46,7 +46,7 @@ import { KeyboardShortcutsHelp } from "@/components/shared/keyboard-shortcuts-he
  * - `useVideoNavigation`: Tracks which video is currently active, URL sync, navigation.
  * - `useVideoProgress`: Handles progress saving (throttled, immediate, beacon).
  * - `useAutoplay`: Handles countdown and auto-advance logic.
- * - `theaterMode`: Toggles expanded video view.
+ * - Fullscreen: Handled by VideoPlayer's custom controls using browser Fullscreen API.
  * - `isSidebarOpen`: Toggles the navigation sidebar (desktop only).
  * 
  * **User Flow**:
@@ -74,7 +74,6 @@ function LecturePlayerPageContent() {
   );
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [theaterMode, setTheaterMode] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
   
   const playerRef = useRef<VideoPlayerRef>(null);
@@ -297,7 +296,7 @@ function LecturePlayerPageContent() {
             >
               <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
             </button>
-            <div className="w-80">
+            <div className="w-80 h-full">
               <LectureSidebar
                 courseTitle={course.title}
                 courseCode={course.code}
@@ -405,8 +404,6 @@ function LecturePlayerPageContent() {
                   onProgressUpdate={progressWithVideo.handleProgressUpdate}
                   onPause={progressWithVideo.handlePause}
                   onEnded={handleVideoEnd}
-                  theaterMode={theaterMode}
-                  onTheaterModeChange={setTheaterMode}
                 />
 
                 {autoplay.showCountdown && navigation.findNextVideo() && (
