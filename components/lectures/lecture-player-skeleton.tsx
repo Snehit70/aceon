@@ -58,8 +58,17 @@ export default function LecturePlayerSkeleton() {
           </div>
           
           <div className="flex-1 flex items-center justify-center bg-neutral-900/30">
-            <div className="w-full max-w-4xl aspect-video bg-neutral-800/30 border-2 border-neutral-800 flex items-center justify-center">
-              <div className="h-16 w-16 bg-neutral-800/50 rounded-full" />
+            <div className="w-full max-w-4xl aspect-video bg-black border-2 border-neutral-800 flex items-center justify-center">
+              {/* Angular play button skeleton - matches actual paused state */}
+              <div className="relative">
+                <div className="w-24 h-20 bg-neutral-800/50 backdrop-blur-sm -skew-x-6 border-2 border-[#E62E2D]/30 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(230,46,45,0.2)]">
+                  {/* Play triangle placeholder */}
+                  <div className="w-0 h-0 skew-x-6 border-l-[20px] border-l-neutral-600/50 border-y-[12px] border-y-transparent" />
+                </div>
+                {/* Corner accent */}
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]/30" />
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/20" />
+              </div>
             </div>
           </div>
         </main>
