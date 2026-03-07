@@ -156,6 +156,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [isPlaying, setIsPlaying] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
     const [showPlayIndicator, setShowPlayIndicator] = useState(false);
+    // Track what action was just triggered (not current state)
+    const [lastAction, setLastAction] = useState<"play" | "pause" | null>(null);
     const [volume, setVolume] = useState(100);
     const [isMuted, setIsMuted] = useState(false);
     const [volumeTrigger, setVolumeTrigger] = useState(0);
@@ -296,10 +298,14 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       if (!isReady || !playerRef.current) return;
       
       const state = playerRef.current.getPlayerState();
-      if (state === window.YT.PlayerState.PLAYING) {
-        playerRef.current.pauseVideo();
-      } else {
+      const willPlay = state !== window.YT.PlayerState.PLAYING;
+      
+      if (willPlay) {
         playerRef.current.playVideo();
+        setLastAction("play");
+      } else {
+        playerRef.current.pauseVideo();
+        setLastAction("pause");
       }
       
       // Show brief play/pause indicator
@@ -309,6 +315,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
       playIndicatorTimeoutRef.current = setTimeout(() => {
         setShowPlayIndicator(false);
+        setLastAction(null);
       }, 900);
     }, [isReady]);
 
@@ -430,12 +437,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         />
         
         {/* Play/Pause indicator - shows briefly on click (shows what just happened) */}
-        {showPlayIndicator && (
+        {showPlayIndicator && lastAction && (
           <div
-            className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none animate-indicator-pop"
+            className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none animate-indicator-pop"
           >
-            {/* White icon with strong shadow - no background circle */}
-            {isPlaying ? (
+            {/* White icon with strong shadow - shows the action that was just triggered */}
+            {lastAction === "play" ? (
               <AngularPlayIcon 
                 className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
                 fill="white" 
