@@ -256,7 +256,9 @@ export default function PlayerControls({
             href={`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}&t=${Math.floor(currentTime)}`}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => { if (isPlaying) onPlayPause(); }}
+            onClick={() => { 
+              if (isPlaying) playerRef.current?.pause(); 
+            }}
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
             aria-label="View on YouTube"
             title="View on YouTube"
