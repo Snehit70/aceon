@@ -309,7 +309,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
       playIndicatorTimeoutRef.current = setTimeout(() => {
         setShowPlayIndicator(false);
-      }, 500);
+      }, 700);
     }, [isReady]);
 
     // Cleanup play indicator timeout on unmount
@@ -429,20 +429,28 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           tabIndex={-1}
         />
         
-        {/* Play/Pause indicator - shows briefly on click */}
+        {/* Play/Pause indicator - shows briefly on click (shows what just happened) */}
         <div
           className={cn(
-            "absolute inset-0 z-30 flex items-center justify-center pointer-events-none transition-opacity duration-200",
-            showPlayIndicator ? "opacity-100" : "opacity-0"
+            "absolute inset-0 z-30 flex items-center justify-center pointer-events-none",
+            "transition-all duration-700 ease-out",
+            showPlayIndicator 
+              ? "opacity-100 scale-100" 
+              : "opacity-0 scale-75"
           )}
         >
-          <div className="w-20 h-20 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border-2 border-[#E62E2D]/30">
-            {isPlaying ? (
-              <AngularPauseIcon className="w-10 h-10" fill="#E62E2D" />
-            ) : (
-              <AngularPlayIcon className="w-10 h-10" fill="#E62E2D" />
-            )}
-          </div>
+          {/* White icon with strong shadow - no background circle */}
+          {isPlaying ? (
+            <AngularPlayIcon 
+              className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+              fill="white" 
+            />
+          ) : (
+            <AngularPauseIcon 
+              className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+              fill="white" 
+            />
+          )}
         </div>
         
         {/* Center play button overlay - shows when paused */}

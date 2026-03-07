@@ -18,7 +18,7 @@ interface PlayerOverlayProps {
  * Shows:
  * - Loading spinner when video is buffering
  * - Large play button when video is paused and ready
- * - Angular brutal-style icons matching Chainsaw Man theme
+ * - Angular brutal-style design matching Chainsaw Man theme
  */
 export default function PlayerOverlay({
   isReady,
@@ -29,9 +29,14 @@ export default function PlayerOverlay({
 }: PlayerOverlayProps) {
   if (!isReady || isBuffering) {
     return (
-      <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 pointer-events-none">
-        <div className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border-2 border-[#E62E2D]/30">
-          <Loader2 className="w-8 h-8 text-[#E62E2D] animate-spin" />
+      <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 pointer-events-none">
+        {/* Angular loading indicator - skewed rectangle */}
+        <div className="relative">
+          <div className="w-20 h-20 bg-black/70 backdrop-blur-sm border-2 border-[#E62E2D]/50 -skew-x-6 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 text-[#E62E2D] animate-spin skew-x-6" />
+          </div>
+          {/* Corner accent */}
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]" />
         </div>
       </div>
     );
@@ -45,15 +50,23 @@ export default function PlayerOverlay({
         className="absolute inset-0 z-30 flex items-center justify-center bg-black/20 group cursor-pointer"
         aria-label="Play video"
       >
-        <div
-          className={cn(
-            "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300",
-            "bg-black/60 border-2 border-[#E62E2D]/50 backdrop-blur-sm",
-            "group-hover:scale-110 group-hover:border-[#E62E2D] group-hover:bg-black/80",
-            "shadow-[0_0_20px_rgba(230,46,45,0.3)] group-hover:shadow-[0_0_30px_rgba(230,46,45,0.5)]"
-          )}
-        >
-          <AngularPlayIcon className="w-10 h-10" fill="#E62E2D" />
+        {/* Angular play button - brutal skewed rectangle, not circle */}
+        <div className="relative">
+          <div
+            className={cn(
+              "w-24 h-20 flex items-center justify-center transition-all duration-300",
+              "bg-black/70 backdrop-blur-sm -skew-x-6",
+              "border-2 border-[#E62E2D]/50",
+              "group-hover:scale-110 group-hover:border-[#E62E2D] group-hover:bg-black/90",
+              "shadow-[4px_4px_0px_0px_rgba(230,46,45,0.4)]",
+              "group-hover:shadow-[6px_6px_0px_0px_#E62E2D]"
+            )}
+          >
+            <AngularPlayIcon className="w-12 h-12 skew-x-6" fill="white" />
+          </div>
+          {/* Corner accent */}
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D] transition-all group-hover:w-4 group-hover:h-4" />
+          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/50" />
         </div>
       </button>
     );
