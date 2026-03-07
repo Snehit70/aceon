@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState, useId } from "react";
-import { cn } from "@/lib/utils";
+
 import LandscapeHint from "./landscape-hint";
 import { PlayerControls, PlayerOverlay, VolumeIndicator } from "./player";
 import { AngularPlayIcon, AngularPauseIcon } from "./player/icons";
@@ -309,7 +309,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
       playIndicatorTimeoutRef.current = setTimeout(() => {
         setShowPlayIndicator(false);
-      }, 700);
+      }, 900);
     }, [isReady]);
 
     // Cleanup play indicator timeout on unmount
@@ -430,28 +430,24 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         />
         
         {/* Play/Pause indicator - shows briefly on click (shows what just happened) */}
-        <div
-          className={cn(
-            "absolute inset-0 z-30 flex items-center justify-center pointer-events-none",
-            "transition-all duration-700 ease-out",
-            showPlayIndicator 
-              ? "opacity-100 scale-100" 
-              : "opacity-0 scale-75"
-          )}
-        >
-          {/* White icon with strong shadow - no background circle */}
-          {isPlaying ? (
-            <AngularPlayIcon 
-              className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
-              fill="white" 
-            />
-          ) : (
-            <AngularPauseIcon 
-              className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
-              fill="white" 
-            />
-          )}
-        </div>
+        {showPlayIndicator && (
+          <div
+            className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none animate-indicator-pop"
+          >
+            {/* White icon with strong shadow - no background circle */}
+            {isPlaying ? (
+              <AngularPlayIcon 
+                className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+                fill="white" 
+              />
+            ) : (
+              <AngularPauseIcon 
+                className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+                fill="white" 
+              />
+            )}
+          </div>
+        )}
         
         {/* Center play button overlay - shows when paused */}
         <PlayerOverlay
