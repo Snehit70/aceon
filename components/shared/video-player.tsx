@@ -453,6 +453,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           isPlaying={isPlaying}
           isReady={isReady}
           onPlayPause={handleOverlayClick}
+          videoId={videoId}
         />
         
         {/* Volume indicator overlay - shows on volume change */}
