@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState, useId } from "react";
 import { cn } from "@/lib/utils";
-import { Play, Pause } from "lucide-react";
 import LandscapeHint from "./landscape-hint";
 import { PlayerControls, PlayerOverlay, VolumeIndicator } from "./player";
+import { AngularPlayIcon, AngularPauseIcon } from "./player/icons";
 
 // YouTube IFrame API types
 declare global {
@@ -154,6 +154,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const playerIdRef = useRef(`yt-player-${uniqueId.replace(/:/g, '')}`);
     const [isReady, setIsReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isBuffering, setIsBuffering] = useState(false);
     const [showPlayIndicator, setShowPlayIndicator] = useState(false);
     const [volume, setVolume] = useState(100);
     const [isMuted, setIsMuted] = useState(false);
@@ -367,6 +368,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             onStateChange: (event) => {
               const state = event.data;
 
+              if (state === window.YT.PlayerState.BUFFERING) {
+                setIsBuffering(true);
+              } else {
+                setIsBuffering(false);
+              }
+
               if (state === window.YT.PlayerState.PLAYING) {
                 setIsPlaying(true);
                 startProgressTracking();
@@ -429,11 +436,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             showPlayIndicator ? "opacity-100" : "opacity-0"
           )}
         >
-          <div className="w-20 h-20 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border-2 border-[#E62E2D]/30">
             {isPlaying ? (
-              <Pause className="w-10 h-10 text-white" fill="white" />
+              <AngularPauseIcon className="w-10 h-10" fill="#E62E2D" />
             ) : (
-              <Play className="w-10 h-10 text-white ml-1" fill="white" />
+              <AngularPlayIcon className="w-10 h-10" fill="#E62E2D" />
             )}
           </div>
         </div>
@@ -442,6 +449,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         <PlayerOverlay
           isReady={isReady}
           isPlaying={isPlaying}
+          isBuffering={isBuffering}
           showPlayButton={!showPlayIndicator}
           onPlay={() => internalRef.current?.play()}
         />
