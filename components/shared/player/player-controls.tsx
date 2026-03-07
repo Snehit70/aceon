@@ -269,7 +269,7 @@ export default function PlayerControls({
 
           {/* View on YouTube */}
           <a
-            href={`https://www.youtube.com/watch?v=${videoId}`}
+            href={`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
