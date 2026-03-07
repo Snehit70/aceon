@@ -58,18 +58,18 @@ export default function LecturePlayerSkeleton() {
           </div>
           
           <div className="flex-1 flex items-center justify-center bg-black">
-            <div className="w-full max-w-4xl aspect-video bg-neutral-900 border-2 border-neutral-800 flex items-center justify-center">
+            <div className="w-full max-w-4xl aspect-video bg-black/80 border-2 border-neutral-700 flex items-center justify-center">
               {/* Angular play button skeleton - matches actual paused state */}
               <div className="relative animate-pulse">
-                <div className="w-24 h-20 bg-neutral-800 -skew-x-6 border-2 border-[#E62E2D]/40 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(230,46,45,0.3)]">
+                <div className="w-24 h-20 bg-neutral-800 -skew-x-6 border-2 border-[#E62E2D]/60 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(230,46,45,0.4)]">
                   {/* Play triangle placeholder - using SVG for reliability */}
                   <svg viewBox="0 0 24 24" className="w-10 h-10 skew-x-6" fill="currentColor">
-                    <path d="M6 4.5L20.5 12L6 19.5V4.5Z" className="fill-neutral-600" />
+                    <path d="M6 4.5L20.5 12L6 19.5V4.5Z" className="fill-neutral-500" />
                   </svg>
                 </div>
                 {/* Corner accent */}
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]/50" />
-                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/30" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]/70" />
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/50" />
               </div>
             </div>
           </div>
