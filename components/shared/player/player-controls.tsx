@@ -7,6 +7,7 @@ import type { VideoPlayerRef } from "../video-player";
 import ProgressBar from "./progress-bar";
 import VolumeControl from "./volume-control";
 import PlaybackSpeed from "./playback-speed";
+import { YouTubeIcon } from "./icons";
 
 interface PlayerControlsProps {
   playerRef: React.RefObject<VideoPlayerRef | null>;
@@ -14,6 +15,7 @@ interface PlayerControlsProps {
   isPlaying: boolean;
   isReady: boolean;
   onPlayPause: () => void;
+  videoId: string;
 }
 
 /**
@@ -44,6 +46,7 @@ export default function PlayerControls({
   isPlaying,
   isReady,
   onPlayPause,
+  videoId,
 }: PlayerControlsProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -247,6 +250,21 @@ export default function PlayerControls({
             rate={playbackRate}
             onRateChange={handlePlaybackRateChange}
           />
+
+          {/* View on YouTube */}
+          <a
+            href={`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}&t=${Math.floor(currentTime)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => { 
+              if (isPlaying) playerRef.current?.pause(); 
+            }}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
+            aria-label="View on YouTube"
+            title="View on YouTube"
+          >
+            <YouTubeIcon className="w-5 h-5 text-white" />
+          </a>
 
           {/* Fullscreen toggle */}
           <button

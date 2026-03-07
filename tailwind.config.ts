@@ -79,6 +79,17 @@ const config: Config = {
         display: ["var(--font-display)", "var(--font-sans)"],
         glitch: ["var(--font-glitch)", "cursive"],
       },
+      keyframes: {
+        "indicator-pop": {
+          "0%": { transform: "scale(1.3)", opacity: "0" },
+          "15%": { transform: "scale(1.05)", opacity: "1" },
+          "75%": { transform: "scale(1)", opacity: "1" },
+          "100%": { transform: "scale(0.8)", opacity: "0" },
+        },
+      },
+      animation: {
+        "indicator-pop": "indicator-pop 900ms ease-out forwards",
+      },
     }
   },
   plugins: [tailwindAnimate],

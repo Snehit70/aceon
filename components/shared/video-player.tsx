@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState, useId } from "react";
-import { cn } from "@/lib/utils";
-import { Play, Pause } from "lucide-react";
+
 import LandscapeHint from "./landscape-hint";
 import { PlayerControls, PlayerOverlay, VolumeIndicator } from "./player";
+import { AngularPlayIcon, AngularPauseIcon } from "./player/icons";
 
 // YouTube IFrame API types
 declare global {
@@ -154,6 +154,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const playerIdRef = useRef(`yt-player-${uniqueId.replace(/:/g, '')}`);
     const [isReady, setIsReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isBuffering, setIsBuffering] = useState(false);
     const [showPlayIndicator, setShowPlayIndicator] = useState(false);
     const [volume, setVolume] = useState(100);
     const [isMuted, setIsMuted] = useState(false);
@@ -308,7 +309,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
       playIndicatorTimeoutRef.current = setTimeout(() => {
         setShowPlayIndicator(false);
-      }, 500);
+      }, 900);
     }, [isReady]);
 
     // Cleanup play indicator timeout on unmount
@@ -367,6 +368,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             onStateChange: (event) => {
               const state = event.data;
 
+              if (state === window.YT.PlayerState.BUFFERING) {
+                setIsBuffering(true);
+              } else {
+                setIsBuffering(false);
+              }
+
               if (state === window.YT.PlayerState.PLAYING) {
                 setIsPlaying(true);
                 startProgressTracking();
@@ -422,26 +429,31 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           tabIndex={-1}
         />
         
-        {/* Play/Pause indicator - shows briefly on click */}
-        <div
-          className={cn(
-            "absolute inset-0 z-30 flex items-center justify-center pointer-events-none transition-opacity duration-200",
-            showPlayIndicator ? "opacity-100" : "opacity-0"
-          )}
-        >
-          <div className="w-20 h-20 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
+        {/* Play/Pause indicator - shows briefly on click (shows the action that will happen) */}
+        {showPlayIndicator && !isBuffering && (
+          <div
+            className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none animate-indicator-pop"
+          >
+            {/* White icon - show opposite of current state = the action available */}
             {isPlaying ? (
-              <Pause className="w-10 h-10 text-white" fill="white" />
+              <AngularPauseIcon 
+                className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+                fill="white" 
+              />
             ) : (
-              <Play className="w-10 h-10 text-white ml-1" fill="white" />
+              <AngularPlayIcon 
+                className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+                fill="white" 
+              />
             )}
           </div>
-        </div>
+        )}
         
         {/* Center play button overlay - shows when paused */}
         <PlayerOverlay
           isReady={isReady}
           isPlaying={isPlaying}
+          isBuffering={isBuffering}
           showPlayButton={!showPlayIndicator}
           onPlay={() => internalRef.current?.play()}
         />
@@ -453,6 +465,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           isPlaying={isPlaying}
           isReady={isReady}
           onPlayPause={handleOverlayClick}
+          videoId={videoId}
         />
         
         {/* Volume indicator overlay - shows on volume change */}

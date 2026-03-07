@@ -1,11 +1,13 @@
 "use client";
 
-import { Play, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AngularPlayIcon } from "./icons";
 
 interface PlayerOverlayProps {
   isReady: boolean;
   isPlaying: boolean;
+  isBuffering?: boolean;
   showPlayButton?: boolean;
   onPlay: () => void;
 }
@@ -16,25 +18,31 @@ interface PlayerOverlayProps {
  * Shows:
  * - Loading spinner when video is buffering
  * - Large play button when video is paused and ready
+ * - Angular brutal-style design matching Chainsaw Man theme
  */
 export default function PlayerOverlay({
   isReady,
   isPlaying,
+  isBuffering = false,
   showPlayButton = true,
   onPlay,
 }: PlayerOverlayProps) {
-  // Show loading state when not ready
-  if (!isReady) {
+  if (!isReady || isBuffering) {
     return (
-      <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 pointer-events-none">
-        <div className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-white animate-spin" />
+      <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
+        {/* Angular loading indicator - skewed rectangle with play icon */}
+        <div className="relative animate-pulse">
+          <div className="w-24 h-20 bg-neutral-900 border-2 border-[#E62E2D]/50 -skew-x-6 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(230,46,45,0.3)]">
+            <Loader2 className="w-10 h-10 text-[#E62E2D] animate-spin skew-x-6" />
+          </div>
+          {/* Corner accent */}
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]/50" />
+          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/30" />
         </div>
       </div>
     );
   }
 
-  // Show play button when paused
   if (!isPlaying && showPlayButton) {
     return (
       <button
@@ -43,14 +51,24 @@ export default function PlayerOverlay({
         className="absolute inset-0 z-30 flex items-center justify-center bg-black/20 group cursor-pointer"
         aria-label="Play video"
       >
-        <div
-          className={cn(
-            "w-20 h-20 rounded-full flex items-center justify-center transition-all",
-            "bg-primary/90 group-hover:bg-primary group-hover:scale-110",
-            "shadow-lg shadow-primary/30"
-          )}
-        >
-          <Play className="w-10 h-10 text-white ml-1" fill="white" />
+        {/* Angular play button - brutal skewed rectangle, not circle */}
+        <div className="relative transition-transform duration-300 group-hover:scale-110">
+          <div
+            className={cn(
+              "w-24 h-20 flex items-center justify-center",
+              "bg-black/70 backdrop-blur-sm -skew-x-6",
+              "border-2 border-[#E62E2D]/50 group-hover:border-[#E62E2D]",
+              "transition-[border-color,background-color,box-shadow] duration-300",
+              "group-hover:bg-black/90",
+              "shadow-[4px_4px_0px_0px_rgba(230,46,45,0.4)]",
+              "group-hover:shadow-[6px_6px_0px_0px_#E62E2D]"
+            )}
+          >
+            <AngularPlayIcon className="w-12 h-12 skew-x-6" fill="white" />
+          </div>
+          {/* Corner accent */}
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D] transition-all duration-300 group-hover:w-4 group-hover:h-4" />
+          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/50" />
         </div>
       </button>
     );

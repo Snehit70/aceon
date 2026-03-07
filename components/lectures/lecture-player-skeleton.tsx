@@ -57,9 +57,18 @@ export default function LecturePlayerSkeleton() {
             </div>
           </div>
           
-          <div className="flex-1 flex items-center justify-center bg-neutral-900/30">
-            <div className="w-full max-w-4xl aspect-video bg-neutral-800/30 border-2 border-neutral-800 flex items-center justify-center">
-              <div className="h-16 w-16 bg-neutral-800/50 rounded-full" />
+          <div className="flex-1 flex items-center justify-center bg-black min-h-[400px] relative z-20">
+            <div className="w-full max-w-4xl aspect-video bg-black border-2 border-neutral-700 flex items-center justify-center relative">
+              {/* Angular play button skeleton - matches actual paused state */}
+              <div className="relative z-10">
+                <div className="w-24 h-20 bg-black -skew-x-6 border-2 border-[#E62E2D] flex items-center justify-center shadow-[4px_4px_0px_0px_#E62E2D]">
+                  <svg viewBox="0 0 24 24" className="w-12 h-12 skew-x-6">
+                    <path d="M6 4.5L20.5 12L6 19.5V4.5Z" fill="#E62E2D" />
+                  </svg>
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]" />
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]" />
+              </div>
             </div>
           </div>
         </main>
