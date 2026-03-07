@@ -29,14 +29,15 @@ export default function PlayerOverlay({
 }: PlayerOverlayProps) {
   if (!isReady || isBuffering) {
     return (
-      <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 pointer-events-none">
-        {/* Angular loading indicator - skewed rectangle */}
-        <div className="relative">
-          <div className="w-20 h-20 bg-black/70 backdrop-blur-sm border-2 border-[#E62E2D]/50 -skew-x-6 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-[#E62E2D] animate-spin skew-x-6" />
+      <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 pointer-events-none">
+        {/* Angular loading indicator - skewed rectangle with play icon */}
+        <div className="relative animate-pulse">
+          <div className="w-24 h-20 bg-neutral-900 border-2 border-[#E62E2D]/50 -skew-x-6 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(230,46,45,0.3)]">
+            <Loader2 className="w-10 h-10 text-[#E62E2D] animate-spin skew-x-6" />
           </div>
           {/* Corner accent */}
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]" />
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]/50" />
+          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]/30" />
         </div>
       </div>
     );
