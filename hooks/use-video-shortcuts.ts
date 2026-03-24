@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
+import { useSettings } from "./use-settings";
 
 interface UseVideoShortcutsOptions {
   playerRef: React.RefObject<VideoPlayerRef | null>;
@@ -20,7 +21,7 @@ const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
  * If rate is not in array (e.g., user set via YouTube UI), find closest.
  */
 function findRateIndex(rate: number): number {
-  const exactIndex = PLAYBACK_RATES.indexOf(rate);
+  const exactIndex = PLAYBACK_RATES.indexOf(rate as 1 | 1.25 | 1.5 | 1.75 | 2);
   if (exactIndex !== -1) return exactIndex;
   
   // Find closest rate
@@ -37,6 +38,13 @@ function findRateIndex(rate: number): number {
 }
 
 export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: UseVideoShortcutsOptions) {
+  const { seekInterval } = useSettings();
+  const seekIntervalRef = useRef(seekInterval);
+
+  // Keep ref in sync with setting
+  useEffect(() => {
+    seekIntervalRef.current = seekInterval;
+  }, [seekInterval]);
 
   useEffect(() => {
     const playerRefCopy = playerRef;
@@ -73,14 +81,14 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           e.stopPropagation();
           if (!player) return;
           const currentTime = player.getCurrentTime();
-          player.seekTo(Math.max(0, currentTime - 10));
+          player.seekTo(Math.max(0, currentTime - seekIntervalRef.current));
           break;
         }
         case "ArrowRight": {
           e.preventDefault();
           e.stopPropagation();
           if (!player) return;
-          player.seekTo(player.getCurrentTime() + 10);
+          player.seekTo(player.getCurrentTime() + seekIntervalRef.current);
           break;
         }
         case "ArrowUp": {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { BookOpenIcon } from "lucide-react";
+import { BookOpenIcon, SlidersHorizontal } from "lucide-react";
 
 /**
  * Navbar - Global navigation header.
@@ -43,6 +43,13 @@ export function Navbar() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
+              <Link
+                href="/settings"
+                className="flex items-center justify-center h-9 w-9 rounded-sm border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary transition-all"
+                title="Settings"
+              >
+                <SlidersHorizontal className="h-4 w-4 text-white/70 hover:text-white transition-colors" />
+              </Link>
               <UserButton
                 appearance={{
                   elements: {

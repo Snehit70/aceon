@@ -5,6 +5,7 @@ import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useSta
 import LandscapeHint from "./landscape-hint";
 import { PlayerControls, PlayerOverlay, VolumeIndicator } from "./player";
 import { AngularPlayIcon, AngularPauseIcon } from "./player/icons";
+import { useSettings } from "@/hooks/use-settings";
 
 // YouTube IFrame API types
 declare global {
@@ -145,6 +146,7 @@ function loadYouTubeAPI(): Promise<void> {
  */
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
   ({ videoId, onEnded, onPause, onProgressUpdate, initialPosition = 0 }, ref) => {
+    const { defaultPlaybackSpeed, rememberVolume, defaultVolume } = useSettings();
     const containerRef = useRef<HTMLDivElement>(null);
     const iframeContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<YTPlayer | null>(null);
@@ -156,7 +158,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [isPlaying, setIsPlaying] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
     const [showPlayIndicator, setShowPlayIndicator] = useState(false);
-    const [volume, setVolume] = useState(100);
+    const [volume, setVolume] = useState(rememberVolume ? defaultVolume : 100);
     const [isMuted, setIsMuted] = useState(false);
     const [volumeTrigger, setVolumeTrigger] = useState(0);
     const pendingSeekRef = useRef<number | null>(null);
@@ -362,7 +364,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               }
               if (pendingPlaybackRateRef.current !== null && playerRef.current) {
                 playerRef.current.setPlaybackRate(pendingPlaybackRateRef.current);
-                // Don't clear - keep as "preferred rate" for subsequent video changes
+              } else if (playerRef.current && defaultPlaybackSpeed !== 1) {
+                playerRef.current.setPlaybackRate(defaultPlaybackSpeed);
+              }
+              if (playerRef.current && rememberVolume) {
+                playerRef.current.setVolume(defaultVolume);
+                setVolume(defaultVolume);
               }
             },
             onStateChange: (event) => {

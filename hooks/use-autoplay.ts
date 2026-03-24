@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSettings } from "./use-settings";
 
 export interface UseAutoplayOptions {
   onAutoplay: (nextVideoId: string) => void;
@@ -17,8 +18,9 @@ export interface UseAutoplayReturn {
 export function useAutoplay({
   onAutoplay,
 }: UseAutoplayOptions): UseAutoplayReturn {
+  const { autoplayEnabled, autoplayDelay } = useSettings();
   const [showCountdown, setShowCountdown] = useState(false);
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState<number>(autoplayDelay);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pendingVideoRef = useRef<string | null>(null);
 
@@ -29,18 +31,24 @@ export function useAutoplay({
     }
     pendingVideoRef.current = null;
     setShowCountdown(false);
-    setCountdown(10);
-  }, [setShowCountdown, setCountdown]);
+    setCountdown(autoplayDelay);
+  }, [autoplayDelay, setShowCountdown, setCountdown]);
 
   const startCountdown = useCallback(
     (nextVideoId: string) => {
+      // Don't start if autoplay is disabled
+      if (!autoplayEnabled) {
+        onAutoplay(nextVideoId);
+        return;
+      }
+
       if (countdownIntervalRef.current) {
         clearInterval(countdownIntervalRef.current);
         countdownIntervalRef.current = null;
       }
       pendingVideoRef.current = nextVideoId;
       setShowCountdown(true);
-      setCountdown(10);
+      setCountdown(autoplayDelay);
 
       countdownIntervalRef.current = setInterval(() => {
         setCountdown((prev) => {
@@ -54,13 +62,13 @@ export function useAutoplay({
               onAutoplay(pendingVideoRef.current);
               pendingVideoRef.current = null;
             }
-            return 10;
+            return autoplayDelay;
           }
           return prev - 1;
         });
       }, 1000);
     },
-    [onAutoplay, setShowCountdown, setCountdown]
+    [onAutoplay, autoplayEnabled, autoplayDelay, setShowCountdown, setCountdown]
   );
 
   const playNextNow = useCallback(
