@@ -176,11 +176,12 @@ export default function PlayerControls({
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const getOrientationController = () =>
-    screen.orientation as ScreenOrientation & {
+  const getOrientationController = ():
+    | (ScreenOrientation & {
       lock?: (orientation: string) => Promise<void>;
       unlock?: () => void;
-    };
+    })
+    | undefined => screen.orientation;
 
   // Track fullscreen state changes
   useEffect(() => {
@@ -188,7 +189,7 @@ export default function PlayerControls({
       setIsFullscreen(!!document.fullscreenElement);
 
       const orientation = getOrientationController();
-      if (!document.fullscreenElement && orientation.unlock) {
+      if (!document.fullscreenElement && orientation?.unlock) {
         orientation.unlock();
       }
     };
@@ -209,7 +210,7 @@ export default function PlayerControls({
       }
 
       const orientation = getOrientationController();
-      if (orientation.lock) {
+      if (orientation?.lock) {
         try {
           await orientation.lock("landscape");
         } catch (error) {
