@@ -59,19 +59,19 @@ export function ChainsawCard({
         
         <div className="relative h-full bg-black border-2 border-border group-hover/card:border-primary flex flex-col clip-corner transition-colors duration-200 overflow-hidden">
           
-          <div className="p-4 border-b-2 border-border group-hover/card:border-primary/50 bg-secondary/5 space-y-3">
+          <div className="p-1.5 sm:p-4 border-b-2 border-border group-hover/card:border-primary/50 bg-secondary/5 space-y-1 sm:space-y-3">
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className="font-mono text-[10px] uppercase border-primary text-primary bg-primary/10 rounded-none px-1.5 py-0.5">
+              <Badge variant="outline" className="font-mono text-[8px] sm:text-[10px] uppercase border-primary text-primary bg-primary/10 rounded-none px-1 py-0.5 sm:px-1.5">
                 {code}
               </Badge>
-              <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                <span>{level.replace(" Level", "")}</span>
+              <div className="flex items-center gap-1 text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wide sm:tracking-widest">
+                <span className="truncate max-w-[64px] sm:max-w-none">{level.replace(" Level", "")}</span>
                 <span className="w-1.5 h-1.5 bg-primary/50" />
               </div>
             </div>
             
-            <div className="space-y-1">
-              <h3 className="font-display text-2xl font-bold leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-white transition-colors">
+            <div className="space-y-0.5 sm:space-y-1">
+              <h3 className="font-display text-lg sm:text-2xl font-bold leading-[0.88] sm:leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-white transition-colors line-clamp-2 sm:line-clamp-none">
                 {cleanCourseTitle(title)}
               </h3>
               {subtitle && (
@@ -82,22 +82,22 @@ export function ChainsawCard({
             </div>
           </div>
 
-          <div className="p-4 flex-grow flex flex-col justify-between space-y-6 relative">
+          <div className="p-1.5 sm:p-4 flex-grow flex flex-col justify-between space-y-2 sm:space-y-6 relative">
             
             <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 pointer-events-none mix-blend-overlay" />
 
-            <div className="space-y-2 z-10">
-              <div className="flex items-center justify-between font-mono text-xs uppercase tracking-wider">
+            <div className="space-y-1 sm:space-y-2 z-10">
+              <div className="flex items-center justify-between font-mono text-[9px] sm:text-xs uppercase tracking-wide sm:tracking-wider">
                 <span className={cn(
-                  "font-bold",
+                  "font-bold truncate pr-1",
                   isCompleted ? "text-primary" : "text-muted-foreground"
                 )}>
-                  {isCompleted ? "Target_Eliminated" : isStarted ? "In_Progress" : "Not_Started"}
+                  {isCompleted ? "Done" : isStarted ? "In_Prog" : "New"}
                 </span>
                 <span className="text-primary">{Math.round(progress)}%</span>
               </div>
               
-              <div className="h-3 w-full bg-secondary border border-border relative">
+              <div className="h-1.5 sm:h-3 w-full bg-secondary border border-border relative">
                 <div 
                   className={cn(
                     "h-full transition-all duration-300",
@@ -109,19 +109,19 @@ export function ChainsawCard({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-dashed border-border group-hover/card:border-primary/30 z-10">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-1.5 sm:pt-4 border-t border-dashed border-border group-hover/card:border-primary/30 z-10">
               <div className="flex flex-col">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Lectures</span>
-                <div className="flex items-center gap-1.5 font-mono text-sm font-bold">
-                  <BookOpen className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase tracking-wide sm:tracking-wider">Lec</span>
+                <div className="flex items-center gap-1 font-mono text-[15px] sm:text-sm font-bold leading-none">
+                  <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
                   {lectureCount}
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Duration</span>
-                <div className="flex items-center gap-1.5 font-mono text-sm font-bold">
-                  <Clock className="w-3.5 h-3.5 text-primary" />
-                  {totalDuration}
+                <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase tracking-wide sm:tracking-wider">Dur</span>
+                <div className="flex items-center gap-1 font-mono text-[13px] sm:text-sm font-bold leading-none">
+                  <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
+                  <span className="truncate">{totalDuration}</span>
                 </div>
               </div>
             </div>

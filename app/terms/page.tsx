@@ -5,7 +5,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white">
       <header className="border-b-4 border-[#E62E2D] py-4">
-        <div className="container flex items-center justify-between">
+        <div className="container flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="p-1.5 bg-[#E62E2D] text-white">
               <GraduationCap className="h-5 w-5" />
@@ -22,10 +22,10 @@ export default function TermsPage() {
         </div>
       </header>
 
-      <main className="container py-16 max-w-3xl">
-        <div className="space-y-12">
+      <main className="container py-10 sm:py-16 max-w-3xl">
+        <div className="space-y-9 sm:space-y-12">
           <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter">
+            <h1 className="text-[clamp(2.5rem,14vw,4.5rem)] md:text-7xl font-display font-black uppercase tracking-normal md:tracking-tighter break-words">
               Terms<span className="text-[#E62E2D]">_of_Service</span>
             </h1>
             <p className="text-neutral-400 font-mono text-sm">
@@ -33,7 +33,7 @@ export default function TermsPage() {
             </p>
           </div>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Acceptance</h2>
             <p className="text-neutral-300 leading-relaxed">
               By accessing and using Aceon, you agree to be bound by these Terms of Service. 
@@ -41,7 +41,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Purpose</h2>
             <p className="text-neutral-300 leading-relaxed">
               Aceon is an unofficial academic companion designed for IITM BS Degree students. 
@@ -49,7 +49,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">User Responsibilities</h2>
             <ul className="text-neutral-300 leading-relaxed space-y-2">
               <li className="flex items-start gap-2">
@@ -67,7 +67,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Intellectual Property</h2>
             <p className="text-neutral-300 leading-relaxed">
               All lecture content belongs to IIT Madras and respective content creators. 
@@ -76,7 +76,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Disclaimer</h2>
             <div className="bg-neutral-900 border-2 border-[#E62E2D] p-4">
               <p className="text-neutral-300 leading-relaxed font-mono text-sm">
@@ -86,7 +86,7 @@ export default function TermsPage() {
             </div>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Limitation of Liability</h2>
             <p className="text-neutral-300 leading-relaxed">
               Aceon is provided &quot;as is&quot; without warranties of any kind. We are not liable for 
@@ -95,7 +95,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Changes to Terms</h2>
             <p className="text-neutral-300 leading-relaxed">
               We reserve the right to modify these terms at any time. Continued use of Aceon 
@@ -103,7 +103,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Contact</h2>
             <p className="text-neutral-300 leading-relaxed">
               Questions? Reach out via{" "}
@@ -121,14 +121,14 @@ export default function TermsPage() {
       </main>
 
       <footer className="border-t-4 border-black py-3 bg-[#E62E2D]">
-        <div className="container flex items-center justify-between gap-4 text-sm font-bold uppercase text-black">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-sm font-bold uppercase text-black">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-black text-white">
               <GraduationCap className="h-4 w-4" />
             </div>
             <span className="font-display font-black text-lg tracking-widest">Aceon</span>
           </div>
-          <div className="flex items-center gap-6 tracking-widest">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-6 tracking-widest">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/terms" className="text-white">Terms</Link>
             <a href="https://github.com/Snehit70" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>

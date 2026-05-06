@@ -6,7 +6,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white">
       {/* Header */}
       <header className="border-b-4 border-[#E62E2D] py-4">
-        <div className="container flex items-center justify-between">
+        <div className="container flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="p-1.5 bg-[#E62E2D] text-white">
               <GraduationCap className="h-5 w-5" />
@@ -24,11 +24,11 @@ export default function PrivacyPage() {
       </header>
 
       {/* Content */}
-      <main className="container py-16 max-w-3xl">
-        <div className="space-y-12">
+      <main className="container py-10 sm:py-16 max-w-3xl">
+        <div className="space-y-9 sm:space-y-12">
           {/* Title */}
           <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter">
+            <h1 className="text-[clamp(2.5rem,14vw,4.5rem)] md:text-7xl font-display font-black uppercase tracking-normal md:tracking-tighter break-words">
               Privacy<span className="text-[#E62E2D]">_Protocol</span>
             </h1>
             <p className="text-neutral-400 font-mono text-sm">
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* Sections */}
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Data Collection</h2>
             <p className="text-neutral-300 leading-relaxed">
               Aceon collects minimal data required to provide you with a personalized learning experience. 
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">How We Use Your Data</h2>
             <ul className="text-neutral-300 leading-relaxed space-y-2">
               <li className="flex items-start gap-2">
@@ -64,7 +64,7 @@ export default function PrivacyPage() {
             </ul>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Third-Party Services</h2>
             <p className="text-neutral-300 leading-relaxed mb-4">
               We integrate with the following services:
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
             </div>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Your Rights</h2>
             <p className="text-neutral-300 leading-relaxed">
               You have the right to request deletion of your data at any time. 
@@ -94,7 +94,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-6">
+          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
             <h2 className="text-2xl font-display font-black uppercase">Contact</h2>
             <p className="text-neutral-300 leading-relaxed">
               For privacy-related inquiries, reach out via{" "}
@@ -113,14 +113,14 @@ export default function PrivacyPage() {
 
       {/* Footer */}
       <footer className="border-t-4 border-black py-3 bg-[#E62E2D]">
-        <div className="container flex items-center justify-between gap-4 text-sm font-bold uppercase text-black">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-sm font-bold uppercase text-black">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-black text-white">
               <GraduationCap className="h-4 w-4" />
             </div>
             <span className="font-display font-black text-lg tracking-widest">Aceon</span>
           </div>
-          <div className="flex items-center gap-6 tracking-widest">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-6 tracking-widest">
             <Link href="/privacy" className="text-white">Privacy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <a href="https://github.com/Snehit70" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
