@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn, cleanCourseTitle } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -355,6 +355,9 @@ function LecturePlayerPageContent() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-full max-w-none h-[100dvh] md:w-[85vw] md:max-w-80">
+              <SheetTitle className="sr-only">
+                Lecture navigation
+              </SheetTitle>
               <LectureSidebar
                 courseTitle={course.title}
                 courseCode={course.code}
