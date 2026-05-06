@@ -412,7 +412,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     return (
       <div
         ref={containerRef}
-        className="relative w-full aspect-video max-h-[50vh] sm:max-h-none overflow-hidden bg-black transition-all duration-500 group"
+        className="relative w-full aspect-video max-h-[52dvh] sm:max-h-none overflow-hidden bg-black transition-all duration-500 group"
       >
         {/* YouTube iframe container */}
         <div

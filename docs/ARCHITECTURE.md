@@ -146,6 +146,22 @@ There are three progress save paths:
 
 The current visual source of truth is `docs/DESIGN.yaml`, backed by `app/globals.css` and `tailwind.config.ts`. The active direction is Chainsaw Man inspired: black surfaces, blood red primary, acid green accent, square corners, clipped cards, halftone/noise textures, and high-contrast image overlays.
 
+Brand assets live in `public/images/aceon-logo.svg`, `app/icon.png`, and `app/apple-icon.png`. The root metadata title is intentionally just `Aceon`, and the app icon is a tight square crop so browser tabs and mobile surfaces do not render the mark too small.
+
+## Responsive Behavior
+
+The mobile layout keeps the desktop visual identity while changing density and control placement for narrow screens:
+
+| Surface | Mobile Behavior |
+| --- | --- |
+| Landing hero | Stacked strapline, centered title stack, and lower CTA placement for phone viewports. |
+| Lectures dashboard | Compact spacing, two-column course grids where possible, horizontal tab/filter scrolling, and wrapped status text. |
+| Profile sheet | Full-width phone sheet, dynamic viewport height, compact level/course controls, and red/green theme tokens. |
+| Lecture sidebar | Course outline uses a full-height mobile sheet with compact week/video rows. |
+| Video player | Touch/pointer seek and volume controls, dynamic viewport sizing, and best-effort landscape orientation lock after fullscreen. |
+
+Radix sheets that hide their visible header still need an accessible title. The mobile lecture navigation sheet provides a visually hidden `SheetTitle` to satisfy that requirement without changing the UI.
+
 ## Environment
 
 Local development uses port `5550`:
@@ -182,4 +198,3 @@ These are good candidates for the next performance and UX phases:
 - `convex/courses.listWithStats` collects all videos to aggregate counts; acceptable at small scale, but should be revisited if course/video volume grows.
 - `/api/save-progress` relies on a public Convex URL and a beacon mutation without the normal Clerk auth context; verify security expectations before expanding it.
 - Mobile lecture player ergonomics need a dedicated pass after documentation and performance review.
-

@@ -28,8 +28,16 @@ const rubikGlitch = Rubik_Glitch({
 });
 
 export const metadata: Metadata = {
-  title: "Aceon - Public Safety Bureau Edition",
+  title: {
+    default: "Aceon",
+    template: "Aceon",
+  },
   description: "The ultimate companion for lecture notes, GPA calculation, and course conquest.",
+  applicationName: "Aceon",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 /**

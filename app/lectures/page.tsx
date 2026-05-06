@@ -208,7 +208,7 @@ if (courses === undefined) {
       />
       <div className="fixed inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none z-0" />
       
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12 max-w-7xl space-y-16 relative z-10 animate-in fade-in duration-500">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-12 max-w-7xl space-y-7 sm:space-y-10 md:space-y-16 relative z-10 animate-in fade-in duration-500">
         
         <ProfileSheet 
           open={showProfileSheet} 
@@ -217,13 +217,13 @@ if (courses === undefined) {
         />
 
         {/* Header */}
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-4 md:gap-8">
           <div className="flex items-center gap-4">
             <Button 
               asChild 
               variant="ghost" 
               size="sm" 
-              className="gap-2 text-neutral-400 hover:text-[#E62E2D] hover:bg-transparent transition-colors uppercase font-bold tracking-widest"
+              className="h-9 gap-2 px-1 text-xs text-neutral-400 hover:text-[#E62E2D] hover:bg-transparent transition-colors uppercase font-bold tracking-widest sm:h-10 sm:text-sm"
             >
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
@@ -232,15 +232,15 @@ if (courses === undefined) {
             </Button>
           </div>
           
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
-            <div className="space-y-4">
-              <h1 className="text-6xl sm:text-7xl font-black tracking-tighter text-white uppercase font-display drop-shadow-[4px_4px_0_#E62E2D] -rotate-1 skew-x-[-5deg] leading-none">
-                Active <span className="text-white bg-[#E62E2D] px-2 transform skew-x-[10deg] inline-block border-2 border-black">Missions</span>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 md:gap-8">
+            <div className="space-y-3 sm:space-y-4">
+              <h1 className="text-[clamp(2.25rem,11vw,3.35rem)] sm:text-7xl font-black tracking-normal sm:tracking-tighter text-white uppercase font-display drop-shadow-[3px_3px_0_#E62E2D] sm:drop-shadow-[4px_4px_0_#E62E2D] -rotate-1 sm:skew-x-[-5deg] leading-none break-words">
+                Active <span className="text-white bg-[#E62E2D] px-2 transform sm:skew-x-[10deg] inline-block border-2 border-black mt-1">Missions</span>
               </h1>
-              <div className="bg-white/10 backdrop-blur-sm border-l-4 border-[#E62E2D] p-4 transform rotate-1">
-                <p className="text-base sm:text-lg text-neutral-200 font-mono uppercase tracking-widest">
+              <div className="bg-white/10 backdrop-blur-sm border-l-4 border-[#E62E2D] p-2.5 sm:p-4 transform sm:rotate-1">
+                <p className="text-xs sm:text-lg text-neutral-200 font-mono uppercase tracking-wider sm:tracking-widest">
                   {profile?.level ? (
-                    <span className="flex items-center gap-2">
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="text-[#E62E2D]">{"///"}</span> 
                       Threat Level: {profile.level.charAt(0).toUpperCase() + profile.level.slice(1)} 
                       <span className="text-[#E62E2D]">{"///"}</span>
@@ -256,9 +256,9 @@ if (courses === undefined) {
               <Button 
                 variant="outline" 
                 onClick={() => setShowProfileSheet(true)} 
-                className="gap-2 border-4 border-white bg-black text-white hover:bg-[#E62E2D] hover:text-white hover:border-[#E62E2D] shadow-[4px_4px_0px_0px_#333] hover:shadow-[6px_6px_0px_0px_#E62E2D] hover:-translate-y-1 transition-all rounded-none font-bold uppercase tracking-widest h-12 px-6"
+                className="gap-1.5 border-2 sm:border-4 border-white bg-black text-white hover:bg-[#E62E2D] hover:text-white hover:border-[#E62E2D] shadow-[3px_3px_0px_0px_#333] sm:shadow-[4px_4px_0px_0px_#333] hover:shadow-[6px_6px_0px_0px_#E62E2D] hover:-translate-y-1 transition-all rounded-none font-bold uppercase tracking-widest min-h-[40px] h-10 px-2.5 py-2 text-[11px] sm:h-12 sm:px-6 sm:text-sm"
               >
-                <Settings2 className="h-4 w-4" />
+                <Settings2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Customize Profile
               </Button>
             )}
@@ -266,27 +266,27 @@ if (courses === undefined) {
         </div>
 
         {/* Tabs Layout */}
-        <Tabs defaultValue={defaultTab} className="space-y-12">
-          <TabsList className="bg-transparent border-b-4 border-neutral-800 p-0 w-full justify-start rounded-none h-auto gap-8">
+        <Tabs defaultValue={defaultTab} className="space-y-6 md:space-y-12">
+          <TabsList className="bg-transparent border-b-4 border-neutral-800 p-0 w-full justify-start rounded-none h-auto gap-4 sm:gap-8 overflow-x-auto overflow-y-hidden no-scrollbar">
             <TabsTrigger 
               value="enrolled" 
-              className="group gap-2 font-display font-black uppercase tracking-widest text-2xl data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
+              className="group gap-2 font-display font-black uppercase tracking-wider sm:tracking-widest text-sm min-[380px]:text-base sm:text-2xl whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-3 sm:py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
             >
               Enrolled_Missions
             </TabsTrigger>
             <TabsTrigger 
               value="library" 
-              className="gap-2 font-display font-black uppercase tracking-widest text-2xl data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
+              className="gap-2 font-display font-black uppercase tracking-wider sm:tracking-widest text-sm min-[380px]:text-base sm:text-2xl whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:text-[#E62E2D] data-[state=active]:shadow-none border-b-4 border-transparent data-[state=active]:border-[#E62E2D] rounded-none px-0 py-3 sm:py-4 transition-all hover:text-white text-neutral-500 -mb-[4px]"
             >
               Mission_Archives
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="enrolled" className="space-y-16 focus-visible:outline-none focus-visible:ring-0">
+          <TabsContent value="enrolled" className="space-y-7 md:space-y-16 focus-visible:outline-none focus-visible:ring-0">
             {/* Enrolled Courses Section */}
             {user && enrolledCourses.length > 0 ? (
-              <section className="space-y-6">
-                <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <section className="space-y-4 sm:space-y-6">
+                <div className="grid gap-3 sm:gap-8 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {enrolledCourses.map((course, index) => (
                     <motion.div
                       key={course._id}
@@ -309,11 +309,11 @@ if (courses === undefined) {
                 </div>
               </section>
             ) : (
-              <div className="relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
+              <div className="relative flex flex-col items-center justify-center px-4 py-16 sm:py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
                  <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
                  <BookOpen className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
-                 <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Enrolled Courses</h3>
+                 <h3 className="text-2xl sm:text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Enrolled Courses</h3>
                  <p className="text-neutral-400 font-mono uppercase tracking-wide max-w-sm relative z-10">
                    You haven&apos;t enrolled in any courses yet. Visit the Archives to get started.
                  </p>
@@ -326,26 +326,26 @@ if (courses === undefined) {
             {/* Course Library Section */}
             <div className="space-y-6">
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 w-full"
+                className="flex flex-col md:flex-row gap-3 md:gap-4 w-full"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <div className="relative w-full sm:w-80 group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 group-focus-within:text-[#E62E2D] transition-colors" />
+                <div className="relative w-full md:w-80 group">
+                  <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-neutral-500 group-focus-within:text-[#E62E2D] transition-colors" />
                   <Input
                     placeholder="SEARCH_ARCHIVES..."
-                    className="pl-12 h-14 bg-black border-4 border-white rounded-none text-lg font-mono placeholder:text-neutral-600 focus-visible:ring-0 focus-visible:border-[#E62E2D] uppercase tracking-wider text-white transition-colors shadow-[4px_4px_0_0_#333]"
+                    className="pl-10 sm:pl-12 h-10 sm:h-14 bg-black border-[3px] sm:border-4 border-white rounded-none text-sm sm:text-lg font-mono placeholder:text-neutral-600 focus-visible:ring-0 focus-visible:border-[#E62E2D] uppercase tracking-wider text-white transition-colors shadow-[3px_3px_0_0_#333] sm:shadow-[4px_4px_0_0_#333]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 no-scrollbar items-center">
+                <div className="-mx-3 flex gap-1.5 sm:gap-2 overflow-x-auto px-3 pb-2 md:mx-0 md:px-0 md:pb-0 no-scrollbar items-center">
                   <Button
                     variant="ghost"
                     onClick={() => setStatusFilter("all")}
                     className={cn(
-                      "capitalize whitespace-nowrap rounded-none border-2 px-4 h-11 font-bold tracking-wider transition-all",
+                      "capitalize whitespace-nowrap rounded-none border-2 px-3 sm:px-4 min-h-[38px] sm:min-h-[44px] h-9 sm:h-11 text-xs sm:text-base font-bold tracking-wider transition-all",
                       statusFilter === "all"
                         ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
                         : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
@@ -353,14 +353,14 @@ if (courses === undefined) {
                   >
                     All
                   </Button>
-                  <div className="w-px h-6 bg-neutral-700" />
+                  <div className="w-px h-5 sm:h-6 bg-neutral-700" />
                   {(["completed", "not-completed"] as const).map((filter) => (
                     <Button
                       key={filter}
                       variant="ghost"
                       onClick={() => setStatusFilter(statusFilter === filter ? "all" : filter)}
                       className={cn(
-                        "capitalize whitespace-nowrap rounded-none border-2 px-4 h-11 font-bold tracking-wider transition-all",
+                        "capitalize whitespace-nowrap rounded-none border-2 px-3 sm:px-4 min-h-[38px] sm:min-h-[44px] h-9 sm:h-11 text-xs sm:text-base font-bold tracking-wider transition-all",
                         statusFilter === filter 
                           ? "bg-[#E62E2D] border-[#E62E2D] text-white shadow-[4px_4px_0_0_black]" 
                           : "bg-black border-white text-white hover:bg-white hover:text-black hover:border-white"
@@ -394,21 +394,21 @@ if (courses === undefined) {
                         aria-controls={`section-panel-${level}`}
                         className={cn(
                           "w-full flex items-center justify-between",
-                          "p-4 bg-secondary/5 hover:bg-secondary/10",
+                          "p-3 sm:p-4 bg-secondary/5 hover:bg-secondary/10",
                           "hover:border-primary transition-colors duration-200",
-                          "min-h-[56px]"
+                          "min-h-[48px] sm:min-h-[56px]"
                         )}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
                           <ChevronRight className={cn(
                             "w-5 h-5 text-primary transition-transform duration-200",
                             isOpen && "rotate-90"
                           )} />
-                          <span className="font-mono text-lg font-bold uppercase tracking-widest text-foreground">
+                          <span className="font-mono text-base sm:text-lg font-bold uppercase tracking-widest text-foreground truncate">
                             {levelLabel}
                           </span>
                         </div>
-                        <span className="font-mono text-sm text-muted-foreground uppercase tracking-wider">
+                        <span className="font-mono text-[10px] sm:text-sm text-muted-foreground uppercase tracking-wider shrink-0">
                           {courses.length} {courses.length === 1 ? "course" : "courses"}
                         </span>
                       </button>
@@ -422,9 +422,9 @@ if (courses === undefined) {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="p-4 border-t-2 border-border overflow-hidden"
+                            className="p-2.5 sm:p-4 border-t-2 border-border overflow-hidden"
                           >
-                            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            <div className="grid gap-2 sm:gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                               {courses.map((course, index) => {
                                 const courseLevelOrder = getLevelOrder(course.level);
                                 const isPriorLevel = userLevelOrder > courseLevelOrder;
@@ -458,7 +458,7 @@ if (courses === undefined) {
                         <div 
                           id={`section-panel-${level}`}
                           aria-labelledby={`section-header-${level}`}
-                          className="p-8 border-t-2 border-border text-center"
+                          className="p-4 sm:p-8 border-t-2 border-border text-center"
                         >
                           <p className="font-mono text-sm text-muted-foreground uppercase tracking-wider">
                             No {levelLabel} courses match your filters
@@ -472,11 +472,11 @@ if (courses === undefined) {
 
               {/* Empty state when all sections have no courses */}
               {Object.values(groupedCourses).every(courses => courses.length === 0) && (
-                <div className="relative flex flex-col items-center justify-center py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
+                <div className="relative flex flex-col items-center justify-center px-4 py-16 sm:py-24 text-center border-4 border-dashed border-neutral-800 bg-neutral-900/20 clip-corner overflow-hidden">
                   <div className="absolute inset-0 bg-[url('/images/character-angel-devil.jpg')] bg-cover bg-center opacity-40 pointer-events-none" aria-hidden="true" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" aria-hidden="true" />
                   <Search className="h-16 w-16 text-neutral-700 mb-6 relative z-10" />
-                  <h3 className="text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Archives Found</h3>
+                  <h3 className="text-2xl sm:text-3xl font-display font-black uppercase text-white mb-2 relative z-10">No Archives Found</h3>
                   <p className="text-neutral-400 font-mono uppercase tracking-wide max-w-sm relative z-10">
                     Try adjusting your search or filters.
                   </p>

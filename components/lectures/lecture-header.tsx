@@ -43,10 +43,10 @@ export function LectureHeader({
   onMarkComplete,
 }: LectureHeaderProps) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="flex-1 min-w-0">
-        <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-wide text-white drop-shadow-md truncate">{title}</h1>
-        <p className="text-sm font-mono text-white/80 uppercase tracking-widest mt-1">
+        <h1 className="text-xl min-[390px]:text-2xl sm:text-3xl md:text-4xl font-display font-black uppercase tracking-wide text-white drop-shadow-md line-clamp-3 sm:line-clamp-2">{title}</h1>
+        <p className="text-[11px] sm:text-sm font-mono text-white/80 uppercase tracking-wider sm:tracking-widest mt-1">
           {weekTitle} <span className="text-primary mx-2">{"//"}</span> {Math.floor(duration / 60)} min
         </p>
       </div>
@@ -62,7 +62,7 @@ export function LectureHeader({
               size="lg"
               onClick={onMarkComplete}
               className={cn(
-                "gap-2 text-sm font-bold uppercase tracking-wider min-h-[48px] px-6 min-w-[160px] transition-all",
+                "gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider min-h-[44px] sm:min-h-[48px] w-full px-4 sm:w-auto sm:px-6 sm:min-w-[160px] transition-all",
                 isCompleted 
                   ? "bg-green-500/20 text-green-400 hover:bg-green-500/30 border-2 border-green-500/40" 
                   : "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/50"

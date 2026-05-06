@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn, cleanCourseTitle } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -206,7 +206,7 @@ function LecturePlayerPageContent() {
 
   if (course === undefined || content === undefined) {
     return (
-      <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden bg-black">
+      <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden bg-black">
         <aside className="hidden md:flex w-80 border-r bg-background flex-col shrink-0 relative">
           <div className="relative p-4 border-b border-white/10 backdrop-blur-sm overflow-hidden">
             <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_top] opacity-60 pointer-events-none" />
@@ -278,7 +278,7 @@ function LecturePlayerPageContent() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden">
       {/* Desktop Sidebar */}
       <AnimatePresence initial={false}>
         {isSidebarOpen && (
@@ -330,7 +330,7 @@ function LecturePlayerPageContent() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-black overflow-y-auto relative transition-all duration-300 ease-in-out">
+      <main className="flex-1 flex flex-col min-w-0 bg-black overflow-x-hidden overflow-y-auto relative transition-all duration-300 ease-in-out">
         <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
         <div 
           className="fixed inset-0 opacity-10 pointer-events-none z-0"
@@ -347,14 +347,17 @@ function LecturePlayerPageContent() {
         <div className="fixed inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent pointer-events-none z-0" />
         
         {/* Mobile Header */}
-        <div className="md:hidden flex items-center p-4 border-b bg-background/80 backdrop-blur-sm relative z-10">
+        <div className="md:hidden sticky top-0 flex min-h-[56px] items-center gap-2 px-3 py-2 border-b bg-background/90 backdrop-blur-sm relative z-20">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2">
+              <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] shrink-0">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-[85vw] max-w-80">
+            <SheetContent side="left" className="p-0 w-full max-w-none h-[100dvh] md:w-[85vw] md:max-w-80">
+              <SheetTitle className="sr-only">
+                Lecture navigation
+              </SheetTitle>
               <LectureSidebar
                 courseTitle={course.title}
                 courseCode={course.code}
@@ -367,18 +370,18 @@ function LecturePlayerPageContent() {
               />
             </SheetContent>
           </Sheet>
-          <span className="font-semibold truncate">{navigation.currentVideo?.title || cleanCourseTitle(course.title)}</span>
+          <span className="min-w-0 flex-1 font-semibold leading-tight line-clamp-2">{navigation.currentVideo?.title || cleanCourseTitle(course.title)}</span>
         </div>
 
         <div className={cn(
-          "flex-1 p-4 md:p-6 w-full space-y-4 transition-all duration-300",
+          "flex-1 px-4 py-3 sm:p-4 md:p-6 w-full space-y-3 md:space-y-4 transition-all duration-300",
           isSidebarOpen ? "max-w-5xl mx-auto" : "max-w-7xl mx-auto"
         )}>
           <Button 
             asChild 
             variant="ghost" 
             size="sm" 
-            className="gap-2 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 w-fit"
+            className="gap-2 text-muted-foreground hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 w-fit min-h-[44px]"
           >
             <Link href="/lectures">
               <ArrowLeft className="h-4 w-4" />
@@ -387,7 +390,7 @@ function LecturePlayerPageContent() {
           </Button>
 
           {navigation.currentVideo ? (
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <div className="relative" ref={videoContainerRef}>
                 <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30 rounded-t-lg overflow-hidden">
                   <div 

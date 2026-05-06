@@ -16,6 +16,10 @@ brand:
     library: mission archives
     enrolled_courses: enrolled missions
     profile: bureau profile
+  assets:
+    logo: public/images/aceon-logo.svg
+    app_icon: app/icon.png
+    apple_icon: app/apple-icon.png
 
 palette:
   core:
@@ -109,6 +113,8 @@ components:
       - background image must remain first-viewport signal
       - CTA labels use current mission/bureau voice
       - preserve strong contrast over image overlays
+      - mobile strapline stacks into readable lines
+      - mobile CTA block sits lower in the viewport than the headline stack
   lectures_dashboard:
     file: app/lectures/page.tsx
     role: Authenticated course dashboard and library.
@@ -146,6 +152,10 @@ components:
       - no_video_selected
       - active_video
       - autoplay_countdown
+    mobile_rules:
+      - course sheet must include an accessible title even when visually hidden
+      - player shell uses dynamic viewport units where possible
+      - fullscreen attempts landscape orientation lock on supported browsers
   lecture_sidebar:
     file: components/lectures/lecture-sidebar.tsx
     role: Course outline, week progress, and video navigation.
@@ -168,6 +178,7 @@ components:
       - preserve aspect ratio
       - keep progress callbacks stable
       - do not reinitialize on progress-only prop changes
+      - seek and volume controls must support pointer/touch input
 
 accessibility:
   contrast:
@@ -195,6 +206,8 @@ responsive_targets:
       - sheet navigation for course outline
       - video max-height suitable for portrait
       - readable titles without clipping
+      - compact two-column course cards where content remains scannable
+      - touch controls stay usable without requiring hover
   tablet:
     width: 768px_to_1023px
     priorities:
@@ -225,4 +238,3 @@ implementation_notes:
     - decorative gradient blobs
     - nested card layouts
     - visible instructional copy about UI mechanics
-

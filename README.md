@@ -16,7 +16,9 @@ Aceon uses a Chainsaw Man inspired visual system: black surfaces, blood red prim
 - Completion toggles for videos, weeks, and courses
 - Timestamped video notes backend support
 - Clerk-authenticated Convex data access
+- Responsive mobile dashboard, course archive, and lecture player layouts
 - Mobile sheet navigation for the lecture sidebar
+- Touch-friendly custom player controls with fullscreen landscape support where the browser allows it
 
 ## Stack
 
@@ -41,6 +43,23 @@ docs/DESIGN.yaml             Current design source of truth
 scripts/                     Scraping, seeding, diagnostics, maintenance
 public/images/               Brand, texture, and page imagery
 ```
+
+## Mobile Testing
+
+The mobile experience is designed around `320px` through `767px` wide screens, with tablet checks from `768px` through `1023px`. The key mobile surfaces are:
+
+- `/` landing hero, including stacked headline and lower CTA placement
+- `/lectures` enrolled missions and mission archives
+- `/lectures/[subjectId]` player, course sheet, touch seek, volume, fullscreen, and orientation behavior
+- `/privacy` and `/terms` long-title wrapping and footer layout
+
+When testing on an Android phone against the local dev server, forward the app port with:
+
+```bash
+adb reverse tcp:5550 tcp:5550
+```
+
+Then open `http://localhost:5550` on the phone.
 
 ## Getting Started
 
@@ -107,6 +126,7 @@ The short version:
 - Shape: square or clipped corners
 - Texture: halftone/noise overlays
 - UI voice: academic mission control
+- Brand assets: cropped Aceon logo in navigation, footer, favicon, and app icon
 
 ## Data And Scraping Notes
 

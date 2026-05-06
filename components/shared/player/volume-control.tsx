@@ -37,10 +37,11 @@ export default function VolumeControl({
     return Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
   }, []);
 
-  const handleSliderMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const handleSliderPointerDown = useCallback(
+    (e: React.PointerEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      e.currentTarget.setPointerCapture(e.pointerId);
       setIsDragging(true);
       const newVolume = getVolumeFromPosition(e.clientX);
       onVolumeChange(newVolume);
@@ -48,8 +49,8 @@ export default function VolumeControl({
     [getVolumeFromPosition, onVolumeChange]
   );
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
       if (isDragging) {
         const newVolume = getVolumeFromPosition(e.clientX);
         onVolumeChange(newVolume);
@@ -58,7 +59,7 @@ export default function VolumeControl({
     [isDragging, getVolumeFromPosition, onVolumeChange]
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
@@ -68,9 +69,9 @@ export default function VolumeControl({
     }
   }, [isDragging]);
 
-  // Global mouse handlers for dragging
-  const handleGlobalMouseMove = useCallback(
-    (e: MouseEvent) => {
+  // Global pointer handlers for dragging
+  const handleGlobalPointerMove = useCallback(
+    (e: PointerEvent) => {
       if (isDragging) {
         const newVolume = getVolumeFromPosition(e.clientX);
         onVolumeChange(newVolume);
@@ -79,7 +80,7 @@ export default function VolumeControl({
     [isDragging, getVolumeFromPosition, onVolumeChange]
   );
 
-  const handleGlobalMouseUp = useCallback(() => {
+  const handleGlobalPointerUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
@@ -87,14 +88,16 @@ export default function VolumeControl({
   useEffect(() => {
     if (!isDragging) return;
     
-    document.addEventListener("mousemove", handleGlobalMouseMove);
-    document.addEventListener("mouseup", handleGlobalMouseUp);
+    document.addEventListener("pointermove", handleGlobalPointerMove);
+    document.addEventListener("pointerup", handleGlobalPointerUp);
+    document.addEventListener("pointercancel", handleGlobalPointerUp);
 
     return () => {
-      document.removeEventListener("mousemove", handleGlobalMouseMove);
-      document.removeEventListener("mouseup", handleGlobalMouseUp);
+      document.removeEventListener("pointermove", handleGlobalPointerMove);
+      document.removeEventListener("pointerup", handleGlobalPointerUp);
+      document.removeEventListener("pointercancel", handleGlobalPointerUp);
     };
-  }, [isDragging, handleGlobalMouseMove, handleGlobalMouseUp]);
+  }, [isDragging, handleGlobalPointerMove, handleGlobalPointerUp]);
 
   const VolumeIcon = isMuted || effectiveVolume === 0 
     ? VolumeX 
@@ -122,15 +125,15 @@ export default function VolumeControl({
       <div
         className={cn(
           "overflow-hidden transition-all duration-200",
-          isHovered || isDragging ? "w-20 opacity-100" : "w-0 opacity-0"
+          isHovered || isDragging ? "w-16 sm:w-20 opacity-100" : "w-0 opacity-0"
         )}
       >
         <div
           ref={sliderRef}
-          onMouseDown={handleSliderMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          className="relative h-1.5 bg-white/20 cursor-pointer rounded-full"
+          onPointerDown={handleSliderPointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          className="relative h-2 sm:h-1.5 bg-white/20 cursor-pointer rounded-full touch-none"
           role="slider"
           aria-label="Volume"
           aria-valuenow={effectiveVolume}
@@ -145,8 +148,8 @@ export default function VolumeControl({
 
           {/* Scrubber handle */}
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-lg"
-            style={{ left: `calc(${effectiveVolume}% - 6px)` }}
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 sm:w-3 sm:h-3 rounded-full bg-white shadow-lg"
+            style={{ left: `${effectiveVolume}%` }}
           />
         </div>
       </div>
