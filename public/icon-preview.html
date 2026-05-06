@@ -3,112 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aceon Identity</title>
-    <!-- Import fonts used in the app -->
-    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <title>Aceon Icon Preview</title>
     <style>
+        :root {
+            color-scheme: dark;
+        }
+
         body {
-            background-color: #050505;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
-            background-image: url('/noise.png');
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #050505;
+            color: #fff;
+            font-family: Arial, sans-serif;
         }
 
-        .showcase {
-            display: flex;
-            gap: 4rem;
-            align-items: center;
+        .preview {
+            display: grid;
+            gap: 1rem;
+            justify-items: center;
         }
 
-        /* The App Icon Container */
-        .app-icon {
+        .icon {
             width: 180px;
             height: 180px;
-            background: #000;
-            border: 4px solid #2BFF00; /* Acid Green Border */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 0 30px rgba(43, 255, 0, 0.2);
+            border: 1px solid rgba(230, 46, 45, 0.4);
+            background: #050505;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
             overflow: hidden;
         }
 
-        /* The 'A' Symbol */
-        .symbol {
-            font-family: 'Rubik Glitch', sans-serif;
-            font-size: 140px;
-            color: #E62E2D; /* Blood Red */
-            position: relative;
-            line-height: 1;
-            z-index: 10;
-        }
-
-        /* Glitch Layers */
-        .symbol::before,
-        .symbol::after {
-            content: "A";
-            position: absolute;
-            top: 0;
-            left: 0;
+        .icon img {
+            display: block;
             width: 100%;
             height: 100%;
-            opacity: 0.8;
+            object-fit: cover;
         }
 
-        .symbol::before {
-            color: #0ff; /* Cyan Shift */
-            transform: translate(-3px, -2px);
-            z-index: -1;
-            mix-blend-mode: screen;
-        }
-
-        .symbol::after {
-            color: #2BFF00; /* Green Shift */
-            transform: translate(3px, 2px);
-            z-index: -2;
-            mix-blend-mode: screen;
-        }
-
-        /* Diagonal Stripe Texture Overlay */
-        .texture {
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255, 255, 255, 0.05) 10px,
-                rgba(255, 255, 255, 0.05) 20px
-            );
-            pointer-events: none;
-        }
-
-        h2 {
-            font-family: 'Oswald', sans-serif;
+        .label {
+            letter-spacing: 0.35em;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            color: #666;
-            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
         }
     </style>
 </head>
 <body>
-    
-    <div class="showcase">
-        <div>
-            <div class="app-icon">
-                <div class="texture"></div>
-                <div class="symbol">A</div>
-            </div>
-            <center><h2>The Glitch Mark</h2></center>
+    <div class="preview">
+        <div class="icon">
+            <img src="/icon.png" alt="Aceon logo preview">
         </div>
+        <div class="label">Aceon</div>
     </div>
-
 </body>
 </html>
