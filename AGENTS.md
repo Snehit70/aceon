@@ -2,8 +2,6 @@
 
 ## 1. Project Overview
 
-\*\* never push any code you can only commit and never push even if the user asks you to do that
-
 Aceon is an academic companion app for IITM BS Degree students.
 **Stack**: Next.js 16 (App Router), React 19, Convex (BaaS), Clerk (Auth), Tailwind 4, Shadcn UI.
 **Theme**: Chainsaw Man aesthetic - Blood Red (#E62E2D) primary, Acid Green (#2BFF00) accent, brutal angular design with glassmorphism effects.
@@ -36,11 +34,9 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 - Feature branches (`feat/short-description`) for large features or experimental work
 - Fix branches (`fix/short-description`) for complex bug fixes
-- Direct commits to `main` are acceptable for:
-  - Small fixes and improvements
-  - UI/UX tweaks
-  - Documentation updates
-  - Refactoring within existing patterns
+- Push code only to feature/fix branches, never directly to `main`
+- `main` deploys the application; keep unfinished or risky work off `main`
+- Small changes may be committed locally on `main`, but create a branch before pushing
 
 **Commits**:
 
@@ -53,46 +49,22 @@ Aceon is an academic companion app for IITM BS Degree students.
 1. **Plan**: Create a checklist in `TODO.md` or memory for complex tasks.
 2. **Implement**: Code in small chunks.
 3. **Verify**: Run `lint` and `tsc` locally.
-4. **Commit**: Commit to main for small changes, feature branch for large work.
-5. **Push**: Push changes to remote.
+4. **Commit**: Use granular commits with conventional commit messages.
+5. **Push**: Push only feature/fix branches; open PRs into `main`.
 
 ## 4. Code Style & Patterns
 
-### TypeScript
-
-- **Strict Mode**: Enabled. No implicit `any`.
-- **Types**: Use interfaces for props (e.g., `VideoPlayerProps`). Export shared types.
-- **Convex**: Use `v` from `convex/values` for schema validation.
-- **Avoid**: `@ts-ignore`, `as any` (unless absolutely necessary with comment).
-
-### React & Next.js
-
-- **Components**: Functional components. Use `export default function Name`.
-- **Hooks**: Custom hooks in `hooks/`. standard hooks (`useState`, `useEffect`) first.
-- **Client vs Server**: Use `"use client"` at the top of client components.
-- **Imports**: Use `@/` alias (e.g., `@/components/ui/button`).
-
-### Styling (Tailwind + Shadcn)
-
-- **Utility First**: Use Tailwind classes.
-- **Merging**: Use `cn()` utility for conditional classes.
-- **Icons**: `lucide-react` is the standard icon set.
-- **Animation**: `framer-motion` for complex transitions; `tailwindcss-animate` for simple ones.
+- Keep changes consistent with existing local patterns before introducing new abstractions.
+- Preserve strict TypeScript. Avoid `any`, `@ts-ignore`, and unsafe casts unless there is a clear reason and a comment.
+- Use `@/` imports, `cn()` for class merging, Tailwind/Shadcn primitives, and `lucide-react` icons unless a component already uses another icon set.
+- Use the `vercel-react-best-practices` skill for React/Next.js implementation or review work.
+- Keep UI aligned with the current design source of truth: `docs/DESIGN.yaml`.
 
 ### Backend (Convex)
 
-- **Queries**: `export const name = query({ args: {...}, handler: async (ctx, args) => {...} })`
-- **Mutations**: `export const name = mutation({ args: {...}, handler: async (ctx, args) => {...} })`
-- **Auth**: Check `ctx.auth.getUserIdentity()` or pass `clerkId`.
-
-### React Best Practices (Modern)
-
-- **Hydration Safety**:
-  - Use `useId()` for stable IDs (never `Math.random()` in render).
-  - Defer random values (e.g. particles) to `useEffect` to ensure server/client match.
-- **React Compiler**:
-  - Include **ALL** used variables in dependency arrays (`useCallback`, `useMemo`), even state setters.
-  - Avoid mutating refs during render. Use **derived state** pattern (`useState` with condition) instead.
+- Use Convex validators from `convex/values`.
+- Queries and mutations should follow the existing `query({ args, handler })` / `mutation({ args, handler })` style.
+- Auth-sensitive functions must validate `ctx.auth.getUserIdentity()` against the Clerk user ID.
 
 ## 5. Specific Guidelines
 
@@ -216,7 +188,7 @@ The action:
 
 For special cases (e.g., release candidate), manually update `package.json` and commit with `chore: bump version to X.Y.Z` (the action skips these commits).
 
-**Current Version**: 0.3.0
+Check `package.json` for the current version; do not trust this guide for live version state.
 **Goal**: Reach 1.0.0 when production-ready.
 
 ## 10. Checklist for "Sisyphus"
