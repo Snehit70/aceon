@@ -58,9 +58,9 @@ export default function PlaybackSpeed({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "min-h-[44px] px-3 flex items-center justify-center rounded-sm",
+          "min-h-[44px] px-2 sm:px-3 flex items-center justify-center rounded-sm",
           "hover:bg-white/10 transition-colors",
-          "text-white text-sm font-medium"
+          "text-white text-xs sm:text-sm font-medium"
         )}
         aria-label="Playback speed"
         aria-expanded={isOpen}

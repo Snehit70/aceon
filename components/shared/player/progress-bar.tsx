@@ -50,15 +50,22 @@ export default function ProgressBar({
     [duration]
   );
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+  const updateHoverPosition = useCallback(
+    (clientX: number) => {
       if (!barRef.current || duration === 0) return;
       const rect = barRef.current.getBoundingClientRect();
-      const position = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const position = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
       setHoverTime(position * duration);
       setHoverPosition(position * 100);
     },
     [duration]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      updateHoverPosition(e.clientX);
+    },
+    [updateHoverPosition]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -67,9 +74,10 @@ export default function ProgressBar({
     }
   }, [isDragging]);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
       e.preventDefault();
+      e.currentTarget.setPointerCapture(e.pointerId);
       setIsDragging(true);
       const time = getTimeFromPosition(e.clientX);
       onSeek(time);
@@ -77,7 +85,7 @@ export default function ProgressBar({
     [getTimeFromPosition, onSeek]
   );
 
-  // Handle dragging - seek only on mouseup for performance
+  // Handle dragging - seek only on pointerup for performance
   // Visual preview updates during drag, actual seek happens on release
   // This prevents overwhelming the YouTube API with rapid seek calls
   const dragTimeRef = useRef<number | null>(null);
@@ -85,18 +93,13 @@ export default function ProgressBar({
   useEffect(() => {
     if (!isDragging) return;
 
-    const handleGlobalMouseMove = (e: MouseEvent) => {
+    const handleGlobalPointerMove = (e: PointerEvent) => {
       const time = getTimeFromPosition(e.clientX);
       dragTimeRef.current = time; // Store for mouseup, don't seek yet
-      if (barRef.current) {
-        const rect = barRef.current.getBoundingClientRect();
-        const position = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        setHoverPosition(position * 100);
-        setHoverTime(position * duration);
-      }
+      updateHoverPosition(e.clientX);
     };
 
-    const handleGlobalMouseUp = () => {
+    const handleGlobalPointerUp = () => {
       // Seek to final position only on mouse release
       if (dragTimeRef.current !== null) {
         onSeek(dragTimeRef.current);
@@ -106,22 +109,24 @@ export default function ProgressBar({
       setHoverTime(null);
     };
 
-    document.addEventListener("mousemove", handleGlobalMouseMove);
-    document.addEventListener("mouseup", handleGlobalMouseUp);
+    document.addEventListener("pointermove", handleGlobalPointerMove);
+    document.addEventListener("pointerup", handleGlobalPointerUp);
+    document.addEventListener("pointercancel", handleGlobalPointerUp);
 
     return () => {
-      document.removeEventListener("mousemove", handleGlobalMouseMove);
-      document.removeEventListener("mouseup", handleGlobalMouseUp);
+      document.removeEventListener("pointermove", handleGlobalPointerMove);
+      document.removeEventListener("pointerup", handleGlobalPointerUp);
+      document.removeEventListener("pointercancel", handleGlobalPointerUp);
     };
-  }, [isDragging, getTimeFromPosition, onSeek, duration]);
+  }, [isDragging, getTimeFromPosition, onSeek, updateHoverPosition]);
 
   return (
     <div
       ref={barRef}
-      onMouseMove={handleMouseMove}
+      onPointerMove={handlePointerMove}
       onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
-      className="relative h-1.5 bg-white/20 cursor-pointer group"
+      onPointerDown={handlePointerDown}
+      className="relative h-2 sm:h-1.5 bg-white/20 cursor-pointer group touch-none"
       role="slider"
       aria-label="Video progress"
       aria-valuenow={currentTime}
@@ -145,11 +150,11 @@ export default function ProgressBar({
       {/* Scrubber handle */}
       <div
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary shadow-lg transition-transform",
-          "opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100",
+          "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 sm:w-4 sm:h-4 rounded-full bg-primary shadow-lg transition-transform",
+          "opacity-100 scale-100 sm:opacity-0 sm:group-hover:opacity-100 sm:scale-0 sm:group-hover:scale-100",
           isDragging && "opacity-100 scale-100"
         )}
-        style={{ left: `calc(${progress}% - 8px)` }}
+        style={{ left: `${progress}%` }}
       />
 
       {/* Time tooltip */}

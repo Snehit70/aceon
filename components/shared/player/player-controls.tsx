@@ -124,6 +124,10 @@ export default function PlayerControls({
     }
   }, [isPlaying]);
 
+  const handlePointerMove = useCallback(() => {
+    handleMouseMove();
+  }, [handleMouseMove]);
+
   const handleSeek = useCallback(
     (time: number) => {
       if (playerRef.current) {
@@ -172,23 +176,52 @@ export default function PlayerControls({
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const getOrientationController = () =>
+    screen.orientation as ScreenOrientation & {
+      lock?: (orientation: string) => Promise<void>;
+      unlock?: () => void;
+    };
+
   // Track fullscreen state changes
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
+
+      const orientation = getOrientationController();
+      if (!document.fullscreenElement && orientation.unlock) {
+        orientation.unlock();
+      }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
-  const handleFullscreenToggle = useCallback(() => {
+  const handleFullscreenToggle = useCallback(async () => {
     const container = containerRef.current;
     if (!container) return;
     
     if (!document.fullscreenElement) {
-      container.requestFullscreen().catch(console.error);
+      try {
+        await container.requestFullscreen({ navigationUI: "hide" });
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+
+      const orientation = getOrientationController();
+      if (orientation.lock) {
+        try {
+          await orientation.lock("landscape");
+        } catch (error) {
+          console.debug("Orientation lock failed:", error);
+        }
+      }
     } else {
-      document.exitFullscreen().catch(console.error);
+      try {
+        await document.exitFullscreen();
+      } catch (error) {
+        console.error(error);
+      }
     }
   }, [containerRef]);
 
@@ -196,6 +229,7 @@ export default function PlayerControls({
     <div
       ref={controlsRef}
       onMouseMove={handleMouseMove}
+      onPointerMove={handlePointerMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       className={cn(
         "absolute bottom-0 left-0 right-0 z-40 transition-opacity duration-300",
@@ -205,7 +239,7 @@ export default function PlayerControls({
       {/* Gradient fade for better visibility */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
 
-      <div className="relative px-3 pb-3 pt-8">
+      <div className="relative px-2 pb-2 pt-8 sm:px-3 sm:pb-3">
         {/* Progress bar */}
         <ProgressBar
           currentTime={currentTime}
@@ -214,7 +248,7 @@ export default function PlayerControls({
         />
 
         {/* Control buttons row */}
-        <div className="flex items-center gap-2 mt-2">
+        <div className="flex items-center gap-1 sm:gap-2 mt-2">
           {/* Play/Pause */}
           <button
             type="button"
@@ -238,8 +272,9 @@ export default function PlayerControls({
           />
 
           {/* Time display */}
-          <div className="text-white/90 text-sm font-mono tabular-nums select-none">
-            {formatTime(currentTime)} / {formatTime(duration)}
+          <div className="text-white/90 text-[11px] sm:text-sm font-mono tabular-nums select-none whitespace-nowrap">
+            {formatTime(currentTime)}
+            <span className="hidden min-[380px]:inline"> / {formatTime(duration)}</span>
           </div>
 
           {/* Spacer */}
@@ -259,7 +294,7 @@ export default function PlayerControls({
             onClick={() => { 
               if (isPlaying) playerRef.current?.pause(); 
             }}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
+            className="flex min-h-[44px] min-w-[40px] sm:min-w-[44px] items-center justify-center rounded-sm hover:bg-white/10 transition-colors"
             aria-label="View on YouTube"
             title="View on YouTube"
           >
