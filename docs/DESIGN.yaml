@@ -1,0 +1,228 @@
+app: Aceon
+updated: 2026-05-06
+status: current
+
+brand:
+  purpose: Academic companion for IITM BS Degree students.
+  personality:
+    - brutal
+    - high-contrast
+    - playful
+    - student-built
+    - fast-to-scan
+  aesthetic: Chainsaw Man inspired academic mission control.
+  vocabulary:
+    course: mission
+    library: mission archives
+    enrolled_courses: enrolled missions
+    profile: bureau profile
+
+palette:
+  core:
+    background: "#000000"
+    foreground: "#ffffff"
+    surface: "#0A0A0A"
+    surface_elevated: "#111111"
+    surface_hover: "#27272a"
+    border: "#27272a"
+  brand:
+    blood_red: "#E62E2D"
+    acid_green: "#2BFF00"
+  semantic:
+    primary: "#E62E2D"
+    primary_foreground: "#ffffff"
+    accent: "#2BFF00"
+    accent_foreground: "#050505"
+    muted: "#27272a"
+    muted_foreground: "#a1a1aa"
+    destructive: "#E62E2D"
+  usage:
+    primary_actions: blood_red
+    completion: blood_red_or_acid_green_where_existing
+    progress_bars: blood_red
+    decorative_texture: halftone_noise_and_high_contrast_image_overlays
+
+typography:
+  display:
+    source: app/layout.tsx font variables
+    usage:
+      - page titles
+      - card titles
+      - mission labels
+    rules:
+      - uppercase by default
+      - heavy weight
+      - no negative letter spacing
+      - avoid overly wide text blocks on mobile
+  mono:
+    usage:
+      - status copy
+      - metadata
+      - system-like labels
+  body:
+    usage:
+      - explanatory copy
+      - legal pages
+      - documentation-facing UI
+
+shape_and_layout:
+  radius: 0
+  corners:
+    primary: square
+    accent: clipped_corner_via_clip-corner
+  shadows:
+    brutalist_offset:
+      examples:
+        - "shadow-[4px_4px_0_0_#333]"
+        - "shadow-[6px_6px_0px_0px_#000]"
+    glow:
+      use_sparingly_for_hover_or_active_state: true
+  density:
+    desktop: dense_dashboard_layouts
+    mobile: touch_first_single_column_layouts
+  touch_targets:
+    minimum_height: 44px
+
+visual_assets:
+  image_directory: public/images
+  patterns:
+    - halftone.svg
+    - noise.svg
+    - pattern.svg
+  hero:
+    primary_background: hero-bg-chainsaw.webp
+    text_mask: hero-text-mask.webp
+  lecture_sidebar:
+    header_background: bg-denji-power.jpg
+    overlay:
+      image_opacity_max: 60
+      gradient: "from-transparent via-black/70 to-black"
+      text_shadow: drop-shadow-lg
+  empty_states:
+    preferred_background: character-angel-devil.jpg
+
+components:
+  landing_hero:
+    file: components/landing/hero.tsx
+    role: Public first viewport and unauthenticated conversion.
+    rules:
+      - background image must remain first-viewport signal
+      - CTA labels use current mission/bureau voice
+      - preserve strong contrast over image overlays
+  lectures_dashboard:
+    file: app/lectures/page.tsx
+    role: Authenticated course dashboard and library.
+    states:
+      - enrolled
+      - library
+      - empty_enrolled
+      - empty_search
+      - skeleton
+    rules:
+      - keep profile setup accessible from header
+      - search and filters must remain keyboard reachable
+      - course cards should not shift size on hover
+  course_card:
+    file: components/shared/chainsaw-card.tsx
+    role: Course summary and navigation surface.
+    required_content:
+      - course_code
+      - clean_course_title
+      - level
+      - progress_percent
+      - lecture_count
+      - total_duration
+    interaction:
+      hover: offset brutalist lift and red backing plate
+  lecture_player:
+    file: app/lectures/[subjectId]/page.tsx
+    role: Main learning workspace.
+    layout:
+      desktop: sidebar_plus_player
+      mobile: sheet_navigation_plus_player
+    required_states:
+      - loading
+      - course_not_found
+      - no_video_selected
+      - active_video
+      - autoplay_countdown
+  lecture_sidebar:
+    file: components/lectures/lecture-sidebar.tsx
+    role: Course outline, week progress, and video navigation.
+    rules:
+      - current week expands by default
+      - active video has clear red-highlighted state
+      - completed videos use check icon
+      - bulk complete actions stay secondary
+  video_player:
+    file: components/shared/video-player.tsx
+    role: YouTube IFrame API wrapper with custom controls.
+    controls:
+      - play_pause
+      - seek
+      - volume
+      - playback_speed
+      - fullscreen
+      - keyboard_shortcuts
+    rules:
+      - preserve aspect ratio
+      - keep progress callbacks stable
+      - do not reinitialize on progress-only prop changes
+
+accessibility:
+  contrast:
+    text_over_images:
+      - opacity_60_or_lower_backgrounds
+      - strong_black_gradient_overlay
+      - drop_shadow_on_text
+  keyboard:
+    required:
+      - visible_focus_states
+      - reachable_tabs_filters_and_video_controls
+      - question_mark_shortcuts_overlay
+  motion:
+    current_use:
+      - framer_motion_page_and_card_entrance
+      - hover_transforms
+    future_requirement:
+      - add_reduced_motion_review
+
+responsive_targets:
+  mobile:
+    width: 320px_to_767px
+    priorities:
+      - avoid horizontal overflow
+      - sheet navigation for course outline
+      - video max-height suitable for portrait
+      - readable titles without clipping
+  tablet:
+    width: 768px_to_1023px
+    priorities:
+      - preserve sidebar ergonomics
+      - keep card grid stable
+  desktop:
+    width: 1024px_plus
+    priorities:
+      - dense dashboard scanning
+      - fast sidebar navigation
+      - wide player mode when sidebar collapsed
+
+implementation_notes:
+  design_tokens_source:
+    - app/globals.css
+    - tailwind.config.ts
+  ui_primitives:
+    - components/ui
+    - Radix
+    - shadcn
+  icons:
+    preferred:
+      - lucide-react
+      - existing Hugeicons only where already used
+  avoid:
+    - purple/indigo redesign drift
+    - soft rounded SaaS cards
+    - decorative gradient blobs
+    - nested card layouts
+    - visible instructional copy about UI mechanics
+

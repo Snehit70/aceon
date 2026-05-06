@@ -1,117 +1,138 @@
-# Aceon 🎓
+# Aceon
 
-> The ultimate academic companion for IITM BS Degree students.
+Academic companion for IITM BS Degree students, built as a focused lecture dashboard with course navigation, YouTube playback, progress tracking, and profile-aware course organization.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Status](https://img.shields.io/badge/status-active-success.svg)
-![Stack](https://img.shields.io/badge/stack-Next.js_16_|_Convex_|_Clerk-red)
+Aceon uses a Chainsaw Man inspired visual system: black surfaces, blood red primary actions, acid green accents, hard edges, clipped corners, halftone texture, and dense mission-control style UI.
 
-## What This Does
+![Aceon app preview](public/images/readme_aceon.png)
 
-Aceon is a modern learning platform designed to streamline the study experience for IIT Madras BS Degree students. It unifies scattered academic resources into a single, cohesive interface.
+## Features
 
-The application features a unique Chainsaw Man-themed design system (Blood Red & Acid Green) and provides:
-- Unified lecture viewing
-- Real-time progress tracking
-- Course management
-- Notes and bookmarks
+- Protected lecture dashboard for enrolled courses and the full course library
+- Course -> week -> video navigation
+- Custom YouTube IFrame API player controls
+- Smart video resume from saved position
+- Progress persistence during playback, pause, and page close
+- Completion toggles for videos, weeks, and courses
+- Timestamped video notes backend support
+- Clerk-authenticated Convex data access
+- Mobile sheet navigation for the lecture sidebar
 
-## Tech Stack
+## Stack
 
-Built with a focus on performance and real-time capabilities:
+| Area | Tooling |
+| --- | --- |
+| App | Next.js 16 App Router, React 19 |
+| Backend | Convex |
+| Auth | Clerk |
+| Styling | Tailwind 4, shadcn UI, Radix |
+| Video | YouTube IFrame API |
+| Runtime | Bun |
 
-- **Frontend**: [Next.js 16](https://nextjs.org/) (App Router) & [React 19](https://react.dev/)
-- **Backend**: [Convex](https://convex.dev/) - Chosen for its real-time database capabilities and seamless TypeScript integration.
-- **Auth**: [Clerk](https://clerk.com/) - Secure, drop-in authentication.
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
-- **Runtime**: [Bun](https://bun.sh/) for fast package management and script execution.
+## Project Map
+
+```text
+app/                         Next.js routes and API route
+components/                  UI, lecture, shared, profile, landing components
+convex/                      Schema, queries, mutations, migrations
+hooks/                       Video progress, navigation, autoplay, shortcuts
+docs/ARCHITECTURE.md         Current architecture documentation
+docs/DESIGN.yaml             Current design source of truth
+scripts/                     Scraping, seeding, diagnostics, maintenance
+public/images/               Brand, texture, and page imagery
+```
 
 ## Getting Started
 
-### Prerequisites
+Install dependencies:
 
-- Node.js 18+ or Bun 1.0+
-- Convex Account
-- Clerk Account
-
-### Installation
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/yourusername/aceon.git
-    cd aceon
-    ```
-
-2.  **Install dependencies**
-    ```bash
-    bun install
-    ```
-
-3.  **Environment Setup**
-    Create a `.env.local` file:
-    ```bash
-    # Convex
-    CONVEX_DEPLOYMENT=your_deployment_name
-    NEXT_PUBLIC_CONVEX_URL=your_convex_url
-
-    # Clerk
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-    CLERK_SECRET_KEY=your_clerk_secret
-    ```
-
-4.  **Run Development Server**
-    ```bash
-    bun run dev
-    ```
-    Opens `http://localhost:3000`.
-
-## How It Works
-
-### Architecture
-
-The app follows a modern serverless architecture using Convex for backend logic and data storage.
-
-```mermaid
-graph TD
-    User((User))
-    
-    subgraph Client ["Client (Next.js 16)"]
-        UI[App Router UI]
-        Auth[Clerk Auth]
-    end
-    
-    subgraph Backend ["Backend (Convex)"]
-        API[Public API]
-        Funcs[Query/Mutation Functions]
-        DB[(Real-time DB)]
-    end
-    
-    subgraph Data ["Data Pipeline"]
-        Scraper[Scraper Scripts]
-        Seeds[JSON Data]
-    end
-
-    User -->|Interacts| UI
-    UI -->|Auth Check| Auth
-    UI -->|Real-time Sync| API
-    API --> Funcs
-    Funcs --> DB
-    Scraper -->|Generates| Seeds
-    Seeds -->|Seeding| DB
+```bash
+bun install
 ```
 
-### Data Pipeline
+Create `.env.local`:
 
-1.  **Ingestion**: Course data is scraped and stored in `data/*.json`.
-2.  **Seeding**: `scripts/seed-database.ts` pushes JSON data to Convex.
-3.  **Consumption**: Next.js client subscribes to Convex queries (`useQuery`) for reactive UI updates.
+```bash
+CONVEX_DEPLOYMENT=prod:glad-marten-760
+NEXT_PUBLIC_CONVEX_URL=your_convex_url
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+```
 
-## What I Learned
+Start the dev server:
 
-- **Real-time State Management**: Leveraging Convex to eliminate manual client-side state management for live data.
-- **Modern React Patterns**: Utilizing React 19 features and Next.js App Router for optimal performance.
-- **Design System Implementation**: Building a custom, thematic UI library on top of Tailwind and Shadcn.
+```bash
+bun run dev
+```
 
-## License
+The app runs on `http://localhost:5550`.
 
-MIT © Aceon Team
+Important: local development currently uses the production Convex deployment, `prod:glad-marten-760`. Do not switch to the empty dev deployment unless the data migration plan explicitly calls for it.
+
+## Common Commands
+
+| Task | Command |
+| --- | --- |
+| Dev server | `bun run dev` |
+| Lint | `bun run lint` |
+| Type check | `bun x tsc --noEmit` |
+| Production build | `bun run build` |
+| Convex dev | `bun x convex dev` |
+
+Before starting a dev server, check whether one is already running on port `5550`.
+
+## Architecture
+
+Aceon is a client-heavy Next.js app backed by Convex real-time queries and Clerk auth. The main learning flow is:
+
+```text
+/lectures/[subjectId]
+  -> load course and content from Convex
+  -> select URL video or first incomplete video
+  -> initialize YouTube IFrame player
+  -> save progress through Convex mutations and beacon fallback
+```
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full system map, data model, route surface, provider flow, and review targets.
+
+## Design
+
+The maintained design spec is [docs/DESIGN.yaml](docs/DESIGN.yaml). It documents the current palette, typography, component roles, image overlay rules, responsive targets, and implementation constraints.
+
+The short version:
+
+- Primary: `#E62E2D`
+- Accent: `#2BFF00`
+- Background: `#000000`
+- Shape: square or clipped corners
+- Texture: halftone/noise overlays
+- UI voice: academic mission control
+
+## Data And Scraping Notes
+
+Scraping and data maintenance docs live in `docs/`:
+
+- [docs/scrape.md](docs/scrape.md)
+- [docs/SCRAPER_UPDATE.md](docs/SCRAPER_UPDATE.md)
+- [docs/SCRAPING_LOG.md](docs/SCRAPING_LOG.md)
+- [docs/DATA_INTEGRITY_REPORT.md](docs/DATA_INTEGRITY_REPORT.md)
+- [docs/CONVEX_MIGRATIONS.md](docs/CONVEX_MIGRATIONS.md)
+
+Treat scraped data, backups, token files, and `.env.local` as private local material. Do not commit secrets.
+
+## Validation
+
+Run the narrow baseline before committing code changes:
+
+```bash
+bun run lint
+bun x tsc --noEmit
+```
+
+Use `bun run build` for release or performance-sensitive changes.
+
+## Version
+
+Current version: `0.9.0`.
+
+Version bumps are automated by the GitHub workflow after conventional commits land on `main`.
