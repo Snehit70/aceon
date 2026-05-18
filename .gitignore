@@ -61,6 +61,7 @@ backups/
 # Playwright artifacts (kept for safety even after test removal)
 /playwright-report/
 /test-results/
+/coverage/
 
 secret_token.txt
 dev.log
