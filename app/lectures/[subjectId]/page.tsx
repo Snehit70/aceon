@@ -278,7 +278,7 @@ function LecturePlayerPageContent() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden">
+    <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden md:gap-3">
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-black overflow-x-hidden overflow-y-auto relative transition-all duration-300 ease-in-out">
         <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
@@ -425,7 +425,7 @@ function LecturePlayerPageContent() {
           >
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="absolute top-3 left-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
+              className="absolute top-3 right-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
               title="Close Sidebar"
             >
               <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
