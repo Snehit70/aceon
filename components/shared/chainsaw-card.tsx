@@ -51,6 +51,8 @@ export function ChainsawCard({
 }: ChainsawCardProps) {
   const isStarted = progress > 0
   const isCompleted = progress >= 100
+  const cleanedTitle = cleanCourseTitle(title)
+  const isLongTitle = cleanedTitle.length > 36
   
   return (
     <Link href={href} className={cn("block group/card outline-none h-full", className)}>
@@ -71,8 +73,15 @@ export function ChainsawCard({
             </div>
             
             <div className="space-y-0.5 sm:space-y-1">
-              <h3 className="font-display text-lg sm:text-2xl font-bold leading-[0.88] sm:leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-white transition-colors line-clamp-2 sm:line-clamp-none">
-                {cleanCourseTitle(title)}
+              <h3
+                className={cn(
+                  "font-display font-bold uppercase text-foreground group-hover/card:text-white transition-colors line-clamp-2 min-h-[2.8rem] sm:min-h-[4.1rem]",
+                  isLongTitle
+                    ? "text-base sm:text-[1.65rem] leading-[0.9] tracking-normal"
+                    : "text-lg sm:text-2xl leading-[0.88] sm:leading-[0.85] tracking-wide",
+                )}
+              >
+                {cleanedTitle}
               </h3>
               {subtitle && (
                 <p className="font-mono text-xs text-muted-foreground uppercase tracking-tight truncate">
