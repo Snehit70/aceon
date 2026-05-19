@@ -279,56 +279,6 @@ function LecturePlayerPageContent() {
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden">
-      {/* Desktop Sidebar */}
-      <AnimatePresence initial={false}>
-        {isSidebarOpen && (
-          <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 320, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="hidden md:flex border-r bg-background flex-col shrink-0 relative overflow-hidden"
-          >
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="absolute top-3 right-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
-              title="Close Sidebar"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
-            </button>
-            <div className="w-80 h-full">
-              <LectureSidebar
-                courseTitle={course.title}
-                courseCode={course.code}
-                content={content}
-                currentVideoId={navigation.activeVideoId}
-                onVideoSelect={navigation.handleVideoSelect}
-                progressData={progressData}
-                onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
-                onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
-              />
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar Toggle Button (When Closed) */}
-      <AnimatePresence initial={false}>
-        {!isSidebarOpen && (
-          <motion.button
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0, transition: { duration: 0.2, ease: "easeOut" } }}
-            exit={{ opacity: 0, transition: { duration: 0.05 } }}
-            onClick={() => setIsSidebarOpen(true)}
-            className="hidden md:flex items-center gap-2 fixed left-4 top-20 z-50 h-10 px-3 bg-black/90 border border-white/10 hover:border-primary hover:bg-black backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[3px_3px_0px_0px_#E62E2D] group transition-all duration-200"
-            title="Open Course Navigation"
-          >
-            <HugeiconsIcon icon={Menu02Icon} className="h-5 w-5 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
-            <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">Menu</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
-
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-black overflow-x-hidden overflow-y-auto relative transition-all duration-300 ease-in-out">
         <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
@@ -354,7 +304,7 @@ function LecturePlayerPageContent() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-full max-w-none h-[100dvh] md:w-[85vw] md:max-w-80">
+            <SheetContent side="right" className="p-0 w-full max-w-none h-[100dvh] md:w-[85vw] md:max-w-80">
               <SheetTitle className="sr-only">
                 Lecture navigation
               </SheetTitle>
@@ -445,6 +395,56 @@ function LecturePlayerPageContent() {
           onClose={() => setShowShortcutsHelp(false)} 
         />
       </main>
+
+      {/* Sidebar Toggle Button (When Closed) */}
+      <AnimatePresence initial={false}>
+        {!isSidebarOpen && (
+          <motion.button
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0, transition: { duration: 0.2, ease: "easeOut" } }}
+            exit={{ opacity: 0, transition: { duration: 0.05 } }}
+            onClick={() => setIsSidebarOpen(true)}
+            className="hidden md:flex items-center gap-2 fixed right-4 top-20 z-50 h-10 px-3 bg-black/90 border border-white/10 hover:border-primary hover:bg-black backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[3px_3px_0px_0px_#E62E2D] group transition-all duration-200"
+            title="Open Course Navigation"
+          >
+            <HugeiconsIcon icon={Menu02Icon} className="h-5 w-5 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
+            <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">Menu</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Sidebar */}
+      <AnimatePresence initial={false}>
+        {isSidebarOpen && (
+          <motion.aside
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 320, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className="hidden md:flex border-l bg-background flex-col shrink-0 relative overflow-hidden"
+          >
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="absolute top-3 left-3 z-20 flex items-center h-8 w-8 justify-center bg-black/50 border border-white/10 hover:border-primary hover:bg-black/80 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#E62E2D] group transition-all duration-200"
+              title="Close Sidebar"
+            >
+              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
+            </button>
+            <div className="w-80 h-full">
+              <LectureSidebar
+                courseTitle={course.title}
+                courseCode={course.code}
+                content={content}
+                currentVideoId={navigation.activeVideoId}
+                onVideoSelect={navigation.handleVideoSelect}
+                progressData={progressData}
+                onMarkWeekComplete={user ? handleMarkWeekComplete : undefined}
+                onMarkCourseComplete={user ? handleMarkCourseComplete : undefined}
+              />
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
