@@ -84,7 +84,7 @@ export function ChainsawCard({
 
           <div className="p-1.5 sm:p-4 flex-grow flex flex-col justify-between space-y-2 sm:space-y-6 relative">
             
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 pointer-events-none mix-blend-overlay" />
+            <div className="absolute inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
 
             <div className="space-y-1 sm:space-y-2 z-10">
               <div className="flex items-center justify-between font-mono text-[9px] sm:text-xs uppercase tracking-wide sm:tracking-wider">
