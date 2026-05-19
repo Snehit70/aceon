@@ -75,10 +75,10 @@ export function ChainsawCard({
             <div className="space-y-0.5 sm:space-y-1">
               <h3
                 className={cn(
-                  "font-display font-bold uppercase text-foreground group-hover/card:text-white transition-colors line-clamp-2 min-h-[2.8rem] sm:min-h-[4.1rem]",
+                  "font-display font-bold uppercase text-foreground group-hover/card:text-white transition-colors line-clamp-2 min-h-[2.8rem] sm:min-h-[4.1rem] break-words text-balance",
                   isLongTitle
-                    ? "text-base sm:text-[1.65rem] leading-[0.9] tracking-normal"
-                    : "text-lg sm:text-2xl leading-[0.88] sm:leading-[0.85] tracking-wide",
+                    ? "text-base sm:text-[1.65rem] leading-[1.02] tracking-normal"
+                    : "text-lg sm:text-2xl leading-[0.98] sm:leading-[0.94] tracking-wide",
                 )}
               >
                 {cleanedTitle}
