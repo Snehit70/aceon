@@ -325,7 +325,7 @@ function LecturePlayerPageContent() {
 
         <div className={cn(
           "flex-1 px-4 py-3 sm:p-4 md:p-6 w-full space-y-3 md:space-y-4 transition-all duration-300",
-          isSidebarOpen ? "max-w-5xl mx-auto" : "max-w-7xl mx-auto"
+          isSidebarOpen ? "max-w-none ml-4 lg:ml-6 xl:ml-8 mr-0 pr-4" : "max-w-7xl mx-auto"
         )}>
           <Button 
             asChild 
@@ -418,7 +418,7 @@ function LecturePlayerPageContent() {
         {isSidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 320, opacity: 1 }}
+            animate={{ width: 352, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="hidden md:flex border-l bg-background flex-col shrink-0 relative overflow-hidden"
@@ -430,7 +430,7 @@ function LecturePlayerPageContent() {
             >
               <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 text-white/70 group-hover:text-primary transition-colors" strokeWidth={2} />
             </button>
-            <div className="w-80 h-full">
+            <div className="w-88 h-full">
               <LectureSidebar
                 courseTitle={course.title}
                 courseCode={course.code}
