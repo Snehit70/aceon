@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import useMediaQuery from "@/hooks/use-media-query";
 
 interface Particle {
   id: number;
@@ -41,11 +42,15 @@ interface Ember {
 export const Particles = () => {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [embers, setEmbers] = useState<Ember[]>([]);
-  
-  // Only run on client to avoid hydration mismatch with random values
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   useEffect(() => {
+    const particleCount = reduceMotion ? 0 : isMobile ? 8 : 20;
+    const emberCount = reduceMotion ? 0 : isMobile ? 2 : 5;
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setParticles([...Array(20)].map((_, i) => ({
+    setParticles([...Array(particleCount)].map((_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -57,7 +62,7 @@ export const Particles = () => {
       size: Math.random() * 10 + 2,
     })));
 
-    setEmbers([...Array(5)].map((_, i) => ({
+    setEmbers([...Array(emberCount)].map((_, i) => ({
       id: i,
       x: Math.random() * 100,
       xOffset: (Math.random() - 0.5) * 20,
@@ -65,7 +70,9 @@ export const Particles = () => {
       delay: Math.random() * 5,
       size: Math.random() * 4 + 2,
     })));
-  }, []);
+  }, [reduceMotion, isMobile]);
+
+  if (reduceMotion) return null;
 
   if (particles.length === 0) return null;
 

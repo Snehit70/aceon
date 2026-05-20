@@ -131,6 +131,21 @@ export const syncCourseData = mutation({
       }
     }
 
+    const courseVideos = await ctx.db
+      .query("videos")
+      .withIndex("by_course", (q) => q.eq("courseId", courseId!))
+      .collect();
+    const lectureCount = courseVideos.length;
+    const totalDurationSeconds = courseVideos.reduce(
+      (sum, video) => sum + (video.duration || 0),
+      0,
+    );
+
+    await ctx.db.patch(courseId!, {
+      lectureCount,
+      totalDurationSeconds,
+    });
+
     return { success: true, code: course.code };
   },
 });

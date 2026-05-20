@@ -27,10 +27,10 @@ export function Navbar() {
         <div className="mr-3 sm:mr-4 flex">
           <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105 group hover:-rotate-1">
             <Image
-              src="/images/aceon-logo.svg"
+              src="/images/aceon-logo.webp"
               alt="Aceon logo"
-              width={1460}
-              height={1060}
+              width={528}
+              height={192}
               className="h-7 w-auto max-w-[82px] select-none sm:h-10 sm:max-w-[132px]"
               priority
             />

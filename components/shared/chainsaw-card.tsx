@@ -51,6 +51,8 @@ export function ChainsawCard({
 }: ChainsawCardProps) {
   const isStarted = progress > 0
   const isCompleted = progress >= 100
+  const cleanedTitle = cleanCourseTitle(title)
+  const isLongTitle = cleanedTitle.length > 36
   
   return (
     <Link href={href} className={cn("block group/card outline-none h-full", className)}>
@@ -71,8 +73,15 @@ export function ChainsawCard({
             </div>
             
             <div className="space-y-0.5 sm:space-y-1">
-              <h3 className="font-display text-lg sm:text-2xl font-bold leading-[0.88] sm:leading-[0.85] uppercase tracking-wide text-foreground group-hover/card:text-white transition-colors line-clamp-2 sm:line-clamp-none">
-                {cleanCourseTitle(title)}
+              <h3
+                className={cn(
+                  "font-display font-bold uppercase text-foreground group-hover/card:text-white transition-colors line-clamp-2 min-h-[2.8rem] sm:min-h-[4.1rem] break-words text-balance",
+                  isLongTitle
+                    ? "text-base sm:text-[1.65rem] leading-[1.02] tracking-normal"
+                    : "text-lg sm:text-2xl leading-[0.98] sm:leading-[0.94] tracking-wide",
+                )}
+              >
+                {cleanedTitle}
               </h3>
               {subtitle && (
                 <p className="font-mono text-xs text-muted-foreground uppercase tracking-tight truncate">
@@ -84,7 +93,7 @@ export function ChainsawCard({
 
           <div className="p-1.5 sm:p-4 flex-grow flex flex-col justify-between space-y-2 sm:space-y-6 relative">
             
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 pointer-events-none mix-blend-overlay" />
+            <div className="absolute inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
 
             <div className="space-y-1 sm:space-y-2 z-10">
               <div className="flex items-center justify-between font-mono text-[9px] sm:text-xs uppercase tracking-wide sm:tracking-wider">

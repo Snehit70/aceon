@@ -29,10 +29,10 @@ export default function LandingPage() {
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-sm font-bold uppercase text-black">
           <div className="flex items-center gap-2">
             <Image
-              src="/images/aceon-logo.svg"
+              src="/images/aceon-logo.webp"
               alt="Aceon logo"
-              width={1460}
-              height={1060}
+              width={528}
+              height={192}
               className="h-7 w-auto max-w-[88px] select-none"
             />
             <span className="font-display font-black text-lg tracking-widest">Aceon</span>

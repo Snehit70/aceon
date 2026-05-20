@@ -25,21 +25,36 @@ export const list = query({
 export const listWithStats = query({
   args: {},
   handler: async (ctx) => {
-    const [courses, allVideos] = await Promise.all([
-      ctx.db.query("courses").collect(),
-      ctx.db.query("videos").collect(),
-    ]);
+    const courses = await ctx.db.query("courses").collect();
+    const coursesMissingPrecomputedStats = courses.filter(
+      (course) =>
+        course.lectureCount === undefined ||
+        course.totalDurationSeconds === undefined,
+    );
 
     const statsByCourse = new Map<string, { count: number; seconds: number }>();
-    for (const video of allVideos) {
-      const stats = statsByCourse.get(video.courseId) || { count: 0, seconds: 0 };
-      stats.count++;
-      stats.seconds += video.duration || 0;
-      statsByCourse.set(video.courseId, stats);
+    if (coursesMissingPrecomputedStats.length > 0) {
+      console.warn(
+        `[courses.listWithStats] fallback aggregation for ${coursesMissingPrecomputedStats.length}/${courses.length} courses`,
+      );
+      const allVideos = await ctx.db.query("videos").collect();
+      for (const video of allVideos) {
+        const stats = statsByCourse.get(video.courseId) || { count: 0, seconds: 0 };
+        stats.count++;
+        stats.seconds += video.duration || 0;
+        statsByCourse.set(video.courseId, stats);
+      }
     }
 
     return courses.map((course) => {
-      const stats = statsByCourse.get(course._id) || { count: 0, seconds: 0 };
+      const stats =
+        course.lectureCount !== undefined &&
+        course.totalDurationSeconds !== undefined
+          ? {
+              count: course.lectureCount,
+              seconds: course.totalDurationSeconds,
+            }
+          : statsByCourse.get(course._id) || { count: 0, seconds: 0 };
       const hours = Math.floor(stats.seconds / 3600);
       const minutes = Math.floor((stats.seconds % 3600) / 60);
       const formatted = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
@@ -219,6 +234,27 @@ export const searchLectures = query({
 export const getCourseStats = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
+    const course = await ctx.db.get(args.courseId);
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    if (
+      course.lectureCount !== undefined &&
+      course.totalDurationSeconds !== undefined
+    ) {
+      const precomputedSeconds = course.totalDurationSeconds;
+      const hours = Math.floor(precomputedSeconds / 3600);
+      const minutes = Math.floor((precomputedSeconds % 3600) / 60);
+      const formatted = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+      return {
+        lectureCount: course.lectureCount,
+        totalDurationSeconds: precomputedSeconds,
+        totalDurationFormatted: formatted,
+      };
+    }
+
     const videos = await ctx.db
       .query("videos")
       .withIndex("by_course", (q) => q.eq("courseId", args.courseId))
@@ -238,4 +274,3 @@ export const getCourseStats = query({
     };
   },
 });
-
