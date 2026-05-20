@@ -71,19 +71,42 @@ export default function MobileProfilePage() {
     }
   }, [allProgress, profile, courses]);
 
-  const filteredCourses = useMemo(() => {
-    if (!courses) return [];
-    if (filter === "all") return courses;
-    if (filter === "current") return courses.filter((c) => c.level === level);
-    return courses.filter((c) => c.level === filter);
-  }, [courses, filter, level]);
-
   const stats = useMemo(() => {
     const studying = studyingCourseIds.length;
     const done = completedCourseIds.length;
     const inProgress = Object.values(allProgress || {}).filter((p) => p > 0 && p < 100).length;
     return { studying, done, inProgress };
   }, [studyingCourseIds, completedCourseIds, allProgress]);
+
+  const effectiveLevel = useMemo<Level>(() => {
+    if (!courses) return level;
+    let maxOrder = getLevelOrder(level);
+    const activeIds = new Set<string>([
+      ...studyingCourseIds,
+      ...completedCourseIds,
+      ...Object.entries(allProgress || {})
+        .filter(([, p]) => p > 0)
+        .map(([id]) => id),
+    ]);
+    for (const c of courses) {
+      if (activeIds.has(c._id)) {
+        const order = getLevelOrder(c.level);
+        if (order > maxOrder) maxOrder = order;
+      }
+    }
+    if (maxOrder >= 3) return "degree";
+    if (maxOrder >= 2) return "diploma";
+    return "foundation";
+  }, [courses, level, studyingCourseIds, completedCourseIds, allProgress]);
+
+  const isAutoPromoted = effectiveLevel !== level;
+
+  const filteredCourses = useMemo(() => {
+    if (!courses) return [];
+    if (filter === "all") return courses;
+    if (filter === "current") return courses.filter((c) => c.level === effectiveLevel);
+    return courses.filter((c) => c.level === filter);
+  }, [courses, filter, effectiveLevel]);
 
   const isDirty = useMemo(() => {
     if (level !== initialLevel) return true;
@@ -140,7 +163,7 @@ export default function MobileProfilePage() {
     .toUpperCase();
 
   const filterChips: { key: FilterKey; label: string }[] = [
-    { key: "current", label: `My tier (${LEVEL_META[level].label})` },
+    { key: "current", label: `My tier (${LEVEL_META[effectiveLevel].label})` },
     { key: "all", label: "All" },
     { key: "foundation", label: "Foundation" },
     { key: "diploma", label: "Diploma" },
@@ -171,9 +194,16 @@ export default function MobileProfilePage() {
                 {displayEmail}
               </p>
             )}
-            <p className="mt-1 inline-block border border-primary/40 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
-              {LEVEL_META[level].label} tier
-            </p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <span className="inline-block border border-primary/40 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
+                {LEVEL_META[effectiveLevel].label} tier
+              </span>
+              {isAutoPromoted && (
+                <span className="inline-block border border-white/15 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white/55">
+                  saved: {LEVEL_META[level].label}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -233,10 +263,10 @@ export default function MobileProfilePage() {
                   key={chip.key}
                   onClick={() => setFilter(chip.key)}
                   className={cn(
-                    "shrink-0 border px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider",
+                    "inline-flex shrink-0 items-center border px-3.5 min-h-[36px] font-mono text-[10px] font-bold uppercase tracking-wider transition-colors",
                     active
                       ? "border-primary bg-primary/15 text-primary"
-                      : "border-white/10 bg-white/[0.02] text-white/65",
+                      : "border-white/10 bg-white/[0.02] text-white/65 active:bg-white/[0.06]",
                   )}
                 >
                   {chip.label}
@@ -294,7 +324,7 @@ export default function MobileProfilePage() {
                         handleCourseStatusChange(course._id, status === "studying" ? null : "studying")
                       }
                       className={cn(
-                        "flex min-h-[40px] items-center justify-center gap-1.5 border text-[10px] font-bold uppercase tracking-wider transition-colors",
+                        "flex min-h-[44px] items-center justify-center gap-1.5 border text-[11px] font-bold uppercase tracking-wider transition-colors",
                         status === "studying"
                           ? "border-primary bg-primary/15 text-primary"
                           : "border-white/10 text-white/70 active:bg-white/5",
@@ -308,7 +338,7 @@ export default function MobileProfilePage() {
                         handleCourseStatusChange(course._id, status === "done" ? null : "done")
                       }
                       className={cn(
-                        "flex min-h-[40px] items-center justify-center gap-1.5 border text-[10px] font-bold uppercase tracking-wider transition-colors",
+                        "flex min-h-[44px] items-center justify-center gap-1.5 border text-[11px] font-bold uppercase tracking-wider transition-colors",
                         status === "done"
                           ? "border-green-500 bg-green-500/15 text-green-400"
                           : "border-white/10 text-white/70 active:bg-white/5",
