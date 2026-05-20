@@ -9,7 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,7 @@ interface OpenSections {
  */
 function LecturesPageContent() {
   const { user } = useUser();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const courses = useQuery(api.courses.listWithStats);
   const profile = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip");
@@ -83,6 +84,12 @@ function LecturesPageContent() {
 
   const tabParam = searchParams.get("tab");
   const defaultTab = tabParam === "library" || tabParam === "enrolled" ? tabParam : "enrolled";
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const mobileTab = tabParam === "library" ? "archives" : "enrolled";
+    router.replace(`/m/lectures?tab=${mobileTab}`);
+  }, [isMobile, router, tabParam]);
 
   const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
@@ -187,6 +194,10 @@ function LecturesPageContent() {
       setCachedCounts(counts);
     }
   }, [courses, enrolledCourses.length, otherCourses.length]);
+
+  if (isMobile) {
+    return <LecturesSkeleton mode="enrolled" count={cachedCounts.enrolled} />;
+  }
 
 if (courses === undefined) {
     const tab = searchParams.get("tab");
