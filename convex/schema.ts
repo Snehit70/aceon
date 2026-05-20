@@ -16,6 +16,8 @@ export default defineSchema({
     code: v.string(),
     title: v.string(),
     level: v.union(v.literal("foundation"), v.literal("diploma"), v.literal("degree")),
+    lectureCount: v.optional(v.number()),
+    totalDurationSeconds: v.optional(v.number()),
   }).index("by_code", ["code"]),
 
   weeks: defineTable({
