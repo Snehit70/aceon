@@ -40,7 +40,7 @@ export default function MobileLecturesPage() {
 
   return (
     <div className="min-h-[calc(100dvh-3.5rem)] bg-black px-3 py-4 pb-24">
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-2xl font-black uppercase tracking-wide text-white">Missions</h1>
         <Link href="/lectures" className="text-xs font-mono uppercase tracking-widest text-primary">
           Desktop View
@@ -65,19 +65,19 @@ export default function MobileLecturesPage() {
         <div className="py-16 text-center text-sm text-white/70">Loading missions...</div>
       ) : tab === "enrolled" ? (
         enrolledCourses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-3.5 min-[420px]:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4.5">
             {enrolledCourses.map((course) => (
               <Link
                 key={course._id}
                 href={`/m/course/${course._id}`}
-                className="block border-2 border-white/10 bg-black/90 p-3.5 hover:border-primary"
+                className="block border-2 border-white/10 bg-black/90 p-4 hover:border-primary"
               >
-                <div className="mb-3 flex items-start justify-between gap-2">
+                <div className="mb-4 flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="mb-1 inline-block border border-primary/60 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] uppercase text-primary">
                       {course.code}
                     </p>
-                    <h3 className="line-clamp-2 font-display text-2xl font-bold uppercase leading-[0.95] text-white">
+                    <h3 className="line-clamp-2 font-display text-[2.05rem] font-bold uppercase leading-[0.92] text-white">
                       {course.title}
                     </h3>
                   </div>
@@ -86,27 +86,27 @@ export default function MobileLecturesPage() {
                   </span>
                 </div>
 
-                <div className="mb-2 flex items-center justify-between border-y border-white/10 py-2 font-mono text-[10px] uppercase tracking-wider">
+                <div className="mb-2.5 flex items-center justify-between border-y border-white/10 py-2.5 font-mono text-[10px] uppercase tracking-wider">
                   <span className={(coursesProgress?.[course._id] || 0) >= 100 ? "text-primary" : "text-white/70"}>
                     {(coursesProgress?.[course._id] || 0) > 0 ? "In_Prog" : "New"}
                   </span>
                   <span className="text-primary">{Math.round(coursesProgress?.[course._id] || 0)}%</span>
                 </div>
-                <div className="mb-3 h-2 border border-white/10 bg-white/5">
+                <div className="mb-4 h-2.5 border border-white/10 bg-white/5">
                   <div
                     className="h-full bg-primary"
                     style={{ width: `${Math.round(coursesProgress?.[course._id] || 0)}%` }}
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-2">
+                <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-3">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-wider text-white/60">Lec</p>
-                    <p className="font-mono text-xl font-bold text-white">{course.stats.lectureCount}</p>
+                    <p className="font-mono text-3xl font-bold leading-none text-white">{course.stats.lectureCount}</p>
                   </div>
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-wider text-white/60">Dur</p>
-                    <p className="font-mono text-base font-bold text-white">{course.stats.totalDurationFormatted}</p>
+                    <p className="font-mono text-xl font-bold leading-none text-white">{course.stats.totalDurationFormatted}</p>
                   </div>
                 </div>
               </Link>
