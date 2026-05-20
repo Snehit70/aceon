@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
 function aggregateCourseStats(
@@ -20,7 +20,7 @@ function aggregateCourseStats(
  * Safe backfill utility: does not alter course identity fields, only updates
  * denormalized stats (`lectureCount`, `totalDurationSeconds`).
  */
-export const recomputeAllCourseStats = mutation({
+export const recomputeAllCourseStats = internalMutation({
   args: {},
   handler: async (ctx) => {
     const courses = await ctx.db.query("courses").collect();
@@ -60,7 +60,7 @@ export const recomputeAllCourseStats = mutation({
  *
  * Useful for targeted validation after import/sync operations.
  */
-export const recomputeCourseStatsByCode = mutation({
+export const recomputeCourseStatsByCode = internalMutation({
   args: {
     code: v.string(),
   },

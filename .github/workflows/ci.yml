@@ -79,6 +79,7 @@ jobs:
     timeout-minutes: 20
     env:
       NEXT_PUBLIC_CONVEX_URL: https://glad-marten-760.convex.cloud
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ci_dummy_key_for_build_only
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -260,7 +260,7 @@ function LecturePlayerPageContent() {
 
         <div className={cn(
           "flex-1 px-4 py-3 sm:p-4 md:p-6 w-full space-y-3 md:space-y-4 transition-all duration-300",
-          isSidebarOpen ? "max-w-none ml-4 lg:ml-6 xl:ml-8 mr-0 pr-4" : "max-w-7xl mx-auto"
+          isSidebarOpen ? "max-w-none md:ml-4 lg:ml-6 xl:ml-8 mr-0 md:pr-4" : "max-w-7xl mx-auto"
         )}>
           <Button 
             asChild 
