@@ -8,6 +8,13 @@ import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
 import { BookOpen, Check, ChevronDown, CircleDot, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const levels = ["foundation", "diploma", "degree"] as const;
@@ -44,6 +51,7 @@ export default function MobileProfilePage() {
   const [initialCompletedIds, setInitialCompletedIds] = useState<Id<"courses">[]>([]);
   const [filter, setFilter] = useState<FilterKey>("current");
   const [isSaving, setIsSaving] = useState(false);
+  const [tierOpen, setTierOpen] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -215,42 +223,105 @@ export default function MobileProfilePage() {
       </div>
 
       <section className="mb-5">
-        <label htmlFor="threat-level" className="mb-2 flex items-center gap-2">
+        <div className="mb-2 flex items-center gap-2">
           <Layers className="h-3.5 w-3.5 text-primary/80" />
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
             Threat level
           </span>
-        </label>
-        <div className="relative">
-          <select
-            id="threat-level"
-            value={level}
-            onChange={(e) => setLevel(e.target.value as Level)}
-            className={cn(
-              "h-12 w-full appearance-none border bg-black pl-3 pr-10 font-display text-sm font-bold uppercase tracking-wide outline-none transition-colors",
-              "focus:border-primary",
-              level === initialLevel
-                ? "border-white/15 text-white"
-                : "border-primary bg-primary/10 text-primary",
-            )}
-          >
-            {levels.map((lvl) => (
-              <option key={lvl} value={lvl} className="bg-black text-white">
-                {LEVEL_META[lvl].label} — {LEVEL_META[lvl].blurb}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2",
-              level === initialLevel ? "text-white/55" : "text-primary",
-            )}
-          />
         </div>
-        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-white/45">
-          {LEVEL_META[level].blurb}
-        </p>
+        <Sheet open={tierOpen} onOpenChange={setTierOpen}>
+          <SheetTrigger asChild>
+            <button
+              type="button"
+              className={cn(
+                "flex h-12 w-full items-center justify-between border bg-black px-3 text-left transition-colors active:bg-white/[0.04]",
+                level === initialLevel
+                  ? "border-white/15 text-white"
+                  : "border-primary bg-primary/10 text-primary",
+              )}
+            >
+              <span className="flex min-w-0 flex-col">
+                <span className="font-display text-sm font-bold uppercase tracking-wide leading-none">
+                  {LEVEL_META[level].label}
+                </span>
+                <span
+                  className={cn(
+                    "mt-0.5 truncate font-mono text-[10px] uppercase tracking-wider leading-none",
+                    level === initialLevel ? "text-white/50" : "text-primary/75",
+                  )}
+                >
+                  {LEVEL_META[level].blurb}
+                </span>
+              </span>
+              <ChevronDown
+                aria-hidden
+                className={cn(
+                  "ml-2 h-4 w-4 shrink-0 transition-transform",
+                  tierOpen && "rotate-180",
+                  level === initialLevel ? "text-white/55" : "text-primary",
+                )}
+              />
+            </button>
+          </SheetTrigger>
+          <SheetContent
+            side="bottom"
+            className="border-t-2 border-primary bg-black pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+          >
+            <SheetHeader className="px-4 pb-2 pt-1">
+              <SheetTitle className="font-display text-xs font-black uppercase tracking-[0.25em] text-primary">
+                Select threat level
+              </SheetTitle>
+            </SheetHeader>
+            <ul className="px-3 pb-2">
+              {levels.map((lvl) => {
+                const active = level === lvl;
+                return (
+                  <li key={lvl}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLevel(lvl);
+                        setTierOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-center gap-3 border-b border-white/5 py-3.5 px-2 text-left transition-colors active:bg-white/[0.04] last:border-b-0",
+                        active && "bg-primary/5",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "flex h-9 w-9 shrink-0 items-center justify-center border",
+                          active
+                            ? "border-primary bg-primary/15 text-primary"
+                            : "border-white/15 bg-white/[0.02] text-white/50",
+                        )}
+                      >
+                        {active ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Layers className="h-3.5 w-3.5" />
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className={cn(
+                            "block font-display text-sm font-bold uppercase tracking-wide leading-tight",
+                            active ? "text-primary" : "text-white",
+                          )}
+                        >
+                          {LEVEL_META[lvl].label}
+                        </span>
+                        <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-wider leading-tight text-white/55">
+                          {LEVEL_META[lvl].blurb}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </SheetContent>
+        </Sheet>
       </section>
 
       <section>
