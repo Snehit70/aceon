@@ -15,6 +15,7 @@ import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useMediaQuery from "@/hooks/use-media-query";
 
 const ProfileSheet = dynamic(
   () => import("@/components/profile/profile-sheet").then((mod) => mod.ProfileSheet),
@@ -78,6 +79,7 @@ function LecturesPageContent() {
     diploma: false,
     degree: false,
   });
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const tabParam = searchParams.get("tab");
   const defaultTab = tabParam === "library" || tabParam === "enrolled" ? tabParam : "enrolled";
@@ -286,7 +288,7 @@ if (courses === undefined) {
                     >
                       <ChainsawCard
                         id={course._id}
-                        href={`/lectures/${course._id}`}
+                        href={isMobile ? `/m/course/${course._id}` : `/lectures/${course._id}`}
                         code={course.code}
                         title={course.title}
                         level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
@@ -426,9 +428,9 @@ if (courses === undefined) {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.03 }}
                                   >
-                                    <ChainsawCard
-                                      id={course._id}
-                                      href={`/lectures/${course._id}`}
+                                <ChainsawCard
+                                  id={course._id}
+                                  href={isMobile ? `/m/course/${course._id}` : `/lectures/${course._id}`}
                                       code={course.code}
                                       title={course.title}
                                       level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
