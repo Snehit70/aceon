@@ -40,11 +40,8 @@ export default function MobileLecturesPage() {
 
   return (
     <div className="min-h-[calc(100dvh-3.5rem)] bg-black px-3 py-4 pb-24">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6">
         <h1 className="font-display text-2xl font-black uppercase tracking-wide text-white">Missions</h1>
-        <Link href="/lectures" className="text-xs font-mono uppercase tracking-widest text-primary">
-          Desktop View
-        </Link>
       </div>
 
       {tab === "archives" && (
@@ -65,7 +62,7 @@ export default function MobileLecturesPage() {
         <div className="py-16 text-center text-sm text-white/70">Loading missions...</div>
       ) : tab === "enrolled" ? (
         enrolledCourses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4.5">
+          <div className="grid grid-cols-2 gap-3">
             {enrolledCourses.map((course) => (
               <Link
                 key={course._id}
