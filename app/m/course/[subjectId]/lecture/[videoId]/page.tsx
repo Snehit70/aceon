@@ -11,6 +11,7 @@ import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
 
 export default function MobileLecturePage() {
   const { user } = useUser();
@@ -72,12 +73,15 @@ export default function MobileLecturePage() {
   };
 
   return (
-    <div className="px-2 py-3">
-      <Link href={`/m/course/${subjectId}/week/${currentVideo.weekId}`} className="px-1 font-mono text-xs uppercase tracking-wider text-primary">
-        Back to {currentVideo.weekTitle}
-      </Link>
+    <div className="px-2 py-3 pb-24">
+      <MobilePageHeader
+        backHref={`/m/course/${subjectId}/week/${currentVideo.weekId}`}
+        backLabel={`Back to ${currentVideo.weekTitle}`}
+        title={currentVideo.title}
+        subtitle={`${currentVideo.weekTitle} // ${Math.floor(currentVideo.duration / 60)} min`}
+      />
 
-      <div className="mt-3 overflow-hidden border border-white/10 bg-black">
+      <div className="overflow-hidden border border-white/10 bg-black">
         <VideoPlayer
           ref={playerRef}
           videoId={currentVideo.youtubeId}
@@ -88,38 +92,34 @@ export default function MobileLecturePage() {
         />
       </div>
 
-      <div className="px-1 pb-3 pt-4">
-        <h1 className="font-display text-3xl font-black uppercase leading-none">{currentVideo.title}</h1>
-        <p className="mt-1 font-mono text-xs uppercase tracking-wider text-white/70">
-          {currentVideo.weekTitle} {"//"} {Math.floor(currentVideo.duration / 60)} min
-        </p>
+      <div className="px-1 pb-3 pt-5">
 
-        <Button onClick={onToggleDone} className="mt-4 h-11 w-full font-bold uppercase tracking-widest">
+        <Button onClick={onToggleDone} className="mt-4 h-12 w-full font-bold uppercase tracking-widest">
           {currentProgress?.completed ? "Marked Done" : "Mark As Done"}
         </Button>
 
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="mt-4 grid grid-cols-2 gap-2.5">
           {previousVideo ? (
             <Link
               href={`/m/course/${subjectId}/lecture/${previousVideo._id}`}
-              className="flex min-h-[44px] items-center justify-center border border-white/20 text-xs font-bold uppercase tracking-wider text-white/80"
+              className="flex min-h-[48px] items-center justify-center border border-white/20 bg-white/5 text-xs font-bold uppercase tracking-wider text-white/90"
             >
-              Prev
+              Previous
             </Link>
           ) : (
-            <span className="flex min-h-[44px] items-center justify-center border border-white/10 text-xs font-bold uppercase tracking-wider text-white/30">
-              Prev
+            <span className="flex min-h-[48px] items-center justify-center border border-white/10 bg-white/[0.02] text-xs font-bold uppercase tracking-wider text-white/30">
+              Previous
             </span>
           )}
           {nextVideo ? (
             <Link
               href={`/m/course/${subjectId}/lecture/${nextVideo._id}`}
-              className="flex min-h-[44px] items-center justify-center border border-primary/40 bg-primary/10 text-xs font-bold uppercase tracking-wider text-primary"
+              className="flex min-h-[48px] items-center justify-center border border-primary/40 bg-primary/12 text-xs font-bold uppercase tracking-wider text-primary"
             >
               Next
             </Link>
           ) : (
-            <span className="flex min-h-[44px] items-center justify-center border border-white/10 text-xs font-bold uppercase tracking-wider text-white/30">
+            <span className="flex min-h-[48px] items-center justify-center border border-white/10 bg-white/[0.02] text-xs font-bold uppercase tracking-wider text-white/30">
               Next
             </span>
           )}

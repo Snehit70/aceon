@@ -99,13 +99,13 @@ export default function MobileProfilePage() {
   };
 
   return (
-    <div className="px-3 py-4">
+    <div className="px-3 py-4 pb-24">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="font-display text-2xl font-black uppercase">Profile</h1>
         <Link href="/lectures" className="font-mono text-xs uppercase tracking-wider text-primary">Desktop</Link>
       </div>
 
-      <div className="mb-4 border border-white/10 bg-white/5 p-3">
+      <div className="mb-4 border border-white/10 bg-white/5 p-3.5">
         <p className="mb-2 font-mono text-xs uppercase tracking-widest text-white/60">Threat level</p>
         <div className="grid grid-cols-3 gap-2">
           {levels.map((lvl) => (
@@ -130,19 +130,19 @@ export default function MobileProfilePage() {
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {filteredCourses?.map((course) => {
           const status = getCourseStatus(course._id);
           return (
-            <div key={course._id} className="border border-white/10 bg-white/5 p-3">
+            <div key={course._id} className="border border-white/10 bg-white/5 p-3.5">
               <p className="line-clamp-2 font-display text-base font-bold uppercase">{course.title}</p>
               <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-white/60">{course.code}</p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="mt-3 grid grid-cols-2 gap-2 rounded-none border border-white/10 p-1">
                 <button
                   onClick={() => handleCourseStatusChange(course._id, status === "studying" ? null : "studying")}
                   className={cn(
-                    "min-h-[40px] border text-[10px] font-bold uppercase tracking-wider",
-                    status === "studying" ? "border-primary bg-primary/10 text-primary" : "border-white/10 text-white/70",
+                    "min-h-[44px] border text-[10px] font-bold uppercase tracking-wider",
+                    status === "studying" ? "border-primary bg-primary/15 text-primary" : "border-white/10 text-white/70",
                   )}
                 >
                   Studying
@@ -150,8 +150,8 @@ export default function MobileProfilePage() {
                 <button
                   onClick={() => handleCourseStatusChange(course._id, status === "done" ? null : "done")}
                   className={cn(
-                    "min-h-[40px] border text-[10px] font-bold uppercase tracking-wider",
-                    status === "done" ? "border-green-500 bg-green-500/10 text-green-400" : "border-white/10 text-white/70",
+                    "min-h-[44px] border text-[10px] font-bold uppercase tracking-wider",
+                    status === "done" ? "border-green-500 bg-green-500/15 text-green-400" : "border-white/10 text-white/70",
                   )}
                 >
                   Done
@@ -162,9 +162,11 @@ export default function MobileProfilePage() {
         })}
       </div>
 
-      <Button onClick={handleSave} disabled={!user || isSaving} className="mt-4 h-11 w-full uppercase font-bold tracking-widest">
-        {isSaving ? "Saving..." : "Save Profile"}
-      </Button>
+      <div className="sticky bottom-[68px] mt-4 border border-white/10 bg-black/95 p-2 backdrop-blur-sm">
+        <Button onClick={handleSave} disabled={!user || isSaving} className="h-11 w-full uppercase font-bold tracking-widest">
+          {isSaving ? "Saving..." : "Save Profile"}
+        </Button>
+      </div>
     </div>
   );
 }
