@@ -7,7 +7,6 @@ import { useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
 import { Search } from "lucide-react";
 import { api } from "@/convex/_generated/api";
-import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -66,20 +65,51 @@ export default function MobileLecturesPage() {
         <div className="py-16 text-center text-sm text-white/70">Loading missions...</div>
       ) : tab === "enrolled" ? (
         enrolledCourses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3.5 min-[420px]:grid-cols-2">
             {enrolledCourses.map((course) => (
-              <div key={course._id} className="min-h-[212px]">
-                <ChainsawCard
-                  id={course._id}
-                  href={`/m/course/${course._id}`}
-                  code={course.code}
-                  title={course.title}
-                  level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                  lectureCount={course.stats.lectureCount}
-                  totalDuration={course.stats.totalDurationFormatted}
-                  progress={coursesProgress?.[course._id] || 0}
-                />
-              </div>
+              <Link
+                key={course._id}
+                href={`/m/course/${course._id}`}
+                className="block border-2 border-white/10 bg-black/90 p-3.5 hover:border-primary"
+              >
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="mb-1 inline-block border border-primary/60 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] uppercase text-primary">
+                      {course.code}
+                    </p>
+                    <h3 className="line-clamp-2 font-display text-2xl font-bold uppercase leading-[0.95] text-white">
+                      {course.title}
+                    </h3>
+                  </div>
+                  <span className="shrink-0 pt-1 font-mono text-[10px] uppercase tracking-wider text-white/60">
+                    {course.level}
+                  </span>
+                </div>
+
+                <div className="mb-2 flex items-center justify-between border-y border-white/10 py-2 font-mono text-[10px] uppercase tracking-wider">
+                  <span className={(coursesProgress?.[course._id] || 0) >= 100 ? "text-primary" : "text-white/70"}>
+                    {(coursesProgress?.[course._id] || 0) > 0 ? "In_Prog" : "New"}
+                  </span>
+                  <span className="text-primary">{Math.round(coursesProgress?.[course._id] || 0)}%</span>
+                </div>
+                <div className="mb-3 h-2 border border-white/10 bg-white/5">
+                  <div
+                    className="h-full bg-primary"
+                    style={{ width: `${Math.round(coursesProgress?.[course._id] || 0)}%` }}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-2">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-white/60">Lec</p>
+                    <p className="font-mono text-xl font-bold text-white">{course.stats.lectureCount}</p>
+                  </div>
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-white/60">Dur</p>
+                    <p className="font-mono text-base font-bold text-white">{course.stats.totalDurationFormatted}</p>
+                  </div>
+                </div>
+              </Link>
             ))}
           </div>
         ) : (
