@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 interface MobilePageHeaderProps {
   backHref: string;
@@ -8,14 +9,24 @@ interface MobilePageHeaderProps {
 }
 
 export function MobilePageHeader({ backHref, backLabel, title, subtitle }: MobilePageHeaderProps) {
+  const cleanLabel = backLabel.replace(/^←\s*/, "").replace(/^back to\s*/i, "");
+
   return (
-    <header className="mb-4 border-b border-white/10 pb-3">
-      <Link href={backHref} className="font-mono text-xs uppercase tracking-wider text-primary">
-        {backLabel}
+    <header className="mb-4 border-b border-white/10 pb-4">
+      <Link
+        href={backHref}
+        className="inline-flex min-h-[36px] items-center gap-1 -ml-1 pl-1 pr-2 font-mono text-[11px] uppercase tracking-wider text-primary active:text-primary/70"
+      >
+        <ChevronLeft className="h-3.5 w-3.5" />
+        <span>{cleanLabel}</span>
       </Link>
-      <h1 className="mt-2 font-display text-2xl font-black uppercase leading-tight text-white">{title}</h1>
+      <h1 className="mt-1.5 font-display text-[1.45rem] font-black uppercase leading-[1.05] text-white">
+        {title}
+      </h1>
       {subtitle ? (
-        <p className="mt-1 font-mono text-xs uppercase tracking-wider text-white/60">{subtitle}</p>
+        <p className="mt-1.5 font-mono text-[11px] uppercase tracking-wider text-white/55">
+          {subtitle}
+        </p>
       ) : null}
     </header>
   );

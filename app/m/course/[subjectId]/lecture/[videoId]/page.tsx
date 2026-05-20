@@ -11,6 +11,7 @@ import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
 
 export default function MobileLecturePage() {
@@ -72,16 +73,20 @@ export default function MobileLecturePage() {
     }
   };
 
+  const isDone = !!currentProgress?.completed;
+  const mins = Math.floor(currentVideo.duration / 60);
+  const secs = (currentVideo.duration % 60).toString().padStart(2, "0");
+
   return (
-    <div className="px-2 py-3 pb-24">
+    <div className="px-4 py-4 pb-28">
       <MobilePageHeader
         backHref={`/m/course/${subjectId}/week/${currentVideo.weekId}`}
-        backLabel={`Back to ${currentVideo.weekTitle}`}
+        backLabel={currentVideo.weekTitle}
         title={currentVideo.title}
-        subtitle={`${currentVideo.weekTitle} // ${Math.floor(currentVideo.duration / 60)} min`}
+        subtitle={`${currentVideo.weekTitle} · ${mins}:${secs}`}
       />
 
-      <div className="overflow-hidden border border-white/10 bg-black">
+      <div className="-mx-1 overflow-hidden border border-white/10 bg-black">
         <VideoPlayer
           ref={playerRef}
           videoId={currentVideo.youtubeId}
@@ -92,35 +97,50 @@ export default function MobileLecturePage() {
         />
       </div>
 
-      <div className="px-1 pb-3 pt-5">
-
-        <Button onClick={onToggleDone} className="mt-4 h-12 w-full font-bold uppercase tracking-widest">
-          {currentProgress?.completed ? "Marked Done" : "Mark As Done"}
+      <div className="mt-5 space-y-3">
+        <Button
+          onClick={onToggleDone}
+          className={`h-12 w-full gap-2 font-bold uppercase tracking-widest ${isDone ? "bg-green-500/15 text-green-400 hover:bg-green-500/20 border border-green-500/40" : ""}`}
+        >
+          {isDone && <Check className="h-4 w-4" />}
+          {isDone ? "Marked Done" : "Mark As Done"}
         </Button>
 
-        <div className="mt-4 grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           {previousVideo ? (
             <Link
               href={`/m/course/${subjectId}/lecture/${previousVideo._id}`}
-              className="flex min-h-[48px] items-center justify-center border border-white/20 bg-white/5 text-xs font-bold uppercase tracking-wider text-white/90"
+              className="group flex min-h-[52px] items-center gap-2 border border-white/15 bg-white/[0.03] px-3 py-2 text-left transition-colors active:bg-white/[0.06]"
             >
-              Previous
+              <ChevronLeft className="h-4 w-4 shrink-0 text-white/60 group-active:text-white" />
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-[9px] uppercase tracking-wider text-white/45">Prev</p>
+                <p className="line-clamp-1 font-display text-[11px] font-bold uppercase leading-tight text-white/85">
+                  {previousVideo.title}
+                </p>
+              </div>
             </Link>
           ) : (
-            <span className="flex min-h-[48px] items-center justify-center border border-white/10 bg-white/[0.02] text-xs font-bold uppercase tracking-wider text-white/30">
-              Previous
+            <span className="flex min-h-[52px] items-center justify-center border border-white/10 bg-white/[0.02] font-mono text-[10px] uppercase tracking-wider text-white/25">
+              Start of course
             </span>
           )}
           {nextVideo ? (
             <Link
               href={`/m/course/${subjectId}/lecture/${nextVideo._id}`}
-              className="flex min-h-[48px] items-center justify-center border border-primary/40 bg-primary/12 text-xs font-bold uppercase tracking-wider text-primary"
+              className="group flex min-h-[52px] items-center gap-2 border border-primary/40 bg-primary/10 px-3 py-2 text-right transition-colors active:bg-primary/20"
             >
-              Next
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-[9px] uppercase tracking-wider text-primary/70">Next</p>
+                <p className="line-clamp-1 font-display text-[11px] font-bold uppercase leading-tight text-primary">
+                  {nextVideo.title}
+                </p>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-primary" />
             </Link>
           ) : (
-            <span className="flex min-h-[48px] items-center justify-center border border-white/10 bg-white/[0.02] text-xs font-bold uppercase tracking-wider text-white/30">
-              Next
+            <span className="flex min-h-[52px] items-center justify-center border border-white/10 bg-white/[0.02] font-mono text-[10px] uppercase tracking-wider text-white/25">
+              End of course
             </span>
           )}
         </div>
