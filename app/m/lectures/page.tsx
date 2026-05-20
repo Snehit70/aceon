@@ -40,8 +40,8 @@ export default function MobileLecturesPage() {
   }, [courses, enrolledIds, searchQuery]);
 
   return (
-    <div className="min-h-[calc(100dvh-3.5rem)] bg-black px-3 py-4">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-black px-3 py-4 pb-24">
+      <div className="mb-5 flex items-center justify-between">
         <h1 className="font-display text-2xl font-black uppercase tracking-wide text-white">Missions</h1>
         <Link href="/lectures" className="text-xs font-mono uppercase tracking-widest text-primary">
           Desktop View
@@ -49,7 +49,7 @@ export default function MobileLecturesPage() {
       </div>
 
       {tab === "archives" && (
-        <div className="sticky top-14 z-20 mb-4 border border-white/10 bg-black/90 p-2 backdrop-blur-sm">
+        <div className="sticky top-14 z-20 mb-4 border border-white/15 bg-black/95 p-2 shadow-[0_6px_20px_rgba(0,0,0,0.45)] backdrop-blur-sm">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
             <Input
@@ -66,19 +66,20 @@ export default function MobileLecturesPage() {
         <div className="py-16 text-center text-sm text-white/70">Loading missions...</div>
       ) : tab === "enrolled" ? (
         enrolledCourses.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
             {enrolledCourses.map((course) => (
-              <ChainsawCard
-                key={course._id}
-                id={course._id}
-                href={`/m/course/${course._id}`}
-                code={course.code}
-                title={course.title}
-                level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
-                lectureCount={course.stats.lectureCount}
-                totalDuration={course.stats.totalDurationFormatted}
-                progress={coursesProgress?.[course._id] || 0}
-              />
+              <div key={course._id} className="min-h-[212px]">
+                <ChainsawCard
+                  id={course._id}
+                  href={`/m/course/${course._id}`}
+                  code={course.code}
+                  title={course.title}
+                  level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                  lectureCount={course.stats.lectureCount}
+                  totalDuration={course.stats.totalDurationFormatted}
+                  progress={coursesProgress?.[course._id] || 0}
+                />
+              </div>
             ))}
           </div>
         ) : (
@@ -87,24 +88,24 @@ export default function MobileLecturesPage() {
           </div>
         )
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {archiveCourses.map((course) => (
             <Link
               key={course._id}
               href={`/m/course/${course._id}`}
               className={cn(
-                "block border border-white/10 bg-white/5 p-3",
+                "block border border-white/10 bg-white/5 p-3.5",
                 "transition-colors hover:border-primary hover:bg-primary/10",
               )}
             >
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex min-h-[64px] items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-display text-base font-bold uppercase leading-tight text-white line-clamp-2">
                     {course.title}
                   </p>
-                  <p className="mt-1 font-mono text-xs uppercase tracking-wider text-white/60">{course.code}</p>
+                  <p className="mt-1.5 font-mono text-[11px] uppercase tracking-wider text-white/60">{course.code}</p>
                 </div>
-                <span className="shrink-0 border border-primary/40 px-2 py-1 font-mono text-[10px] uppercase text-primary">
+                <span className="shrink-0 border border-primary/40 px-2 py-1 font-mono text-[10px] uppercase leading-none text-primary">
                   {course.level}
                 </span>
               </div>
@@ -115,8 +116,6 @@ export default function MobileLecturesPage() {
           )}
         </div>
       )}
-
-      <div className="h-2" />
     </div>
   );
 }
