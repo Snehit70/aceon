@@ -85,12 +85,6 @@ function LecturesPageContent() {
   const tabParam = searchParams.get("tab");
   const defaultTab = tabParam === "library" || tabParam === "enrolled" ? tabParam : "enrolled";
 
-  useEffect(() => {
-    if (!isMobile) return;
-    const mobileTab = tabParam === "library" ? "archives" : "enrolled";
-    router.replace(`/m/lectures?tab=${mobileTab}`);
-  }, [isMobile, router, tabParam]);
-
   const enrolledCourseIds = useMemo(() => profile?.enrolledCourseIds || [], [profile]);
   
   const { enrolledCourses, otherCourses } = useMemo(() => {

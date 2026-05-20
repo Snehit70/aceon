@@ -8,6 +8,7 @@ import { ChevronRight } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
+import { MobileCourseSkeleton } from "@/components/mobile/mobile-skeletons";
 
 export default function MobileCoursePage() {
   const { user } = useUser();
@@ -22,11 +23,15 @@ export default function MobileCoursePage() {
   );
 
   if (course === undefined || content === undefined) {
-    return <div className="p-4 text-sm text-white/70">Loading course...</div>;
+    return <MobileCourseSkeleton />;
   }
 
   if (!course) {
-    return <div className="p-4 text-sm text-white/70">Course not found.</div>;
+    return (
+      <div className="px-4 py-10 text-center font-mono text-xs uppercase tracking-wider text-white/55">
+        Course not found
+      </div>
+    );
   }
 
   const totalVideos = content.reduce((acc, week) => acc + week.videos.length, 0);

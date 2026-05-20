@@ -8,6 +8,10 @@ import { useUser } from "@clerk/nextjs";
 import { ChevronRight, Clapperboard, Clock, Search } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
+import {
+  ArchiveTierSkeleton,
+  EnrolledCardSkeleton,
+} from "@/components/mobile/mobile-skeletons";
 
 const LEVELS = [
   { key: "foundation", label: "Foundation", blurb: "Entry-level operations" },
@@ -116,9 +120,23 @@ export default function MobileLecturesPage() {
       )}
 
       {courses === undefined ? (
-        <div className="py-16 text-center font-mono text-xs uppercase tracking-wider text-white/60">
-          Loading missions...
-        </div>
+        isEnrolledTab ? (
+          <ul className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <li key={i}>
+                <EnrolledCardSkeleton />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <li key={i}>
+                <ArchiveTierSkeleton />
+              </li>
+            ))}
+          </ul>
+        )
       ) : isEnrolledTab ? (
         enrolledCourses.length > 0 ? (
           <ul className="space-y-3">

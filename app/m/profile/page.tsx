@@ -277,9 +277,18 @@ export default function MobileProfilePage() {
         </div>
 
         {courses === undefined ? (
-          <div className="py-10 text-center font-mono text-[11px] uppercase tracking-wider text-white/55">
-            Loading courses...
-          </div>
+          <ul className="space-y-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <li key={i} className="border border-white/10 bg-white/[0.02] p-3.5">
+                <div className="h-3 w-20 animate-pulse bg-primary/30" />
+                <div className="mt-1.5 h-4 w-3/4 animate-pulse bg-neutral-800/60" />
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="h-11 animate-pulse bg-white/[0.04]" />
+                  <div className="h-11 animate-pulse bg-white/[0.04]" />
+                </div>
+              </li>
+            ))}
+          </ul>
         ) : filteredCourses.length === 0 ? (
           <div className="border border-dashed border-white/15 bg-white/[0.02] p-6 text-center">
             <p className="font-mono text-[11px] uppercase tracking-wider text-white/55">

@@ -8,6 +8,7 @@ import { Check, Play } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
+import { MobileWeekSkeleton } from "@/components/mobile/mobile-skeletons";
 
 export default function MobileWeekPage() {
   const { user } = useUser();
@@ -23,12 +24,16 @@ export default function MobileWeekPage() {
   );
 
   if (course === undefined || content === undefined) {
-    return <div className="p-4 text-sm text-white/70">Loading week...</div>;
+    return <MobileWeekSkeleton />;
   }
 
   const week = content.find((item) => item._id === weekId);
   if (!course || !week) {
-    return <div className="p-4 text-sm text-white/70">Week not found.</div>;
+    return (
+      <div className="px-4 py-10 text-center font-mono text-xs uppercase tracking-wider text-white/55">
+        Week not found
+      </div>
+    );
   }
 
   return (

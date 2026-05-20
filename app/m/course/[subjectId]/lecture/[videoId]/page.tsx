@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
+import { MobileLectureSkeleton } from "@/components/mobile/mobile-skeletons";
 
 export default function MobileLecturePage() {
   const { user } = useUser();
@@ -51,11 +52,15 @@ export default function MobileLecturePage() {
   });
 
   if (course === undefined || content === undefined) {
-    return <div className="p-4 text-sm text-white/70">Loading lecture...</div>;
+    return <MobileLectureSkeleton />;
   }
 
   if (!course || !currentVideo) {
-    return <div className="p-4 text-sm text-white/70">Lecture not found.</div>;
+    return (
+      <div className="px-4 py-10 text-center font-mono text-xs uppercase tracking-wider text-white/55">
+        Lecture not found
+      </div>
+    );
   }
 
   const currentProgress = progressData?.find((p) => p.videoId === currentVideo._id);

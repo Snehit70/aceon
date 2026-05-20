@@ -99,14 +99,6 @@ function LecturePlayerPageContent() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    if (!isMobile) return;
-    if (videoFromUrl) {
-      router.replace(`/m/course/${subjectId}/lecture/${videoFromUrl}`);
-      return;
-    }
-    router.replace(`/m/course/${subjectId}`);
-  }, [isMobile, router, subjectId, videoFromUrl]);
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
