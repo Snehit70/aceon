@@ -52,6 +52,7 @@ export default function MobileProfilePage() {
   const [filter, setFilter] = useState<FilterKey>("current");
   const [isSaving, setIsSaving] = useState(false);
   const [tierOpen, setTierOpen] = useState(false);
+  const [statusSheetCourseId, setStatusSheetCourseId] = useState<Id<"courses"> | null>(null);
 
   useEffect(() => {
     if (profile) {
@@ -373,11 +374,17 @@ export default function MobileProfilePage() {
           <ul className="space-y-2">
             {filteredCourses.map((course) => {
               const status = getCourseStatus(course._id);
+              const statusMeta =
+                status === "studying"
+                  ? { label: "Studying", icon: <CircleDot className="h-3 w-3" />, cls: "border-primary bg-primary/15 text-primary" }
+                  : status === "done"
+                    ? { label: "Done", icon: <Check className="h-3 w-3" />, cls: "border-green-500/60 bg-green-500/15 text-green-400" }
+                    : { label: "Not set", icon: <span className="h-1.5 w-1.5 rounded-full bg-white/40" aria-hidden />, cls: "border-white/15 bg-white/[0.04] text-white/55" };
               return (
                 <li
                   key={course._id}
                   className={cn(
-                    "border bg-white/[0.02] p-3.5 transition-colors",
+                    "border bg-white/[0.02] px-3.5 py-3 transition-colors",
                     status === "studying"
                       ? "border-primary/40"
                       : status === "done"
@@ -385,7 +392,7 @@ export default function MobileProfilePage() {
                         : "border-white/10",
                   )}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
@@ -395,40 +402,22 @@ export default function MobileProfilePage() {
                           · {course.level}
                         </span>
                       </div>
-                      <p className="mt-1 line-clamp-2 font-display text-[0.95rem] font-bold uppercase leading-tight text-white">
+                      <p className="mt-0.5 line-clamp-2 font-display text-[0.95rem] font-bold uppercase leading-tight text-white">
                         {course.title}
                       </p>
                     </div>
-                  </div>
-
-                  <div className="mt-3 grid grid-cols-2 gap-2">
                     <button
-                      onClick={() =>
-                        handleCourseStatusChange(course._id, status === "studying" ? null : "studying")
-                      }
+                      type="button"
+                      onClick={() => setStatusSheetCourseId(course._id)}
+                      aria-label={`Change status for ${course.title}`}
                       className={cn(
-                        "flex min-h-[44px] items-center justify-center gap-1.5 border text-[11px] font-bold uppercase tracking-wider transition-colors",
-                        status === "studying"
-                          ? "border-primary bg-primary/15 text-primary"
-                          : "border-white/10 text-white/70 active:bg-white/5",
+                        "inline-flex h-9 shrink-0 items-center gap-1.5 border px-2.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-colors active:opacity-80",
+                        statusMeta.cls,
                       )}
                     >
-                      {status === "studying" && <CircleDot className="h-3 w-3" />}
-                      Studying
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleCourseStatusChange(course._id, status === "done" ? null : "done")
-                      }
-                      className={cn(
-                        "flex min-h-[44px] items-center justify-center gap-1.5 border text-[11px] font-bold uppercase tracking-wider transition-colors",
-                        status === "done"
-                          ? "border-green-500 bg-green-500/15 text-green-400"
-                          : "border-white/10 text-white/70 active:bg-white/5",
-                      )}
-                    >
-                      {status === "done" && <Check className="h-3 w-3" />}
-                      Done
+                      {statusMeta.icon}
+                      <span>{statusMeta.label}</span>
+                      <ChevronDown className="h-3 w-3 opacity-70" />
                     </button>
                   </div>
                 </li>
@@ -437,6 +426,89 @@ export default function MobileProfilePage() {
           </ul>
         )}
       </section>
+
+      <Sheet
+        open={statusSheetCourseId !== null}
+        onOpenChange={(open) => !open && setStatusSheetCourseId(null)}
+      >
+        <SheetContent
+          side="bottom"
+          className="border-t-2 border-primary bg-black pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+        >
+          {(() => {
+            const course = courses?.find((c) => c._id === statusSheetCourseId);
+            const currentStatus = statusSheetCourseId ? getCourseStatus(statusSheetCourseId) : null;
+            const options: { key: "studying" | "done" | null; label: string; blurb: string; icon: React.ReactNode; tone: string }[] = [
+              { key: null, label: "Not set", blurb: "No tracking", icon: <span className="h-2 w-2 rounded-full bg-white/40" aria-hidden />, tone: "text-white/60" },
+              { key: "studying", label: "Studying", blurb: "Active engagement", icon: <CircleDot className="h-4 w-4" />, tone: "text-primary" },
+              { key: "done", label: "Done", blurb: "Course complete", icon: <Check className="h-4 w-4" />, tone: "text-green-400" },
+            ];
+            return (
+              <>
+                <SheetHeader className="px-4 pb-2 pt-1">
+                  <SheetTitle className="font-display text-xs font-black uppercase tracking-[0.25em] text-primary">
+                    Set status
+                  </SheetTitle>
+                  {course && (
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-white/55">
+                      {course.code} · {course.title}
+                    </p>
+                  )}
+                </SheetHeader>
+                <ul className="px-3 pb-2">
+                  {options.map((opt) => {
+                    const active = currentStatus === opt.key;
+                    return (
+                      <li key={String(opt.key)}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (statusSheetCourseId) handleCourseStatusChange(statusSheetCourseId, opt.key);
+                            setStatusSheetCourseId(null);
+                          }}
+                          className={cn(
+                            "flex w-full items-center gap-3 border-b border-white/5 py-3.5 px-2 text-left transition-colors active:bg-white/[0.04] last:border-b-0",
+                            active && "bg-white/[0.03]",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "flex h-9 w-9 shrink-0 items-center justify-center border",
+                              active
+                                ? opt.key === "done"
+                                  ? "border-green-500 bg-green-500/15 text-green-400"
+                                  : opt.key === "studying"
+                                    ? "border-primary bg-primary/15 text-primary"
+                                    : "border-white/30 bg-white/[0.06] text-white/70"
+                                : "border-white/10 bg-white/[0.02] text-white/50",
+                            )}
+                          >
+                            {opt.icon}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span
+                              className={cn(
+                                "block font-display text-sm font-bold uppercase tracking-wide leading-tight",
+                                active ? opt.tone : "text-white",
+                              )}
+                            >
+                              {opt.label}
+                            </span>
+                            <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-wider leading-tight text-white/55">
+                              {opt.blurb}
+                            </span>
+                          </span>
+                          {active && <Check className="h-4 w-4 shrink-0 text-white/60" />}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
 
       <div className="sticky bottom-[68px] z-30 mt-5 -mx-4 border-t border-white/10 bg-black/95 px-4 py-3 backdrop-blur-sm">
         <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
