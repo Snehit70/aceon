@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
-import { BookOpen, Check, CircleDot, Layers } from "lucide-react";
+import { BookOpen, Check, ChevronDown, CircleDot, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -215,39 +215,42 @@ export default function MobileProfilePage() {
       </div>
 
       <section className="mb-5">
-        <div className="mb-2 flex items-center gap-2">
+        <label htmlFor="threat-level" className="mb-2 flex items-center gap-2">
           <Layers className="h-3.5 w-3.5 text-primary/80" />
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">Threat level</p>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/70">
+            Threat level
+          </span>
+        </label>
+        <div className="relative">
+          <select
+            id="threat-level"
+            value={level}
+            onChange={(e) => setLevel(e.target.value as Level)}
+            className={cn(
+              "h-12 w-full appearance-none border bg-black pl-3 pr-10 font-display text-sm font-bold uppercase tracking-wide outline-none transition-colors",
+              "focus:border-primary",
+              level === initialLevel
+                ? "border-white/15 text-white"
+                : "border-primary bg-primary/10 text-primary",
+            )}
+          >
+            {levels.map((lvl) => (
+              <option key={lvl} value={lvl} className="bg-black text-white">
+                {LEVEL_META[lvl].label} — {LEVEL_META[lvl].blurb}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2",
+              level === initialLevel ? "text-white/55" : "text-primary",
+            )}
+          />
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          {levels.map((lvl) => {
-            const active = level === lvl;
-            return (
-              <button
-                key={lvl}
-                onClick={() => setLevel(lvl)}
-                className={cn(
-                  "flex min-h-[60px] flex-col items-start justify-center border px-2.5 py-2 text-left transition-colors",
-                  active
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-white/10 bg-white/[0.02] text-white/80 active:bg-white/5",
-                )}
-              >
-                <span className="font-display text-xs font-bold uppercase tracking-wide">
-                  {LEVEL_META[lvl].label}
-                </span>
-                <span
-                  className={cn(
-                    "mt-0.5 font-mono text-[9px] uppercase tracking-wider leading-tight",
-                    active ? "text-primary/80" : "text-white/45",
-                  )}
-                >
-                  {LEVEL_META[lvl].blurb}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wider text-white/45">
+          {LEVEL_META[level].blurb}
+        </p>
       </section>
 
       <section>
