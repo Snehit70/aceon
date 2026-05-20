@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
+import { ChevronRight } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
@@ -33,41 +34,59 @@ export default function MobileCoursePage() {
   const percent = totalVideos > 0 ? Math.round((completed / totalVideos) * 100) : 0;
 
   return (
-    <div className="px-3 py-4 pb-24">
+    <div className="px-4 py-5 pb-28">
       <MobilePageHeader
         backHref="/m/lectures?tab=enrolled"
-        backLabel="Back to missions"
+        backLabel="← Missions"
         title={course.title}
         subtitle={course.code}
       />
 
-      <div className="mb-4 border border-white/10 bg-white/5 p-3.5">
-        <p className="font-mono text-xs uppercase tracking-wider text-white/70">
-          {completed} / {totalVideos} complete ({percent}%)
+      <div className="mb-5 border border-white/10 bg-white/[0.03] p-4">
+        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
+          <span className="text-white/55">Progress</span>
+          <span className="text-primary">{percent}%</span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden bg-white/8">
+          <div
+            className={`h-full ${percent >= 100 ? "bg-green-500" : "bg-primary"}`}
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+        <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-white/45">
+          {completed} of {totalVideos} lectures complete
         </p>
       </div>
 
-      <div className="space-y-2.5">
-        {content.map((week) => {
+      <ul className="space-y-2.5">
+        {content.map((week, idx) => {
           const weekTotal = week.videos.length;
           const weekDone = week.videos.filter((v) => progressData?.find((p) => p.videoId === v._id)?.completed).length;
+          const done = weekTotal > 0 && weekDone === weekTotal;
 
           return (
-            <Link
-              key={week._id}
-              href={`/m/course/${subjectId}/week/${week._id}`}
-              className="block border border-white/10 bg-black/60 p-3.5 hover:border-primary"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <p className="font-display text-lg font-bold uppercase">{week.title}</p>
-                <span className="font-mono text-xs uppercase tracking-wide text-white/60">
-                  {weekDone}/{weekTotal}
+            <li key={week._id}>
+              <Link
+                href={`/m/course/${subjectId}/week/${week._id}`}
+                className="group flex items-center gap-3 border border-white/10 bg-black/40 p-4 transition-colors active:bg-primary/10"
+              >
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary/70">
+                  W{String(idx + 1).padStart(2, "0")}
                 </span>
-              </div>
-            </Link>
+                <div className="min-w-0 flex-1">
+                  <p className="line-clamp-2 font-display text-[0.95rem] font-bold uppercase leading-tight text-white">
+                    {week.title}
+                  </p>
+                  <p className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${done ? "text-green-400" : "text-white/55"}`}>
+                    {weekDone}/{weekTotal} {done ? "done" : "lectures"}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-white/30 group-hover:text-primary" />
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }

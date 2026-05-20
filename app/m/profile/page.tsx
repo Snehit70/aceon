@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
@@ -100,10 +99,12 @@ export default function MobileProfilePage() {
 
   return (
     <div className="px-3 py-4 pb-24">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-black uppercase">Profile</h1>
-        <Link href="/lectures" className="font-mono text-xs uppercase tracking-wider text-primary">Desktop</Link>
-      </div>
+      <header className="mb-5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80">{"// Operator"}</p>
+        <h1 className="mt-1.5 font-display text-[1.65rem] font-black uppercase leading-none tracking-wide text-white">
+          Profile
+        </h1>
+      </header>
 
       <div className="mb-4 border border-white/10 bg-white/5 p-3.5">
         <p className="mb-2 font-mono text-xs uppercase tracking-widest text-white/60">Threat level</p>
