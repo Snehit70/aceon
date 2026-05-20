@@ -1,78 +1,53 @@
 export default function LecturePlayerSkeleton() {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white overflow-x-hidden relative">
-      <div className="fixed inset-0 bg-[url('/images/halftone.svg')] opacity-5 pointer-events-none mix-blend-screen z-0" />
-      <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
-      <div 
-        className="fixed inset-0 opacity-10 pointer-events-none z-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,#ffffff_4px,#ffffff_5px)]"
-      />
-      <div className="fixed inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none z-0" />
-      
-      <div className="flex flex-col lg:flex-row h-[calc(100dvh-67px)] relative z-10">
-        <aside className="w-full lg:w-80 xl:w-96 border-r-2 border-neutral-800 bg-black/50 backdrop-blur-sm overflow-hidden animate-pulse">
-          <div className="p-4 border-b-2 border-neutral-800 space-y-3">
-            <div className="h-6 w-32 bg-neutral-800/50" />
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-20 bg-[#E62E2D]/40" />
-              <div className="h-4 w-16 bg-neutral-800/50" />
-            </div>
-          </div>
-          
-          <div className="p-4 space-y-3">
-            <div className="h-10 w-full bg-neutral-800/30 border-2 border-neutral-800" />
-          </div>
-          
-          <div className="space-y-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="border-b border-neutral-800">
-                <div className="p-3 flex items-center justify-between">
-                  <div className="h-5 w-24 bg-neutral-800/50" />
-                  <div className="h-4 w-16 bg-neutral-800/30" />
-                </div>
-                <div className="px-3 pb-3 space-y-2">
-                  {Array.from({ length: 2 + (i % 3) }).map((_, j) => (
-                    <div key={j} className="h-12 bg-neutral-900/50 border border-neutral-800 p-2 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-neutral-800/50" />
-                      <div className="h-4 flex-1 bg-neutral-800/50" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
-        
-        <main className="flex-1 flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b-2 border-neutral-800">
-            <div className="flex items-center gap-4">
-              <div className="h-8 w-8 bg-neutral-800/50" />
-              <div className="space-y-2">
-                <div className="h-6 w-64 bg-neutral-800/50" />
-                <div className="h-4 w-48 bg-neutral-800/30" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <div className="h-10 w-24 bg-neutral-800/50 border-2 border-neutral-800" />
-              <div className="h-10 w-32 bg-[#E62E2D]/20 border-2 border-[#E62E2D]/50" />
-            </div>
-          </div>
-          
-          <div className="flex-1 flex items-center justify-center bg-black min-h-[400px] relative z-20">
-            <div className="w-full max-w-4xl aspect-video bg-black border-2 border-neutral-700 flex items-center justify-center relative">
-              {/* Angular play button skeleton - matches actual paused state */}
-              <div className="relative z-10">
-                <div className="w-24 h-20 bg-black -skew-x-6 border-2 border-[#E62E2D] flex items-center justify-center shadow-[4px_4px_0px_0px_#E62E2D]">
-                  <svg viewBox="0 0 24 24" className="w-12 h-12 skew-x-6">
-                    <path d="M6 4.5L20.5 12L6 19.5V4.5Z" fill="#E62E2D" />
-                  </svg>
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#E62E2D]" />
-                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-[#E62E2D]" />
+    <div className="flex h-[calc(100dvh-3.5rem)] overflow-hidden md:gap-3">
+      <main className="flex-1 flex flex-col min-w-0 bg-black overflow-x-hidden overflow-y-auto relative">
+        <div className="fixed inset-0 bg-[url('/images/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay z-0" />
+        <div
+          className="fixed inset-0 opacity-10 pointer-events-none z-0"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(45deg, transparent, transparent 4px, #ffffff 4px, #ffffff 5px)",
+          }}
+        />
+        <div className="fixed inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent pointer-events-none z-0" />
+
+        <div className="md:hidden sticky top-0 flex min-h-[56px] items-center gap-2 px-3 py-2 border-b bg-background/90 backdrop-blur-sm relative z-20 animate-pulse">
+          <div className="h-10 w-10 bg-neutral-800/50" />
+          <div className="h-5 flex-1 bg-neutral-800/50" />
+        </div>
+
+        <div className="flex-1 px-4 py-3 sm:p-4 md:p-6 w-full space-y-3 md:space-y-4 max-w-none ml-4 lg:ml-6 xl:ml-8 mr-0 pr-4 relative z-10 animate-pulse">
+          <div className="h-10 w-40 bg-white/5 border border-white/10" />
+          <div className="aspect-video w-full bg-black border border-white/10 relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-20 h-16 bg-black -skew-x-6 border-2 border-[#E62E2D]/70 flex items-center justify-center shadow-[3px_3px_0px_0px_#E62E2D]">
+                <div className="w-0 h-0 border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent border-l-[18px] border-l-[#E62E2D]/80 skew-x-6 ml-1" />
               </div>
             </div>
           </div>
-        </main>
-      </div>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2 flex-1">
+              <div className="h-10 w-3/4 bg-neutral-800/50" />
+              <div className="h-5 w-32 bg-neutral-800/30" />
+            </div>
+            <div className="h-14 w-44 bg-[#2BFF00]/10 border border-[#2BFF00]/40" />
+          </div>
+        </div>
+      </main>
+
+      <aside className="hidden md:flex w-[352px] border-l bg-background flex-col shrink-0 relative overflow-hidden animate-pulse">
+        <div className="absolute top-3 right-3 h-8 w-8 bg-neutral-800/50 z-20" />
+        <div className="h-[86px] border-b border-white/10 bg-neutral-900/30" />
+        <div className="flex-1 p-5 space-y-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="space-y-2 pb-3 border-b border-white/5">
+              <div className="h-6 w-24 bg-neutral-800/50" />
+              <div className="h-11 w-full bg-neutral-900/40 border border-neutral-800" />
+            </div>
+          ))}
+        </div>
+      </aside>
     </div>
   );
 }
