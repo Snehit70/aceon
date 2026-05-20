@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { MobilePageHeader } from "@/components/mobile/mobile-page-header";
 
 export default function MobileCoursePage() {
   const { user } = useUser();
@@ -32,20 +32,21 @@ export default function MobileCoursePage() {
   const percent = totalVideos > 0 ? Math.round((completed / totalVideos) * 100) : 0;
 
   return (
-    <div className="px-3 py-4">
-      <Link href="/m/lectures?tab=enrolled" className="font-mono text-xs uppercase tracking-wider text-primary">
-        Back
-      </Link>
+    <div className="px-3 py-4 pb-24">
+      <MobilePageHeader
+        backHref="/m/lectures?tab=enrolled"
+        backLabel="Back to missions"
+        title={course.title}
+        subtitle={course.code}
+      />
 
-      <div className="mt-3 border border-white/10 bg-white/5 p-3">
-        <p className="font-mono text-xs uppercase tracking-wider text-white/60">{course.code}</p>
-        <h1 className="mt-1 font-display text-2xl font-black uppercase leading-tight">{course.title}</h1>
-        <p className="mt-2 font-mono text-xs uppercase tracking-wider text-white/70">
+      <div className="mb-4 border border-white/10 bg-white/5 p-3.5">
+        <p className="font-mono text-xs uppercase tracking-wider text-white/70">
           {completed} / {totalVideos} complete ({percent}%)
         </p>
       </div>
 
-      <div className="mt-4 space-y-2">
+      <div className="space-y-2.5">
         {content.map((week) => {
           const weekTotal = week.videos.length;
           const weekDone = week.videos.filter((v) => progressData?.find((p) => p.videoId === v._id)?.completed).length;
@@ -54,7 +55,7 @@ export default function MobileCoursePage() {
             <Link
               key={week._id}
               href={`/m/course/${subjectId}/week/${week._id}`}
-              className="block border border-white/10 bg-black/60 p-3 hover:border-primary"
+              className="block border border-white/10 bg-black/60 p-3.5 hover:border-primary"
             >
               <div className="flex items-center justify-between gap-2">
                 <p className="font-display text-lg font-bold uppercase">{week.title}</p>
