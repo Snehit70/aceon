@@ -16,8 +16,8 @@ Aceon uses a Chainsaw Man inspired visual system: black surfaces, blood red prim
 - Completion toggles for videos, weeks, and courses
 - Timestamped video notes backend support
 - Clerk-authenticated Convex data access
-- Responsive mobile dashboard, course archive, and lecture player layouts
-- Mobile sheet navigation for the lecture sidebar
+- Dedicated mobile route shell at `/m/*` with bottom-tab navigation (Enrolled / Archives / Profile)
+- Automatic UA-based redirect from desktop `/lectures` and `/lectures/[subjectId]` into the mobile flow
 - Touch-friendly custom player controls with fullscreen landscape support where the browser allows it
 
 ## Stack
@@ -34,10 +34,12 @@ Aceon uses a Chainsaw Man inspired visual system: black surfaces, blood red prim
 ## Project Map
 
 ```text
-app/                         Next.js routes and API route
-components/                  UI, lecture, shared, profile, landing components
+app/                         Next.js routes (desktop) and API route
+app/m/                       Mobile-only route shell (bottom tabs, course/week/lecture pages)
+components/                  UI, lecture, shared, profile, landing, mobile components
 convex/                      Schema, queries, mutations, migrations
 hooks/                       Video progress, navigation, autoplay, shortcuts
+proxy.ts                     Clerk middleware + UA-based redirect into /m/*
 docs/ARCHITECTURE.md         Current architecture documentation
 docs/DESIGN.yaml             Current design source of truth
 scripts/                     Scraping, seeding, diagnostics, maintenance
@@ -46,20 +48,23 @@ public/images/               Brand, texture, and page imagery
 
 ## Mobile Testing
 
-The mobile experience is designed around `320px` through `767px` wide screens, with tablet checks from `768px` through `1023px`. The key mobile surfaces are:
+The mobile experience is designed around `320px` through `767px` wide screens, with tablet checks from `768px` through `1023px`. Mobile user-agents hitting `/lectures` or `/lectures/[subjectId]` are redirected by `proxy.ts` into the mobile shell. The key mobile surfaces are:
 
-- `/` landing hero, including stacked headline and lower CTA placement
-- `/lectures` enrolled missions and mission archives
-- `/lectures/[subjectId]` player, course sheet, touch seek, volume, fullscreen, and orientation behavior
+- `/` landing hero — 3-zone non-scrolling layout (tagline / title / CTAs)
+- `/m/lectures` enrolled and archives tabs (`?tab=enrolled|archives`)
+- `/m/profile` profile editor
+- `/m/course/[subjectId]` course banner + circular progress + week tiles
+- `/m/course/[subjectId]/week/[weekId]` lecture list with per-video progress bars
+- `/m/course/[subjectId]/lecture/[videoId]` player + resume strip + merged primary CTA
 - `/privacy` and `/terms` long-title wrapping and footer layout
 
-When testing on an Android phone against the local dev server, forward the app port with:
+When testing on an Android phone against the local dev server, either forward the app port with adb:
 
 ```bash
 adb reverse tcp:5550 tcp:5550
 ```
 
-Then open `http://localhost:5550` on the phone.
+Then open `http://localhost:5550` on the phone. Alternatively, run the dev server bound to the LAN (`bun run dev -- --hostname 0.0.0.0`) and open `http://<your-LAN-IP>:5550`.
 
 ## Getting Started
 
@@ -102,7 +107,7 @@ Before starting a dev server, check whether one is already running on port `5550
 
 ## Architecture
 
-Aceon is a client-heavy Next.js app backed by Convex real-time queries and Clerk auth. The main learning flow is:
+Aceon is a client-heavy Next.js app backed by Convex real-time queries and Clerk auth. The main learning flow on desktop is:
 
 ```text
 /lectures/[subjectId]
@@ -111,6 +116,15 @@ Aceon is a client-heavy Next.js app backed by Convex real-time queries and Clerk
   -> initialize YouTube IFrame player
   -> save progress through Convex mutations and beacon fallback
 ```
+
+On mobile the same flow is split across route pages:
+
+```text
+/m/lectures -> /m/course/[subjectId] -> /m/course/[subjectId]/week/[weekId]
+            -> /m/course/[subjectId]/lecture/[videoId]
+```
+
+Progress mutations and beacon fallback are shared with the desktop flow.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full system map, data model, route surface, provider flow, and review targets.
 
@@ -153,6 +167,6 @@ Use `bun run build` for release or performance-sensitive changes.
 
 ## Version
 
-Current version: `0.9.0`.
+Current version: `0.11.0`.
 
 Version bumps are automated by the GitHub workflow after conventional commits land on `main`.
