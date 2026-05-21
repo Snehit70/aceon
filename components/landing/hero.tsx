@@ -30,33 +30,33 @@ export function Hero() {
   const { isSignedIn } = useUser();
 
   return (
-    <section className="relative flex min-h-[calc(100dvh-59px)] sm:min-h-[calc(100dvh-67px)] flex-col items-center justify-start overflow-hidden px-3 pb-10 pt-20 sm:justify-center sm:px-4 sm:py-12 md:py-24 text-center">
+    <section className="relative flex h-[calc(100dvh-59px)] sm:h-auto sm:min-h-[calc(100dvh-67px)] flex-col items-center justify-between overflow-hidden px-3 pt-6 pb-[max(env(safe-area-inset-bottom),2rem)] sm:justify-center sm:px-4 sm:py-12 md:py-24 text-center">
       <div className="absolute inset-0 z-0 select-none bg-black">
         <Image
           src="/images/hero-bg-chainsaw.webp"
           alt=""
           fill
           priority
-          className="object-cover opacity-50 mix-blend-luminosity grayscale contrast-125"
+          className="object-cover object-[50%_18%] sm:object-center opacity-50 mix-blend-luminosity grayscale contrast-125"
           sizes="100vw"
           placeholder="blur"
           blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAAABAAAAAAAAAAAA"
         />
         <div className="absolute inset-0 bg-[url('/images/noise.svg')] opacity-40 mix-blend-overlay" />
         <div className="absolute inset-0 bg-[#E62E2D]/10 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10 sm:via-black/80 sm:to-transparent" />
         <Particles />
       </div>
 
-      <div className="z-10 flex max-w-7xl flex-col items-center gap-5 sm:gap-6">
-        
-        <motion.div 
+      <div className="z-10 flex w-full max-w-7xl flex-1 sm:flex-none flex-col items-center justify-between sm:justify-center gap-5 sm:gap-6">
+
+        <motion.div
           initial={{ opacity: 0, scale: 1.5, rotate: -5 }}
           animate={{ opacity: 1, scale: 1, rotate: -2 }}
           transition={{ duration: 0.4, ease: "backOut" }}
-          className="relative inline-block mb-2 sm:mb-4 max-w-full px-1"
+          className="relative inline-block sm:mb-4 max-w-full px-1"
         >
-             <h2 className="font-display text-[clamp(1.45rem,7.8vw,2.3rem)] sm:text-4xl md:text-6xl italic font-black uppercase tracking-normal sm:tracking-tighter text-white drop-shadow-[3px_3px_0_#E62E2D] sm:drop-shadow-[4px_4px_0_#E62E2D] leading-[1.02]">
+             <h2 className="font-display text-[clamp(1.3rem,7vw,2.3rem)] sm:text-4xl md:text-6xl italic font-black uppercase tracking-normal sm:tracking-tighter text-white drop-shadow-[3px_3px_0_#E62E2D] sm:drop-shadow-[4px_4px_0_#E62E2D] leading-[1.02]">
                 <span className="block sm:inline">Devour Lectures.</span>
                 <span className="block sm:inline sm:ml-2 mt-2 sm:mt-0 text-black bg-[#E62E2D] px-2 transform -skew-x-12 inline-block">Conquer Degree.</span>
              </h2>
@@ -89,7 +89,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-20 sm:mt-12 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-6"
+          className="sm:mt-12 flex w-full max-w-sm flex-col gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-6"
         >
           {isSignedIn ? (
             <Button 
