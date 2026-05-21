@@ -180,12 +180,29 @@ export default function MobileProfilePage() {
   ];
 
   return (
-    <div className="px-4 py-5 pb-32">
+    <div className="px-4 py-5 pb-24">
       <header className="mb-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80">{"// Operator"}</p>
-        <h1 className="mt-1.5 font-display text-[1.65rem] font-black uppercase leading-none tracking-wide text-white">
-          Profile
-        </h1>
+        <div className="mt-1.5 flex items-end justify-between gap-3">
+          <h1 className="font-display text-[1.65rem] font-black uppercase leading-none tracking-wide text-white">
+            Profile
+          </h1>
+          <Button
+            onClick={handleSave}
+            disabled={!user || isSaving || !isDirty}
+            className={cn(
+              "h-9 shrink-0 px-4 font-bold uppercase tracking-widest text-xs disabled:opacity-40",
+              !isDirty && "bg-white/[0.04] text-white/40 hover:bg-white/[0.04]",
+            )}
+          >
+            {isSaving ? "Saving..." : isDirty ? "Save" : "Saved"}
+          </Button>
+        </div>
+        {isDirty && (
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-primary">
+            Unsaved changes
+          </p>
+        )}
       </header>
 
       <div className="relative mb-5 overflow-hidden border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-4">
@@ -510,23 +527,6 @@ export default function MobileProfilePage() {
         </SheetContent>
       </Sheet>
 
-      <div className="sticky bottom-[68px] z-30 mt-5 -mx-4 border-t border-white/10 bg-black/95 px-4 py-3 backdrop-blur-sm">
-        <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
-          <span className={isDirty ? "text-primary" : "text-white/40"}>
-            {isDirty ? "Unsaved changes" : "All synced"}
-          </span>
-          <span className="text-white/40">
-            {stats.studying} studying · {stats.done} done
-          </span>
-        </div>
-        <Button
-          onClick={handleSave}
-          disabled={!user || isSaving || !isDirty}
-          className="h-11 w-full font-bold uppercase tracking-widest disabled:opacity-40"
-        >
-          {isSaving ? "Saving..." : isDirty ? "Save Profile" : "Saved"}
-        </Button>
-      </div>
     </div>
   );
 }
