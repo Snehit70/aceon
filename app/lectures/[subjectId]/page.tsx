@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useParams, useSearchParams, notFound } from "next/navigation";
+import { useParams, useRouter, useSearchParams, notFound } from "next/navigation";
 import { useState, useRef, useCallback, Suspense, useEffect } from "react";
 import { Menu, ArrowLeft } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -28,6 +28,7 @@ import { useAutoplay } from "@/hooks/use-autoplay";
 import { useVideoNavigation } from "@/hooks/use-video-navigation";
 import { useVideoShortcuts } from "@/hooks/use-video-shortcuts";
 import { KeyboardShortcutsHelp } from "@/components/shared/keyboard-shortcuts-help";
+import useMediaQuery from "@/hooks/use-media-query";
 
 /**
  * LecturePlayerPage - The core learning experience view.
@@ -60,6 +61,7 @@ import { KeyboardShortcutsHelp } from "@/components/shared/keyboard-shortcuts-he
  */
 function LecturePlayerPageContent() {
   const { user } = useUser();
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const subjectId = params.subjectId as Id<"courses">;
@@ -75,6 +77,7 @@ function LecturePlayerPageContent() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -95,6 +98,7 @@ function LecturePlayerPageContent() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
   
   const markComplete = useMutation(api.progress.markComplete);
   const markWeekComplete = useMutation(api.progress.markWeekComplete);
@@ -210,6 +214,10 @@ function LecturePlayerPageContent() {
 
   if (course === null) {
     notFound();
+  }
+
+  if (isMobile) {
+    return <LecturePlayerSkeleton />;
   }
 
   return (

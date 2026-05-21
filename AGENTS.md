@@ -68,7 +68,8 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 ## 5. Specific Guidelines
 
-- **Mobile First**: Always ensure responsive design (Sheet for sidebar on mobile).
+- **Mobile architecture**: Desktop (`md+`) and mobile (`< md`) diverge at the route level. Mobile lives under `app/m/*` with sticky bottom tabs (`components/mobile/mobile-bottom-tabs.tsx`); desktop continues to use `/lectures` with the sidebar/sheet pattern. `proxy.ts` redirects mobile UAs from desktop lecture URLs into the mobile shell.
+- **Mobile UI patterns**: Use route pages instead of bottom sheets for primary navigation; reserve `Sheet` for desktop-only contexts (lecture sidebar, profile drawer).
 - **Glassmorphism**: Use `bg-card/50 backdrop-blur-sm` patterns.
 - **Error Handling**: Fail gracefully. Show UI feedback (toasts via `sonner`).
 
@@ -100,10 +101,11 @@ When placing text over background images, use this pattern for optimal readabili
 ### Mobile Responsive Patterns
 
 - **Touch Targets**: Minimum `min-h-[44px]` for all interactive elements
-- **Sidebar Width**: Use `w-[85vw] max-w-80` to show peek of content behind
-- **Profile Sheet**: Use `w-full max-w-[400px]` to prevent overflow on small screens
+- **Mobile shell**: `app/m/layout.tsx` is a flex column with internal scrolling `<main>` and a sticky `MobileBottomTabs` sibling — do not wrap mobile pages in `pb-24`/`pb-28` for the tab bar.
+- **Sidebar Width (desktop sheet)**: Use `w-[85vw] max-w-80` to show peek of content behind
+- **Profile Sheet (desktop)**: Use `w-full max-w-[400px]` to prevent overflow on small screens
 - **Video Height**: Constrain with `max-h-[50vh] sm:max-h-none` on mobile
-- **Media Queries**: Use `useMediaQuery` hook for SSR-safe responsive detection
+- **Media Queries**: Prefer route-level UA split (`proxy.ts` → `/m/*`) over `useMediaQuery` for layout swaps; reserve the hook for in-page responsive behavior
 
 ## 6. Component Architecture
 
@@ -145,8 +147,15 @@ When placing text over background images, use this pattern for optimal readabili
 **useMediaQuery Hook** (`hooks/use-media-query.ts`)
 
 - SSR-safe media query detection
-- Used for responsive behavior across components
+- Used for in-page responsive behavior; layout-level desktop/mobile swap is handled by `proxy.ts` redirecting mobile UAs to `/m/*`
 - Prevents hydration mismatches
+
+**Mobile shell** (`app/m/layout.tsx`, `components/mobile/`)
+
+- Flex-column layout with sticky `MobileBottomTabs` and internal scrolling `<main>` (URL bar collapse stays smooth)
+- Pages: `/m/lectures`, `/m/profile`, `/m/course/[subjectId]`, `/m/course/[subjectId]/week/[weekId]`, `/m/course/[subjectId]/lecture/[videoId]`
+- Reuses Convex queries and `useVideoProgress` — no business logic forked from desktop
+- Loading states live in `components/mobile/mobile-skeletons.tsx`; per-page chrome (back link, title block) in `mobile-page-header.tsx`
 
 ## 7. Testing Strategy
 

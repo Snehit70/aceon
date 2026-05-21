@@ -9,12 +9,13 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, BookOpen, Settings2, ArrowLeft, ChevronRight } from "lucide-react";
 import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useMediaQuery from "@/hooks/use-media-query";
 
 const ProfileSheet = dynamic(
   () => import("@/components/profile/profile-sheet").then((mod) => mod.ProfileSheet),
@@ -60,6 +61,7 @@ interface OpenSections {
  */
 function LecturesPageContent() {
   const { user } = useUser();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const courses = useQuery(api.courses.listWithStats);
   const profile = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip");
@@ -78,6 +80,7 @@ function LecturesPageContent() {
     diploma: false,
     degree: false,
   });
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const tabParam = searchParams.get("tab");
   const defaultTab = tabParam === "library" || tabParam === "enrolled" ? tabParam : "enrolled";
@@ -186,6 +189,10 @@ function LecturesPageContent() {
     }
   }, [courses, enrolledCourses.length, otherCourses.length]);
 
+  if (isMobile) {
+    return <LecturesSkeleton mode="enrolled" count={cachedCounts.enrolled} />;
+  }
+
 if (courses === undefined) {
     const tab = searchParams.get("tab");
     const mode = tab === "library" ? "library" : "enrolled";
@@ -286,7 +293,7 @@ if (courses === undefined) {
                     >
                       <ChainsawCard
                         id={course._id}
-                        href={`/lectures/${course._id}`}
+                        href={isMobile ? `/m/course/${course._id}` : `/lectures/${course._id}`}
                         code={course.code}
                         title={course.title}
                         level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
@@ -426,9 +433,9 @@ if (courses === undefined) {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.03 }}
                                   >
-                                    <ChainsawCard
-                                      id={course._id}
-                                      href={`/lectures/${course._id}`}
+                                <ChainsawCard
+                                  id={course._id}
+                                  href={isMobile ? `/m/course/${course._id}` : `/lectures/${course._id}`}
                                       code={course.code}
                                       title={course.title}
                                       level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}

@@ -1,6 +1,6 @@
 # Aceon Architecture
 
-Updated: 2026-05-18
+Updated: 2026-05-21
 
 Aceon is an authenticated lecture companion for IITM BS students. The app centers on one critical flow: open a course, watch a lecture, and persist progress reliably.
 
@@ -27,6 +27,7 @@ Browser -> /api/save-progress -> Convex mutation
 
 ## App Surface
 
+Desktop:
 - `/`: landing
 - `/lectures`: authenticated dashboard (enrolled + archives)
 - `/lectures/[subjectId]`: player route
@@ -34,7 +35,14 @@ Browser -> /api/save-progress -> Convex mutation
 - `/privacy`, `/terms`: legal
 - `/makima-calibration`: calibration/utility route
 
-`proxy.ts` protects lecture routes via Clerk middleware.
+Mobile shell (under `app/m/`):
+- `/m/lectures`: enrolled / archives tabs (`?tab=enrolled|archives`)
+- `/m/profile`: profile editor
+- `/m/course/[subjectId]`: course banner + week tiles
+- `/m/course/[subjectId]/week/[weekId]`: lecture list for one week
+- `/m/course/[subjectId]/lecture/[videoId]`: single-video player page
+
+`proxy.ts` (Clerk middleware) protects all `/lectures` and `/m` routes, and on mobile user-agents redirects desktop lecture URLs into the matching `/m/*` page so links stay shareable across devices.
 
 ## Provider Topology
 
@@ -94,7 +102,17 @@ Core client hooks:
 - `useAutoplay`: next-video countdown
 - `useVideoShortcuts`: keyboard control layer
 
-## 3) Progress Persistence
+## 3) Mobile Flow
+
+The mobile shell (`app/m/layout.tsx`) is a flex-column with a sticky `MobileBottomTabs` sibling and an internal scrolling `<main>`, so the tab bar doesn't dance when the browser URL bar collapses. The learning flow is split across route pages instead of a sheet/sidebar:
+
+- `/m/course/[subjectId]` reuses `courses.get` + `courses.getCourseContent` + `progress.getCourseProgress`
+- `/m/course/[subjectId]/week/[weekId]` slices the same content into one week
+- `/m/course/[subjectId]/lecture/[videoId]` mounts the shared `VideoPlayer` + `useVideoProgress` and exposes a single adaptive primary CTA (Mark Done / Mark Done & Continue / Next Lecture)
+
+All mobile pages call the same Convex queries/mutations as the desktop player — only routing and presentation diverge.
+
+## 4) Progress Persistence
 
 - Throttled save (every ~5s): `api.progress.updateProgress`
 - Pause/manual save: `api.progress.updateProgress`

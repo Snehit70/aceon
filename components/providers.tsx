@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { AlertTriangle, CheckCircle, Info, AlertOctagon } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { dark } from "@clerk/themes";
+import useMediaQuery from "@/hooks/use-media-query";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -32,6 +33,8 @@ const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
  * @returns Provider-wrapped application.
  */
 export function Providers({ children }: { children: React.ReactNode }) {
+  const isMobile = useMediaQuery("(max-width: 767px)");
+
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
@@ -67,10 +70,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <TooltipProvider delayDuration={0}>
             {children}
             <Toaster 
-              position="bottom-right"
+              position={isMobile ? "bottom-center" : "bottom-right"}
               theme="dark"
               closeButton
               duration={5000}
+              mobileOffset={{
+                bottom: "calc(env(safe-area-inset-bottom) + 72px)",
+                left: "12px",
+                right: "12px",
+              }}
               toastOptions={{
                 unstyled: true,
                 classNames: {

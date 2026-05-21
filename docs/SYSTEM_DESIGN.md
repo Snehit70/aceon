@@ -1,6 +1,6 @@
 # Aceon System Design
 
-Updated: 2026-05-18
+Updated: 2026-05-21
 
 This document describes runtime behavior, data movement, scaling assumptions, and operational design.
 
@@ -48,10 +48,15 @@ Client sendBeacon -> Next API route -> Convex mutation
 - Progress state: Convex `videoProgress`
 - Notes state: Convex `videoNotes`
 
+## Routing Model
+
+- `proxy.ts` runs Clerk middleware on every request and protects `/lectures(.*)` and `/m(.*)`.
+- On mobile user-agents, the same middleware redirects `/lectures` and `/lectures/[subjectId]` (including `?video=` deep links) into the corresponding `/m/*` page so URLs stay device-agnostic.
+
 ## Security Model (Current)
 
 - Convex mutations for core progress/user updates validate Clerk identity.
-- Protected lecture routes use Clerk middleware.
+- Protected lecture and `/m` routes use Clerk middleware in `proxy.ts`.
 - Risk: beacon endpoint currently accepts body `clerkId` and should be hardened to server-derived identity.
 
 ## Reliability Model
