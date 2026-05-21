@@ -185,7 +185,7 @@ export default function MobileCoursePage() {
                       </p>
                       {isNext && (
                         <span className="shrink-0 font-mono text-[8px] font-bold uppercase tracking-wider text-primary">
-                          // Next
+                          {"// Next"}
                         </span>
                       )}
                     </div>
