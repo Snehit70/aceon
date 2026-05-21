@@ -1,6 +1,6 @@
 # Aceon Product
 
-Updated: 2026-05-18
+Updated: 2026-05-21
 
 ## Product Summary
 
@@ -26,7 +26,7 @@ Core job-to-be-done:
 - Resume from saved position
 - Per-video, per-week, per-course completion toggles
 - Timestamped video notes
-- Mobile-aware player + sidebar sheet behavior
+- Dedicated mobile route shell (`/m/*`) with bottom-tab navigation and UA-based redirect from desktop URLs
 
 ## UX Principles
 

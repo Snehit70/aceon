@@ -1,6 +1,6 @@
 # Aceon Design
 
-Updated: 2026-05-18
+Updated: 2026-05-21
 
 ## Design Direction
 
@@ -45,7 +45,7 @@ Always combine:
 ## Layout Principles
 
 - Desktop: dense dashboard scanability.
-- Mobile: single-column clarity + sheet-based navigation.
+- Mobile: single-column clarity, route-driven navigation, persistent bottom tab bar. The desktop sheet/sidebar pattern is not used on mobile.
 - Avoid horizontal overflow in all route surfaces.
 
 ## Motion Principles
