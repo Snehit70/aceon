@@ -180,7 +180,7 @@ export default function MobileProfilePage() {
   ];
 
   return (
-    <div className="px-4 py-5 pb-24">
+    <div className="px-4 py-5 pb-6">
       <header className="mb-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80">{"// Operator"}</p>
         <div className="mt-1.5 flex items-end justify-between gap-3">
