@@ -1,5 +1,10 @@
 # Mobile Navigation Re-Architecture Plan (Desktop-Safe)
 
+> **Status (2026-05-21): Shipped.** All five phases below are in production. The mobile shell lives under `app/m/`, bottom tabs are sticky in `app/m/layout.tsx`, and `proxy.ts` redirects mobile UAs from desktop lecture URLs into `/m/*`. This document is retained for historical context — for current architecture see `docs/ARCHITECTURE.md`. Notable post-plan changes:
+> - Profile body was migrated to a full `/m/profile` page rather than an extracted `profile-form` component; the desktop `ProfileSheet` was kept untouched.
+> - Mobile UI components shipped under `components/mobile/` (`mobile-bottom-tabs`, `mobile-page-header`, `mobile-skeletons`); the granular `mobile-week-list` / `mobile-lecture-list` / `mobile-player-layout` split in §"New components" was not needed — page components stayed cohesive.
+> - The lecture page merges Mark Done + Next into a single adaptive CTA, beyond the original plan.
+
 ## Objective
 Replace mobile-only sidebar/sheet-heavy lecture navigation with route-driven pages and bottom tabs, while preserving the existing desktop UX exactly.
 

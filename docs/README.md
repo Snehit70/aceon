@@ -1,6 +1,6 @@
 # Aceon Docs Index
 
-Updated: 2026-05-18
+Updated: 2026-05-21
 
 ## Core docs
 
@@ -10,6 +10,10 @@ Updated: 2026-05-18
 - `PRODUCT.md`: product intent, user value, roadmap priorities
 - `DESIGN.md`: design implementation guide
 - `docs/DESIGN.yaml`: machine-readable visual design source of truth
+
+## Historical / reference
+
+- `docs/MOBILE_WEB_POLISH_PLAN.md`: original mobile re-architecture plan (shipped — kept for context)
 
 ## Data and scraper docs (legacy/operational)
 
