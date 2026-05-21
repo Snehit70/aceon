@@ -5,9 +5,10 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
-import { ChevronRight, Clapperboard, Clock, Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
+import { ChainsawCard } from "@/components/shared/chainsaw-card";
 import {
   ArchiveTierSkeleton,
   EnrolledCardSkeleton,
@@ -76,7 +77,7 @@ export default function MobileLecturesPage() {
   const activeLevelMeta = LEVELS.find((l) => l.key === activeLevel);
 
   return (
-    <div className="min-h-[calc(100dvh-3.5rem)] bg-black px-4 py-5 pb-28">
+    <div className="bg-black px-4 py-5 pb-6">
       <header className="mb-5">
         {showLevelDetail && (
           <Link
@@ -121,13 +122,11 @@ export default function MobileLecturesPage() {
 
       {courses === undefined ? (
         isEnrolledTab ? (
-          <ul className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <li key={i}>
-                <EnrolledCardSkeleton />
-              </li>
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <EnrolledCardSkeleton key={i} />
             ))}
-          </ul>
+          </div>
         ) : (
           <ul className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -139,78 +138,21 @@ export default function MobileLecturesPage() {
         )
       ) : isEnrolledTab ? (
         enrolledCourses.length > 0 ? (
-          <ul className="space-y-3">
-            {enrolledCourses.map((course) => {
-              const percent = Math.round(coursesProgress?.[course._id] || 0);
-              const started = percent > 0;
-              const complete = percent >= 100;
-              return (
-                <li key={course._id}>
-                  <Link
-                    href={`/m/course/${course._id}`}
-                    className="group relative block border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-4 transition-colors active:bg-primary/5"
-                  >
-                    <span
-                      aria-hidden
-                      className="absolute left-0 top-0 h-full w-[3px] bg-primary"
-                    />
-
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="border border-primary/60 bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
-                          {course.code}
-                        </span>
-                        <span className="font-mono text-[10px] uppercase tracking-wider text-white/45">
-                          {course.level}
-                        </span>
-                      </div>
-                      <ChevronRight className="h-4 w-4 shrink-0 text-white/30 group-hover:text-primary" />
-                    </div>
-
-                    <h3 className="mt-3 line-clamp-2 font-display text-[1.15rem] font-bold uppercase leading-[1.05] text-white">
-                      {course.title}
-                    </h3>
-
-                    <div className="mt-4 flex items-center gap-3">
-                      <div className="relative h-1.5 flex-1 overflow-hidden bg-white/8">
-                        <div
-                          className={`h-full ${complete ? "bg-green-500" : "bg-primary"}`}
-                          style={{ width: `${percent}%` }}
-                        />
-                      </div>
-                      <span
-                        className={`shrink-0 font-mono text-[11px] font-bold tabular-nums ${complete ? "text-green-400" : "text-primary"}`}
-                      >
-                        {percent}%
-                      </span>
-                    </div>
-
-                    <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-white/55">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clapperboard className="h-3 w-3" />
-                        {course.stats.lectureCount} lec
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clock className="h-3 w-3" />
-                        {course.stats.totalDurationFormatted}
-                      </span>
-                      <span
-                        className={
-                          complete
-                            ? "text-green-400"
-                            : started
-                              ? "text-primary"
-                              : "text-white/55"
-                        }
-                      >
-                        {complete ? "Complete" : started ? "In progress" : "Not started"}
-                      </span>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="grid grid-cols-2 gap-3">
+            {enrolledCourses.map((course) => (
+              <ChainsawCard
+                key={course._id}
+                id={course._id}
+                href={`/m/course/${course._id}`}
+                code={course.code}
+                title={course.title}
+                level={course.level.charAt(0).toUpperCase() + course.level.slice(1) + " Level"}
+                lectureCount={course.stats.lectureCount}
+                totalDuration={course.stats.totalDurationFormatted}
+                progress={coursesProgress?.[course._id] || 0}
+              />
+            ))}
+          </div>
         ) : (
           <div className="border border-dashed border-white/15 bg-white/[0.02] p-8 text-center">
             <p className="font-display text-sm font-bold uppercase tracking-wider text-white/80">
