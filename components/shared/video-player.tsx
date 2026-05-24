@@ -18,6 +18,7 @@ declare global {
           events?: {
             onReady?: (event: { target: YTPlayer }) => void;
             onStateChange?: (event: { data: number; target: YTPlayer }) => void;
+            onError?: (event: { data: number; target: YTPlayer }) => void;
           };
         }
       ) => YTPlayer;
@@ -159,9 +160,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [volume, setVolume] = useState(100);
     const [isMuted, setIsMuted] = useState(false);
     const [volumeTrigger, setVolumeTrigger] = useState(0);
+    const [showPlaybackHelp, setShowPlaybackHelp] = useState(false);
+    const [playerErrorCode, setPlayerErrorCode] = useState<number | null>(null);
     const pendingSeekRef = useRef<number | null>(null);
     const pendingPlaybackRateRef = useRef<number | null>(null);
     const playIndicatorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const playAttemptTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     
     // Derived state to track initial position for the current video
     // This allows us to ignore initialPosition prop updates unless videoId changes
@@ -288,6 +292,26 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
     }, []);
 
+    const clearPlayAttemptTimeout = useCallback(() => {
+      if (playAttemptTimeoutRef.current) {
+        clearTimeout(playAttemptTimeoutRef.current);
+        playAttemptTimeoutRef.current = null;
+      }
+    }, []);
+
+    const beginPlayAttemptCheck = useCallback(() => {
+      clearPlayAttemptTimeout();
+      setShowPlaybackHelp(false);
+      playAttemptTimeoutRef.current = setTimeout(() => {
+        const player = playerRef.current;
+        if (!player || !window.YT) return;
+        const isActuallyPlaying = player.getPlayerState() === window.YT.PlayerState.PLAYING;
+        if (!isActuallyPlaying && player.getCurrentTime() < 1) {
+          setShowPlaybackHelp(true);
+        }
+      }, 4500);
+    }, [clearPlayAttemptTimeout]);
+
     /**
      * Handle click on the overlay to toggle play/pause.
      * This prevents the iframe from receiving focus while still controlling playback.
@@ -298,7 +322,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       const state = playerRef.current.getPlayerState();
       if (state === window.YT.PlayerState.PLAYING) {
         playerRef.current.pauseVideo();
+        clearPlayAttemptTimeout();
       } else {
+        beginPlayAttemptCheck();
         playerRef.current.playVideo();
       }
       
@@ -310,7 +336,13 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       playIndicatorTimeoutRef.current = setTimeout(() => {
         setShowPlayIndicator(false);
       }, 900);
-    }, [isReady]);
+    }, [beginPlayAttemptCheck, clearPlayAttemptTimeout, isReady]);
+
+    const handlePlayFromOverlay = useCallback(() => {
+      if (!isReady || !playerRef.current) return;
+      beginPlayAttemptCheck();
+      playerRef.current.playVideo();
+    }, [beginPlayAttemptCheck, isReady]);
 
     // Cleanup play indicator timeout on unmount
     useEffect(() => {
@@ -318,8 +350,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         if (playIndicatorTimeoutRef.current) {
           clearTimeout(playIndicatorTimeoutRef.current);
         }
+        clearPlayAttemptTimeout();
       };
-    }, []);
+    }, [clearPlayAttemptTimeout]);
 
     useEffect(() => {
       let mounted = true;
@@ -376,6 +409,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
               if (state === window.YT.PlayerState.PLAYING) {
                 setIsPlaying(true);
+                setShowPlaybackHelp(false);
+                setPlayerErrorCode(null);
+                clearPlayAttemptTimeout();
                 startProgressTracking();
               } else {
                 setIsPlaying(false);
@@ -391,6 +427,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 onEndedRef.current?.();
               }
             },
+            onError: (event) => {
+              setPlayerErrorCode(event.data ?? null);
+              setShowPlaybackHelp(true);
+              clearPlayAttemptTimeout();
+            },
           },
         });
       };
@@ -400,6 +441,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       return () => {
         mounted = false;
         stopProgressTracking();
+        clearPlayAttemptTimeout();
         if (playerRef.current) {
           playerRef.current.destroy();
           playerRef.current = null;
@@ -407,7 +449,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
+    }, [videoId, clearPlayAttemptTimeout, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
 
     return (
       <div
@@ -455,7 +497,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           isPlaying={isPlaying}
           isBuffering={isBuffering}
           showPlayButton={!showPlayIndicator}
-          onPlay={() => internalRef.current?.play()}
+          onPlay={handlePlayFromOverlay}
         />
         
         {/* Custom player controls */}
@@ -476,6 +518,40 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         />
         
         <LandscapeHint isReady={isReady} />
+
+        {showPlaybackHelp && (
+          <div className="absolute inset-x-3 bottom-16 z-50 border border-white/20 bg-black/90 p-3 text-white shadow-lg backdrop-blur-sm sm:bottom-20 sm:inset-x-4">
+            <p className="font-display text-sm font-bold uppercase tracking-wide">
+              Playback blocked by YouTube
+            </p>
+            <p className="mt-1 text-xs text-white/75">
+              This can happen due to YouTube bot checks, sign-in requirements, VPN/proxy filtering, or network/IP reputation.
+              {playerErrorCode !== null ? ` (Error code: ${playerErrorCode})` : ""}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <a
+                href={`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[36px] items-center justify-center border border-primary/60 bg-primary/20 px-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-primary/30"
+              >
+                Open on YouTube
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowPlaybackHelp(false)}
+                className="inline-flex min-h-[36px] items-center justify-center border border-white/20 px-3 text-xs font-bold uppercase tracking-wider text-white/80 hover:text-white"
+              >
+                Dismiss
+              </button>
+            </div>
+            <ul className="mt-2 space-y-1 text-[11px] text-white/70">
+              <li>1. Sign in to YouTube in this browser profile and retry.</li>
+              <li>2. Disable VPN/proxy/ad-block temporarily.</li>
+              <li>3. If still blocked, use “Open on YouTube”.</li>
+            </ul>
+          </div>
+        )}
       </div>
     );
   }
