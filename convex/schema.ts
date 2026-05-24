@@ -68,5 +68,6 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_user", ["clerkId"])
-    .index("by_user_video", ["clerkId", "videoId"]),
+    .index("by_user_video", ["clerkId", "videoId"])
+    .index("by_user_video_timestamp", ["clerkId", "videoId", "timestamp"]),
 });

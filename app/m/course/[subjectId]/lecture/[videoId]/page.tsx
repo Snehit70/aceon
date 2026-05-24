@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowRight, Check, ChevronLeft, RotateCcw } from "lucide-react";
 import { MobileLectureSkeleton } from "@/components/mobile/mobile-skeletons";
+import { VideoNotesPanel } from "@/components/lectures/video-notes-panel";
 
 export default function MobileLecturePage() {
   const { user } = useUser();
@@ -216,6 +217,17 @@ export default function MobileLecturePage() {
             {course.code} · {currentVideo.weekTitle} · Lecture {String(weekLectureIdx + 1).padStart(2, "0")} / {String(weekTotal).padStart(2, "0")}
           </p>
         )}
+      </div>
+
+      <div className="mt-4">
+        <VideoNotesPanel
+          userId={user?.id}
+          videoId={currentVideo._id}
+          playerRef={playerRef}
+          compact
+          collapsible
+          defaultOpen={false}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,16 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+const MAX_NOTE_LENGTH = 1000;
+
+function normalizeTimestamp(timestamp: number) {
+  return Math.max(0, Math.floor(timestamp));
+}
+
+function normalizeContent(content: string) {
+  return content.trim();
+}
+
 /**
  * Creates a new note for a specific video.
  *
@@ -24,12 +34,20 @@ export const addNote = mutation({
       throw new Error("Unauthorized");
     }
 
+    const content = normalizeContent(args.content);
+    if (!content) {
+      throw new Error("Note content cannot be empty");
+    }
+    if (content.length > MAX_NOTE_LENGTH) {
+      throw new Error("Note content is too long");
+    }
+
     const now = Date.now();
     return await ctx.db.insert("videoNotes", {
       clerkId: args.clerkId,
       videoId: args.videoId,
-      timestamp: args.timestamp,
-      content: args.content,
+      timestamp: normalizeTimestamp(args.timestamp),
+      content,
       createdAt: now,
       updatedAt: now,
     });
@@ -52,6 +70,14 @@ export const updateNote = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
 
+    const content = normalizeContent(args.content);
+    if (!content) {
+      throw new Error("Note content cannot be empty");
+    }
+    if (content.length > MAX_NOTE_LENGTH) {
+      throw new Error("Note content is too long");
+    }
+
     const note = await ctx.db.get(args.noteId);
     if (!note) throw new Error("Note not found");
 
@@ -60,7 +86,7 @@ export const updateNote = mutation({
     }
 
     await ctx.db.patch(args.noteId, {
-      content: args.content,
+      content,
       updatedAt: Date.now(),
     });
   },
@@ -109,14 +135,13 @@ export const getNotesForVideo = query({
       return [];
     }
 
-    const notes = await ctx.db
+    return await ctx.db
       .query("videoNotes")
-      .withIndex("by_user_video", (q) =>
+      .withIndex("by_user_video_timestamp", (q) =>
         q.eq("clerkId", args.clerkId).eq("videoId", args.videoId)
       )
+      .order("asc")
       .collect();
-
-    return notes.sort((a, b) => a.timestamp - b.timestamp);
   },
 });
 
@@ -158,4 +183,3 @@ export const getAllNotes = query({
     return results.filter((r) => r.video);
   },
 });
-
