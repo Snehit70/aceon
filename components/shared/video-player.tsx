@@ -162,6 +162,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [volumeTrigger, setVolumeTrigger] = useState(0);
     const [showPlaybackHelp, setShowPlaybackHelp] = useState(false);
     const [playerErrorCode, setPlayerErrorCode] = useState<number | null>(null);
+    const [reloadNonce, setReloadNonce] = useState(0);
+    const [showBrowserFixes, setShowBrowserFixes] = useState(false);
     const pendingSeekRef = useRef<number | null>(null);
     const pendingPlaybackRateRef = useRef<number | null>(null);
     const playIndicatorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -344,6 +346,13 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       playerRef.current.playVideo();
     }, [beginPlayAttemptCheck, isReady]);
 
+    const handleRetryAfterVerification = useCallback(() => {
+      clearPlayAttemptTimeout();
+      setShowPlaybackHelp(false);
+      setPlayerErrorCode(null);
+      setReloadNonce((prev) => prev + 1);
+    }, [clearPlayAttemptTimeout]);
+
     // Cleanup play indicator timeout on unmount
     useEffect(() => {
       return () => {
@@ -449,7 +458,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, clearPlayAttemptTimeout, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
+    }, [videoId, reloadNonce, clearPlayAttemptTimeout, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
 
     return (
       <div
@@ -459,56 +468,62 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         {/* YouTube iframe container */}
         <div
           ref={iframeContainerRef}
-          className="absolute inset-0 z-10 [&>div]:w-full [&>div]:h-full [&>iframe]:w-full [&>iframe]:h-full"
+          className={`absolute inset-0 z-10 [&>div]:w-full [&>div]:h-full [&>iframe]:w-full [&>iframe]:h-full ${
+            showPlaybackHelp ? "pointer-events-none opacity-20" : ""
+          }`}
         />
         
-        {/* Transparent click overlay - intercepts clicks to prevent iframe focus */}
-        <button
-          type="button"
-          onClick={handleOverlayClick}
-          className="absolute inset-0 z-20 cursor-pointer bg-transparent border-none outline-none focus:outline-none"
-          aria-label={isPlaying ? "Pause video" : "Play video"}
-          tabIndex={-1}
-        />
+        {!showPlaybackHelp && (
+          <>
+            {/* Transparent click overlay - intercepts clicks to prevent iframe focus */}
+            <button
+              type="button"
+              onClick={handleOverlayClick}
+              className="absolute inset-0 z-20 cursor-pointer bg-transparent border-none outline-none focus:outline-none"
+              aria-label={isPlaying ? "Pause video" : "Play video"}
+              tabIndex={-1}
+            />
         
-        {/* Play/Pause indicator - shows briefly on click (shows the action that will happen) */}
-        {showPlayIndicator && !isBuffering && (
-          <div
-            className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none animate-indicator-pop"
-          >
-            {/* White icon - show opposite of current state = the action available */}
-            {isPlaying ? (
-              <AngularPauseIcon 
-                className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
-                fill="white" 
-              />
-            ) : (
-              <AngularPlayIcon 
-                className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
-                fill="white" 
-              />
+            {/* Play/Pause indicator - shows briefly on click (shows the action that will happen) */}
+            {showPlayIndicator && !isBuffering && (
+              <div
+                className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none animate-indicator-pop"
+              >
+                {/* White icon - show opposite of current state = the action available */}
+                {isPlaying ? (
+                  <AngularPauseIcon 
+                    className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+                    fill="white" 
+                  />
+                ) : (
+                  <AngularPlayIcon 
+                    className="w-16 h-16 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]" 
+                    fill="white" 
+                  />
+                )}
+              </div>
             )}
-          </div>
+        
+            {/* Center play button overlay - shows when paused */}
+            <PlayerOverlay
+              isReady={isReady}
+              isPlaying={isPlaying}
+              isBuffering={isBuffering}
+              showPlayButton={!showPlayIndicator}
+              onPlay={handlePlayFromOverlay}
+            />
+        
+            {/* Custom player controls */}
+            <PlayerControls
+              playerRef={internalRef}
+              containerRef={containerRef}
+              isPlaying={isPlaying}
+              isReady={isReady}
+              onPlayPause={handleOverlayClick}
+              videoId={videoId}
+            />
+          </>
         )}
-        
-        {/* Center play button overlay - shows when paused */}
-        <PlayerOverlay
-          isReady={isReady}
-          isPlaying={isPlaying}
-          isBuffering={isBuffering}
-          showPlayButton={!showPlayIndicator}
-          onPlay={handlePlayFromOverlay}
-        />
-        
-        {/* Custom player controls */}
-        <PlayerControls
-          playerRef={internalRef}
-          containerRef={containerRef}
-          isPlaying={isPlaying}
-          isReady={isReady}
-          onPlayPause={handleOverlayClick}
-          videoId={videoId}
-        />
         
         {/* Volume indicator overlay - shows on volume change */}
         <VolumeIndicator
@@ -520,7 +535,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         <LandscapeHint isReady={isReady} />
 
         {showPlaybackHelp && (
-          <div className="absolute inset-x-3 bottom-16 z-50 border border-white/20 bg-black/90 p-3 text-white shadow-lg backdrop-blur-sm sm:bottom-20 sm:inset-x-4">
+          <div className="absolute inset-0 z-60 flex items-center justify-center bg-black/85 p-4">
+            <div className="w-full max-w-lg border border-white/20 bg-black/90 p-4 text-white shadow-lg backdrop-blur-sm">
             <p className="font-display text-sm font-bold uppercase tracking-wide">
               Playback blocked by YouTube
             </p>
@@ -528,15 +544,37 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               This can happen due to YouTube bot checks, sign-in requirements, VPN/proxy filtering, or network/IP reputation.
               {playerErrorCode !== null ? ` (Error code: ${playerErrorCode})` : ""}
             </p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
+            <p className="mt-2 text-xs text-amber-300/90">
+              If YouTube opens fine in another tab but this embed still fails, your browser is likely blocking third-party cookies or cross-site storage for embedded YouTube.
+            </p>
+            <ol className="mt-2 space-y-1 text-[11px] text-white/75">
+              <li>1. Open YouTube and complete sign-in/verification in this browser profile.</li>
+              <li>2. Allow third-party cookie exceptions for YouTube/Google domains.</li>
+              <li>3. Return to Aceon and click retry.</li>
+            </ol>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <a
                 href={`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex min-h-[36px] items-center justify-center border border-primary/60 bg-primary/20 px-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-primary/30"
               >
-                Open on YouTube
+                Verify on YouTube
               </a>
+              <button
+                type="button"
+                onClick={handleRetryAfterVerification}
+                className="inline-flex min-h-[36px] items-center justify-center border border-white/30 bg-white/10 px-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/20"
+              >
+                I verified, retry
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowBrowserFixes((prev) => !prev)}
+                className="inline-flex min-h-[36px] items-center justify-center border border-white/20 px-3 text-xs font-bold uppercase tracking-wider text-white/80 hover:text-white"
+              >
+                {showBrowserFixes ? "Hide browser fixes" : "Show browser fixes"}
+              </button>
               <button
                 type="button"
                 onClick={() => setShowPlaybackHelp(false)}
@@ -545,11 +583,25 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 Dismiss
               </button>
             </div>
-            <ul className="mt-2 space-y-1 text-[11px] text-white/70">
-              <li>1. Sign in to YouTube in this browser profile and retry.</li>
-              <li>2. Disable VPN/proxy/ad-block temporarily.</li>
-              <li>3. If still blocked, use “Open on YouTube”.</li>
-            </ul>
+            {showBrowserFixes && (
+              <div className="mt-3 border border-white/15 bg-white/5 p-3 text-[11px] text-white/75">
+                <p className="font-bold uppercase tracking-wide text-white/85">Browser Fixes</p>
+                <ul className="mt-2 space-y-1">
+                  <li>Chrome/Chromium: Settings → Privacy and security → Third-party cookies → Sites allowed to use third-party cookies. Add: [*.]youtube.com, [*.]google.com, [*.]ytimg.com, [*.]googlevideo.com.</li>
+                  <li>Brave: Click the lion icon → Shields down for this site (or Cookies: Allow all cookies), then reload this page.</li>
+                  <li>Firefox: Click the shield icon in address bar → Turn off Enhanced Tracking Protection for this site, then reload.</li>
+                  <li>Safari (macOS): Safari → Settings → Privacy → temporarily uncheck “Prevent cross-site tracking”, reload, then retry.</li>
+                  <li>Any browser: disable VPN/proxy/ad-block for this page and retry.</li>
+                </ul>
+                <p className="mt-2 text-white/65">
+                  Important: avoid accidental trailing spaces in domain entries (for example `%20`), or the exception will not match.
+                </p>
+                <p className="mt-1 text-white/65">
+                  If restrictions are enforced by your organization/device policy, continue via “Verify on YouTube”.
+                </p>
+              </div>
+            )}
+            </div>
           </div>
         )}
       </div>
