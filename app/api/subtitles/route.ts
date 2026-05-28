@@ -12,6 +12,7 @@ const execFileAsync = promisify(execFile);
 const subtitleCache = new Map<string, string>();
 const CACHE_TTL_MS = 1000 * 60 * 60 * 6;
 const cacheExpiry = new Map<string, number>();
+const noSubtitleCacheExpiry = new Map<string, number>();
 const allowedVideoCache = new Map<string, number>();
 const ALLOWED_VIDEO_CACHE_TTL_MS = 1000 * 60 * 30;
 
@@ -22,6 +23,14 @@ const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
 const convexClient = CONVEX_URL ? new ConvexHttpClient(CONVEX_URL) : null;
 
 function getCachedSubtitle(youtubeId: string): string | null {
+  const missExpiry = noSubtitleCacheExpiry.get(youtubeId);
+  if (missExpiry && Date.now() <= missExpiry) {
+    return "__NO_SUBTITLE__";
+  }
+  if (missExpiry && Date.now() > missExpiry) {
+    noSubtitleCacheExpiry.delete(youtubeId);
+  }
+
   const expiry = cacheExpiry.get(youtubeId);
   if (!expiry || Date.now() > expiry) {
     subtitleCache.delete(youtubeId);
@@ -34,6 +43,11 @@ function getCachedSubtitle(youtubeId: string): string | null {
 function setCachedSubtitle(youtubeId: string, content: string) {
   subtitleCache.set(youtubeId, content);
   cacheExpiry.set(youtubeId, Date.now() + CACHE_TTL_MS);
+  noSubtitleCacheExpiry.delete(youtubeId);
+}
+
+function setNoSubtitleCache(youtubeId: string) {
+  noSubtitleCacheExpiry.set(youtubeId, Date.now() + CACHE_TTL_MS);
 }
 
 async function isKnownVideoId(youtubeId: string): Promise<boolean> {
@@ -145,6 +159,9 @@ export async function GET(req: NextRequest) {
   }
 
   const cached = getCachedSubtitle(youtubeId);
+  if (cached === "__NO_SUBTITLE__") {
+    return NextResponse.json({ error: "No subtitles found" }, { status: 404 });
+  }
   if (cached) {
     return new NextResponse(cached, {
       status: 200,
@@ -155,6 +172,7 @@ export async function GET(req: NextRequest) {
   try {
     const subtitle = await fetchSubtitleViaYtDlp(youtubeId);
     if (!subtitle) {
+      setNoSubtitleCache(youtubeId);
       return NextResponse.json({ error: "No subtitles found" }, { status: 404 });
     }
     setCachedSubtitle(youtubeId, subtitle);
