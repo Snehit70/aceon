@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { Clock3, Pencil, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
@@ -20,7 +20,7 @@ interface VideoNotesPanelProps {
   defaultOpen?: boolean;
 }
 
-const MAX_NOTE_LENGTH = 1000;
+const MAX_NOTE_LENGTH = 300;
 
 function formatTimestamp(seconds: number) {
   const total = Math.max(0, Math.floor(seconds));
@@ -47,6 +47,7 @@ export function VideoNotesPanel({
   const [editingText, setEditingText] = useState("");
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [displayTimestamp, setDisplayTimestamp] = useState(0);
+  const quickInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const notes = useQuery(
     api.videoNotes.getNotesForVideo,
@@ -57,7 +58,15 @@ export function VideoNotesPanel({
   const updateNote = useMutation(api.videoNotes.updateNote);
   const deleteNote = useMutation(api.videoNotes.deleteNote);
 
-  const noteCount = notes?.length ?? 0;
+  const sortedNotes = useMemo(() => {
+    if (!notes) return [];
+    return [...notes].sort((a, b) => {
+      if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
+      return a._creationTime - b._creationTime;
+    });
+  }, [notes]);
+
+  const noteCount = sortedNotes?.length ?? 0;
   const canCreate = !!userId && !!videoId && noteInput.trim().length > 0 && noteInput.trim().length <= MAX_NOTE_LENGTH;
 
   useEffect(() => {
@@ -82,6 +91,7 @@ export function VideoNotesPanel({
         content: text,
       });
       setNoteInput("");
+      quickInputRef.current?.focus();
       toast.success("Note added");
     } catch (error) {
       console.error("Failed to add note", error);
@@ -121,9 +131,31 @@ export function VideoNotesPanel({
   };
 
   const handleDelete = async (noteId: Id<"videoNotes">) => {
+    const deletedNote = sortedNotes?.find((note) => note._id === noteId);
     try {
       await deleteNote({ noteId });
-      toast.success("Note deleted");
+      toast.success("Note deleted", {
+        action: deletedNote
+          ? {
+              label: "Undo",
+              onClick: async () => {
+                if (!userId || !videoId) return;
+                try {
+                  await addNote({
+                    clerkId: userId,
+                    videoId: videoId as Id<"videos">,
+                    timestamp: deletedNote.timestamp,
+                    content: deletedNote.content,
+                  });
+                  toast.success("Note restored");
+                } catch (error) {
+                  console.error("Failed to restore note", error);
+                  toast.error("Failed to restore note");
+                }
+              },
+            }
+          : undefined,
+      });
       if (editingNoteId === noteId) {
         handleCancelEdit();
       }
@@ -152,8 +184,9 @@ export function VideoNotesPanel({
             variant="ghost"
             size="sm"
             onClick={() => setIsOpen((prev) => !prev)}
-            className="min-h-[36px] border border-white/10 text-white/80 hover:text-white"
+            className="min-h-[36px] gap-1.5 border border-white/10 text-white/80 hover:text-white"
           >
+            <span className="font-mono text-[10px] uppercase tracking-wider">{noteCount} notes</span>
             {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
         )}
@@ -163,11 +196,19 @@ export function VideoNotesPanel({
         <div className="mt-3 space-y-3">
           <div className="space-y-2">
             <Textarea
+              ref={quickInputRef}
               value={noteInput}
               onChange={(e) => setNoteInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (!isSubmitting) void handleAddNote();
+                }
+              }}
               maxLength={MAX_NOTE_LENGTH}
-              placeholder={`Add note at ${formatTimestamp(displayTimestamp)}...`}
-              className="min-h-[88px] border-white/15 bg-black/40 text-sm text-white placeholder:text-white/35"
+              placeholder={`Press Enter to capture quickly at ${formatTimestamp(displayTimestamp)}...`}
+              rows={1}
+              className="min-h-[44px] border-white/15 bg-black/40 text-sm text-white placeholder:text-white/35"
             />
             <div className="flex items-center justify-between gap-2">
               <p className="font-mono text-[10px] uppercase tracking-wider text-white/50">
@@ -189,13 +230,13 @@ export function VideoNotesPanel({
 
           {notes === undefined ? (
             <p className="font-mono text-[10px] uppercase tracking-wider text-white/50">Loading notes...</p>
-          ) : notes.length === 0 ? (
+          ) : sortedNotes.length === 0 ? (
             <p className="border border-dashed border-white/15 bg-black/30 p-3 font-mono text-[10px] uppercase tracking-wider text-white/50">
-              No notes yet for this lecture.
+              Press Enter to capture your first note quickly.
             </p>
           ) : (
             <div className="space-y-2">
-              {notes.map((note) => {
+              {sortedNotes.map((note) => {
                 const isEditing = editingNoteId === note._id;
                 return (
                   <article key={note._id} className="border border-white/10 bg-black/35 p-3">
