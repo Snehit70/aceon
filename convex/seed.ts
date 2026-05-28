@@ -63,6 +63,18 @@ type ImportCourse = {
   weeks: ImportWeek[];
 };
 
+type VideoDoc = {
+  _id: any;
+  youtubeId: string;
+  slug: string;
+  title: string;
+  duration: number;
+  transcriptUrl?: string;
+  order: number;
+  weekId: any;
+  courseId: any;
+};
+
 const requireSeedAuth = async (
   _ctx: { auth: { getUserIdentity: () => Promise<unknown> } },
   importToken?: string,
@@ -70,6 +82,25 @@ const requireSeedAuth = async (
   const expectedToken = process.env.CONVEX_SEED_IMPORT_TOKEN;
   if (!expectedToken || importToken !== expectedToken) {
     throw new Error("Unauthorized");
+  }
+};
+
+const videoIdentityKey = (video: { youtubeId: string; order: number }) =>
+  `${video.youtubeId}::${video.order}`;
+
+const deleteProgressAndNotesForVideo = async (ctx: any, videoId: any) => {
+  const notesRows = (await ctx.db.query("videoNotes").collect()).filter(
+    (row: any) => row.videoId === videoId,
+  );
+  for (const row of notesRows) {
+    await ctx.db.delete(row._id);
+  }
+
+  const progressRows = (await ctx.db.query("videoProgress").collect()).filter(
+    (row: any) => row.videoId === videoId,
+  );
+  for (const row of progressRows) {
+    await ctx.db.delete(row._id);
   }
 };
 
@@ -202,6 +233,9 @@ export const replaceCourseData = mutation({
       .withIndex("by_code", (q: any) => q.eq("code", args.course.code))
       .first();
 
+    const oldVideosByKey = new Map<string, VideoDoc[]>();
+    const oldVideoIdsToDelete = new Set<any>();
+
     if (existingCourse) {
       const weeks = await ctx.db
         .query("weeks")
@@ -213,9 +247,12 @@ export const replaceCourseData = mutation({
           .withIndex("by_week", (q: any) => q.eq("weekId", week._id))
           .collect();
         for (const video of videos) {
-          await ctx.db.delete(video._id);
+          const key = videoIdentityKey(video);
+          const list = oldVideosByKey.get(key) ?? [];
+          list.push(video as VideoDoc);
+          oldVideosByKey.set(key, list);
+          oldVideoIdsToDelete.add(video._id);
         }
-        await ctx.db.delete(week._id);
       }
     }
 
@@ -245,18 +282,57 @@ export const replaceCourseData = mutation({
       });
 
       for (const video of week.videos) {
-        await ctx.db.insert("videos", {
-          weekId,
-          courseId,
-          title: video.title,
-          youtubeId: video.youtubeId,
-          duration: video.duration,
-          transcriptUrl: video.transcriptUrl,
-          slug: video.slug,
-          order: video.order,
-        });
+        const key = videoIdentityKey(video);
+        const candidates = oldVideosByKey.get(key) ?? [];
+        const reusableVideo = candidates.shift();
+
+        if (reusableVideo) {
+          await ctx.db.patch(reusableVideo._id, {
+            weekId,
+            courseId,
+            title: video.title,
+            youtubeId: video.youtubeId,
+            duration: video.duration,
+            transcriptUrl: video.transcriptUrl,
+            slug: video.slug,
+            order: video.order,
+          });
+          oldVideoIdsToDelete.delete(reusableVideo._id);
+        } else {
+          await ctx.db.insert("videos", {
+            weekId,
+            courseId,
+            title: video.title,
+            youtubeId: video.youtubeId,
+            duration: video.duration,
+            transcriptUrl: video.transcriptUrl,
+            slug: video.slug,
+            order: video.order,
+          });
+        }
         lectureCount += 1;
         totalDurationSeconds += video.duration || 0;
+      }
+    }
+
+    if (existingCourse) {
+      for (const oldVideoId of oldVideoIdsToDelete) {
+        await deleteProgressAndNotesForVideo(ctx, oldVideoId);
+        await ctx.db.delete(oldVideoId);
+      }
+
+      const staleWeeks = await ctx.db
+        .query("weeks")
+        .withIndex("by_course", (q: any) => q.eq("courseId", existingCourse._id))
+        .collect();
+      for (const staleWeek of staleWeeks) {
+        const hasVideos = await ctx.db
+          .query("videos")
+          .withIndex("by_week", (q: any) => q.eq("weekId", staleWeek._id))
+          .first();
+        if (!hasVideos) {
+          await ctx.db.delete(staleWeek._id);
+        }
       }
     }
 
@@ -288,19 +364,40 @@ export const dedupeCourseById = mutation({
     if (!keepCourse) throw new Error("keepCourseId not found");
     if (!removeCourse) throw new Error("removeCourseId not found");
 
+    const keepWeeks = await ctx.db
+      .query("weeks")
+      .withIndex("by_course", (q: any) => q.eq("courseId", args.keepCourseId))
+      .collect();
+    const keepVideos = (
+      await Promise.all(
+        keepWeeks.map((week: any) =>
+          ctx.db.query("videos").withIndex("by_week", (q: any) => q.eq("weekId", week._id)).collect(),
+        ),
+      )
+    ).flat();
+    const keepVideoByKey = new Map<string, any>();
+    for (const keepVideo of keepVideos) {
+      keepVideoByKey.set(videoIdentityKey(keepVideo), keepVideo);
+    }
+
     const removeWeeks = await ctx.db
       .query("weeks")
       .withIndex("by_course", (q: any) => q.eq("courseId", args.removeCourseId))
       .collect();
+    const removeToKeepVideoId = new Map<any, any>();
+    const removeVideoIds: any[] = [];
     for (const week of removeWeeks) {
       const videos = await ctx.db
         .query("videos")
         .withIndex("by_week", (q: any) => q.eq("weekId", week._id))
         .collect();
       for (const video of videos) {
-        await ctx.db.delete(video._id);
+        const matchingKeep = keepVideoByKey.get(videoIdentityKey(video));
+        if (matchingKeep) {
+          removeToKeepVideoId.set(video._id, matchingKeep._id);
+        }
+        removeVideoIds.push(video._id);
       }
-      await ctx.db.delete(week._id);
     }
 
     const users = await ctx.db.query("users").collect();
@@ -318,7 +415,60 @@ export const dedupeCourseById = mutation({
       (row) => row.courseId === args.removeCourseId,
     );
     for (const row of progressRows) {
-      await ctx.db.patch(row._id, { courseId: args.keepCourseId });
+      const targetVideoId = removeToKeepVideoId.get(row.videoId);
+      if (!targetVideoId) {
+        await ctx.db.delete(row._id);
+        continue;
+      }
+
+      const existingTarget = await ctx.db
+        .query("videoProgress")
+        .withIndex("by_user_video", (q: any) =>
+          q.eq("clerkId", row.clerkId).eq("videoId", targetVideoId),
+        )
+        .first();
+
+      if (existingTarget && existingTarget._id !== row._id) {
+        await ctx.db.patch(existingTarget._id, {
+          courseId: args.keepCourseId,
+          progress: Math.max(existingTarget.progress, row.progress),
+          watchedSeconds: Math.max(existingTarget.watchedSeconds, row.watchedSeconds),
+          completed: existingTarget.completed || row.completed,
+          lastPosition: Math.max(existingTarget.lastPosition, row.lastPosition),
+          lastWatchedAt: Math.max(existingTarget.lastWatchedAt, row.lastWatchedAt),
+        });
+        await ctx.db.delete(row._id);
+      } else {
+        await ctx.db.patch(row._id, {
+          courseId: args.keepCourseId,
+          videoId: targetVideoId,
+        });
+      }
+    }
+
+    const noteRows = (await ctx.db.query("videoNotes").collect()).filter(
+      (row: any) => removeToKeepVideoId.has(row.videoId),
+    );
+    for (const row of noteRows) {
+      await ctx.db.patch(row._id, { videoId: removeToKeepVideoId.get(row.videoId) });
+    }
+
+    const orphanNotes = (await ctx.db.query("videoNotes").collect()).filter(
+      (row: any) => removeVideoIds.includes(row.videoId) && !removeToKeepVideoId.has(row.videoId),
+    );
+    for (const row of orphanNotes) {
+      await ctx.db.delete(row._id);
+    }
+
+    for (const week of removeWeeks) {
+      const videos = await ctx.db
+        .query("videos")
+        .withIndex("by_week", (q: any) => q.eq("weekId", week._id))
+        .collect();
+      for (const video of videos) {
+        await ctx.db.delete(video._id);
+      }
+      await ctx.db.delete(week._id);
     }
 
     if (args.newTitle) {

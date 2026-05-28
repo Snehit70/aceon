@@ -28,12 +28,25 @@ function setCachedSubtitle(youtubeId: string, content: string) {
   cacheExpiry.set(youtubeId, Date.now() + CACHE_TTL_MS);
 }
 
+type ExecSpec = { file: string; argsPrefix?: string[] };
+
+function getYtDlpCandidates(): ExecSpec[] {
+  const configured = process.env.YT_DLP_BINARY?.trim();
+  const candidates: ExecSpec[] = [];
+  if (configured) {
+    candidates.push({ file: configured });
+  }
+  candidates.push({ file: "yt-dlp" });
+  candidates.push({ file: "python3", argsPrefix: ["-m", "yt_dlp"] });
+  return candidates;
+}
+
 async function fetchSubtitleViaYtDlp(youtubeId: string): Promise<string | null> {
   const url = `https://www.youtube.com/watch?v=${youtubeId}`;
   const tempDir = await mkdtemp(join(tmpdir(), "aceon-subs-"));
 
   try {
-    await execFileAsync("yt-dlp", [
+    const baseArgs = [
       "--skip-download",
       "--write-subs",
       "--write-auto-subs",
@@ -44,7 +57,28 @@ async function fetchSubtitleViaYtDlp(youtubeId: string): Promise<string | null> 
       "-o",
       join(tempDir, "%(id)s.%(ext)s"),
       url,
-    ]);
+    ];
+
+    let lastError: unknown = null;
+    let attempted = 0;
+    for (const candidate of getYtDlpCandidates()) {
+      attempted += 1;
+      try {
+        await execFileAsync(candidate.file, [...(candidate.argsPrefix ?? []), ...baseArgs]);
+        lastError = null;
+        break;
+      } catch (error: unknown) {
+        lastError = error;
+        const code = (error as NodeJS.ErrnoException).code;
+        if (code !== "ENOENT") {
+          throw error;
+        }
+      }
+    }
+
+    if (lastError && attempted > 0) {
+      throw new Error("yt-dlp-unavailable");
+    }
 
     const files = await readdir(tempDir);
     const subtitleFile = files.find((file) => file.startsWith(`${youtubeId}.`) && file.endsWith(".vtt"));
@@ -83,6 +117,15 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Subtitle fetch failed", error);
+    if (error instanceof Error && error.message === "yt-dlp-unavailable") {
+      return NextResponse.json(
+        {
+          error:
+            "Subtitle fallback is unavailable on this deployment. Install yt-dlp or set YT_DLP_BINARY to a valid executable path.",
+        },
+        { status: 503 },
+      );
+    }
     return NextResponse.json({ error: "Failed to fetch subtitles" }, { status: 500 });
   }
 }
