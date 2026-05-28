@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 
@@ -37,6 +37,11 @@ function findRateIndex(rate: number): number {
 }
 
 export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: UseVideoShortcutsOptions) {
+  const spaceHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spaceIsDownRef = useRef(false);
+  const spaceDidBoostRef = useRef(false);
+  const spacePrevRateRef = useRef(1);
+  const SPACE_HOLD_MS = 180;
 
   useEffect(() => {
     const playerRefCopy = playerRef;
@@ -61,11 +66,25 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           e.preventDefault();
           e.stopPropagation();
           if (!player) return;
-          if (player.isPlaying()) {
-            player.pause();
-          } else {
-            player.play();
+          if (e.repeat) return;
+
+          spaceIsDownRef.current = true;
+          spaceDidBoostRef.current = false;
+
+          if (spaceHoldTimerRef.current) {
+            clearTimeout(spaceHoldTimerRef.current);
           }
+
+          spaceHoldTimerRef.current = setTimeout(() => {
+            const activePlayer = playerRefCopy.current;
+            if (!activePlayer || !spaceIsDownRef.current) return;
+            const currentRate = activePlayer.getPlaybackRate();
+            spacePrevRateRef.current = currentRate;
+            if (currentRate !== 2) {
+              activePlayer.setPlaybackRate(2);
+            }
+            spaceDidBoostRef.current = true;
+          }, SPACE_HOLD_MS);
           break;
         }
         case "ArrowLeft": {
@@ -162,8 +181,47 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
       }
     };
 
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!enabled) return;
+      if (e.key !== " ") return;
+
+      const player = playerRefCopy.current;
+      if (!player) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      spaceIsDownRef.current = false;
+      if (spaceHoldTimerRef.current) {
+        clearTimeout(spaceHoldTimerRef.current);
+        spaceHoldTimerRef.current = null;
+      }
+
+      if (spaceDidBoostRef.current) {
+        const restoreRate = spacePrevRateRef.current;
+        if (player.getPlaybackRate() !== restoreRate) {
+          player.setPlaybackRate(restoreRate);
+        }
+        spaceDidBoostRef.current = false;
+      } else {
+        if (player.isPlaying()) {
+          player.pause();
+        } else {
+          player.play();
+        }
+      }
+    };
+
     // Use capture phase to intercept events before any iframe can steal them
     window.addEventListener("keydown", handleKeyDown, { capture: true });
-    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
+    window.addEventListener("keyup", handleKeyUp, { capture: true });
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, { capture: true });
+      window.removeEventListener("keyup", handleKeyUp, { capture: true });
+      if (spaceHoldTimerRef.current) {
+        clearTimeout(spaceHoldTimerRef.current);
+        spaceHoldTimerRef.current = null;
+      }
+    };
   }, [playerRef, containerRef, enabled]);
 }
