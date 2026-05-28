@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 5550",
+    "convex:dev": "bun x convex dev --env-file .env.dev.local",
+    "convex:deploy:prod": "bun x convex deploy --env-file .env.local",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
