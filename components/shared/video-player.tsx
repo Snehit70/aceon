@@ -65,6 +65,7 @@ export interface VideoPlayerRef {
   unmute: () => void;
   getPlaybackRate: () => number;
   setPlaybackRate: (rate: number) => void;
+  toggleSubtitles: () => void;
 }
 
 interface VideoPlayerProps {
@@ -81,6 +82,13 @@ interface SubtitleCue {
   start: number;
   end: number;
   text: string;
+}
+
+function decodeHtmlEntities(text: string): string {
+  if (typeof document === "undefined") return text;
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = text;
+  return textarea.value;
 }
 
 function parseVttTimestamp(raw: string): number {
@@ -142,7 +150,8 @@ function parseVttContent(content: string): SubtitleCue[] {
       i += 1;
     }
 
-    const text = textLines.join("\n").replace(/<[^>]+>/g, "").trim();
+    const rawText = textLines.join("\n").replace(/<[^>]+>/g, "");
+    const text = decodeHtmlEntities(rawText).replace(/\u00a0/g, " ").replace(/[ \t]+/g, " ").trim();
     if (text) {
       cues.push({ start, end, text });
     }
@@ -240,6 +249,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [reloadNonce, setReloadNonce] = useState(0);
     const [showBrowserFixes, setShowBrowserFixes] = useState(false);
     const [subtitleCues, setSubtitleCues] = useState<SubtitleCue[]>([]);
+    const [hasSubtitleTrack, setHasSubtitleTrack] = useState(false);
     const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
     const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
     const pendingSeekRef = useRef<number | null>(null);
@@ -287,12 +297,15 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           if (cancelled) return;
           const parsed = parseVttContent(text);
           setSubtitleCues(parsed);
-          setSubtitlesEnabled(parsed.length > 0);
+          setHasSubtitleTrack(parsed.length > 0);
+          // Keep captions OFF by default even when a track is available.
+          setSubtitlesEnabled(false);
           setActiveSubtitle(null);
         } catch (error) {
           if (!cancelled) {
             console.warn("Failed to load subtitles", error);
             setSubtitleCues([]);
+            setHasSubtitleTrack(false);
             setSubtitlesEnabled(false);
             setActiveSubtitle(null);
           }
@@ -385,6 +398,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         if (isReady && playerRef.current) {
           playerRef.current.setPlaybackRate(rate);
         }
+      },
+      toggleSubtitles: () => {
+        if (!hasSubtitleTrack) return;
+        setSubtitlesEnabled((prev) => !prev);
       },
     };
 
@@ -587,6 +604,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       };
     }, [videoId, reloadNonce, clearPlayAttemptTimeout, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
 
+    const subtitlesAvailable = hasSubtitleTrack || Boolean(transcriptUrl);
+
     return (
       <div
         ref={containerRef}
@@ -648,7 +667,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           isReady={isReady}
           onPlayPause={handleOverlayClick}
           videoId={videoId}
-          subtitlesAvailable={Boolean(transcriptUrl)}
+          subtitlesAvailable={subtitlesAvailable}
           subtitlesEnabled={subtitlesEnabled}
           onToggleSubtitles={() => setSubtitlesEnabled((prev) => !prev)}
         />

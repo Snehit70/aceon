@@ -142,6 +142,14 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           }
           break;
         }
+        case "c":
+        case "C": {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!player) return;
+          player.toggleSubtitles();
+          break;
+        }
         case "+":
         case "=": {
           e.preventDefault();
