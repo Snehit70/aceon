@@ -284,6 +284,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     useEffect(() => {
       let cancelled = false;
 
+      // Reset immediately on video switch so old captions never bleed into the new lecture.
+      setSubtitleCues([]);
+      setHasSubtitleTrack(false);
+      setSubtitlesEnabled(false);
+      setActiveSubtitle(null);
+
       const loadFromSource = async (source: string) => {
         const response = await fetch(source);
         if (!response.ok) throw new Error(`Subtitle fetch failed: ${response.status}`);

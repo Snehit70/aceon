@@ -21,6 +21,8 @@ if (!inputPath) {
   process.exit(1);
 }
 const skipDuration = process.argv.includes("--skip-duration");
+const outFlagIndex = process.argv.indexOf("--out");
+const explicitOutPath = outFlagIndex >= 0 ? process.argv[outFlagIndex + 1] : null;
 
 type Level = "foundation" | "diploma" | "degree";
 type Video = {
@@ -221,7 +223,14 @@ async function run() {
   };
 
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const outPath = `/home/snehit/Downloads/aceon-seek-course-import-ready-${payload.code.toLowerCase()}-${stamp}.json`;
+  const defaultOutPath = path.resolve(
+    process.cwd(),
+    "data",
+    "imports",
+    `aceon-seek-course-import-ready-${payload.code.toLowerCase()}-${stamp}.json`,
+  );
+  const outPath = explicitOutPath ? path.resolve(explicitOutPath) : defaultOutPath;
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(payload, null, 2));
   console.log(`Saved import-ready payload: ${outPath}`);
 
