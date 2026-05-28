@@ -464,6 +464,15 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       }
     }, []);
 
+    useEffect(() => {
+      // Ensure playback-error overlays from the previous lecture do not persist
+      // when the user navigates to a different video.
+      clearPlayAttemptTimeout();
+      setShowPlaybackHelp(false);
+      setPlayerErrorCode(null);
+      setShowBrowserFixes(false);
+    }, [videoId, clearPlayAttemptTimeout]);
+
     const beginPlayAttemptCheck = useCallback(() => {
       clearPlayAttemptTimeout();
       setShowPlaybackHelp(false);
