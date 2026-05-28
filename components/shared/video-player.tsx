@@ -284,16 +284,29 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     useEffect(() => {
       let cancelled = false;
 
+      const loadFromSource = async (source: string) => {
+        const response = await fetch(source);
+        if (!response.ok) throw new Error(`Subtitle fetch failed: ${response.status}`);
+        return response.text();
+      };
+
       const loadSubtitles = async () => {
-        const subtitleSource =
-          transcriptUrl && transcriptUrl.trim().length > 0
-            ? transcriptUrl
-            : `/api/subtitles?youtubeId=${encodeURIComponent(videoId)}`;
+        const fallbackSource = `/api/subtitles?youtubeId=${encodeURIComponent(videoId)}`;
+        const hasStoredTranscriptUrl = Boolean(transcriptUrl && transcriptUrl.trim().length > 0);
 
         try {
-          const response = await fetch(subtitleSource);
-          if (!response.ok) throw new Error(`Subtitle fetch failed: ${response.status}`);
-          const text = await response.text();
+          let text: string;
+          if (hasStoredTranscriptUrl) {
+            try {
+              text = await loadFromSource(transcriptUrl!);
+            } catch (storedUrlError) {
+              console.warn("Stored transcript URL failed, falling back to subtitle API", storedUrlError);
+              text = await loadFromSource(fallbackSource);
+            }
+          } else {
+            text = await loadFromSource(fallbackSource);
+          }
+
           if (cancelled) return;
           const parsed = parseVttContent(text);
           setSubtitleCues(parsed);

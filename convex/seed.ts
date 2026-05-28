@@ -85,8 +85,7 @@ const requireSeedAuth = async (
   }
 };
 
-const videoIdentityKey = (video: { youtubeId: string; order: number }) =>
-  `${video.youtubeId}::${video.order}`;
+const videoIdentityKey = (video: { youtubeId: string }) => video.youtubeId;
 
 const deleteProgressAndNotesForVideo = async (ctx: any, videoId: any) => {
   const notesRows = (await ctx.db.query("videoNotes").collect()).filter(
