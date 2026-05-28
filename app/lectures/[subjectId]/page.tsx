@@ -90,6 +90,13 @@ function LecturePlayerPageContent() {
   // Toggle shortcuts help with ?
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target instanceof HTMLElement && e.target.isContentEditable)
+      ) {
+        return;
+      }
       if (e.key === "?") {
         e.preventDefault();
         setShowShortcutsHelp((prev) => !prev);
