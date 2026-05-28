@@ -141,6 +141,7 @@ export default function MobileLecturePage() {
           ref={playerRef}
           videoId={currentVideo.youtubeId}
           title={currentVideo.title}
+          transcriptUrl={currentVideo.transcriptUrl}
           initialPosition={currentProgress?.lastPosition ?? 0}
           onProgressUpdate={progress.handleProgressUpdate}
           onPause={progress.handlePause}

@@ -70,10 +70,85 @@ export interface VideoPlayerRef {
 interface VideoPlayerProps {
   videoId: string;
   title: string;
+  transcriptUrl?: string;
   onEnded?: () => void;
   onPause?: (currentTime: number) => void;
   onProgressUpdate?: (progress: { played: number; playedSeconds: number }) => void;
   initialPosition?: number;
+}
+
+interface SubtitleCue {
+  start: number;
+  end: number;
+  text: string;
+}
+
+function parseVttTimestamp(raw: string): number {
+  const value = raw.trim().replace(",", ".");
+  const parts = value.split(":");
+  if (parts.length < 2 || parts.length > 3) return Number.NaN;
+  const [hh, mm, ss] =
+    parts.length === 3
+      ? [parts[0], parts[1], parts[2]]
+      : ["0", parts[0], parts[1]];
+  const hours = Number(hh);
+  const minutes = Number(mm);
+  const seconds = Number(ss);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes) || !Number.isFinite(seconds)) {
+    return Number.NaN;
+  }
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+function parseVttContent(content: string): SubtitleCue[] {
+  const lines = content.replace(/\r/g, "").split("\n");
+  const cues: SubtitleCue[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i]?.trim() ?? "";
+    if (!line) {
+      i += 1;
+      continue;
+    }
+    if (line.startsWith("WEBVTT") || line.startsWith("NOTE")) {
+      i += 1;
+      continue;
+    }
+
+    let timingLine = line;
+    if (!timingLine.includes("-->") && i + 1 < lines.length) {
+      timingLine = lines[i + 1].trim();
+      i += 1;
+    }
+    if (!timingLine.includes("-->")) {
+      i += 1;
+      continue;
+    }
+
+    const [startRaw, rightSide] = timingLine.split("-->");
+    const endRaw = rightSide?.trim().split(/\s+/)[0] ?? "";
+    const start = parseVttTimestamp(startRaw);
+    const end = parseVttTimestamp(endRaw);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+      i += 1;
+      continue;
+    }
+
+    i += 1;
+    const textLines: string[] = [];
+    while (i < lines.length && lines[i].trim() !== "") {
+      textLines.push(lines[i].trim());
+      i += 1;
+    }
+
+    const text = textLines.join("\n").replace(/<[^>]+>/g, "").trim();
+    if (text) {
+      cues.push({ start, end, text });
+    }
+  }
+
+  return cues;
 }
 
 // Track if API script is loaded
@@ -145,7 +220,7 @@ function loadYouTubeAPI(): Promise<void> {
  * @returns A responsive div containing the YouTube IFrame.
  */
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
-  ({ videoId, onEnded, onPause, onProgressUpdate, initialPosition = 0 }, ref) => {
+  ({ videoId, transcriptUrl, onEnded, onPause, onProgressUpdate, initialPosition = 0 }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const iframeContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<YTPlayer | null>(null);
@@ -164,6 +239,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [playerErrorCode, setPlayerErrorCode] = useState<number | null>(null);
     const [reloadNonce, setReloadNonce] = useState(0);
     const [showBrowserFixes, setShowBrowserFixes] = useState(false);
+    const [subtitleCues, setSubtitleCues] = useState<SubtitleCue[]>([]);
+    const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
+    const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
     const pendingSeekRef = useRef<number | null>(null);
     const pendingPlaybackRateRef = useRef<number | null>(null);
     const playIndicatorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -192,6 +270,55 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     useEffect(() => {
       onProgressUpdateRef.current = onProgressUpdate;
     }, [onProgressUpdate]);
+
+    useEffect(() => {
+      let cancelled = false;
+
+      const loadSubtitles = async () => {
+        const subtitleSource =
+          transcriptUrl && transcriptUrl.trim().length > 0
+            ? transcriptUrl
+            : `/api/subtitles?youtubeId=${encodeURIComponent(videoId)}`;
+
+        try {
+          const response = await fetch(subtitleSource);
+          if (!response.ok) throw new Error(`Subtitle fetch failed: ${response.status}`);
+          const text = await response.text();
+          if (cancelled) return;
+          const parsed = parseVttContent(text);
+          setSubtitleCues(parsed);
+          setSubtitlesEnabled(parsed.length > 0);
+          setActiveSubtitle(null);
+        } catch (error) {
+          if (!cancelled) {
+            console.warn("Failed to load subtitles", error);
+            setSubtitleCues([]);
+            setSubtitlesEnabled(false);
+            setActiveSubtitle(null);
+          }
+        }
+      };
+
+      loadSubtitles();
+      return () => {
+        cancelled = true;
+      };
+    }, [transcriptUrl, videoId]);
+
+    useEffect(() => {
+      if (!subtitlesEnabled || subtitleCues.length === 0 || !isReady) {
+        setActiveSubtitle(null);
+        return;
+      }
+
+      const interval = window.setInterval(() => {
+        const currentTime = playerRef.current?.getCurrentTime() ?? 0;
+        const cue = subtitleCues.find((item) => currentTime >= item.start && currentTime <= item.end);
+        setActiveSubtitle(cue?.text ?? null);
+      }, 200);
+
+      return () => window.clearInterval(interval);
+    }, [isReady, subtitleCues, subtitlesEnabled]);
 
     // Create the imperative handle object
     const imperativeHandle: VideoPlayerRef = {
@@ -514,14 +641,17 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             />
         
             {/* Custom player controls */}
-            <PlayerControls
-              playerRef={internalRef}
-              containerRef={containerRef}
-              isPlaying={isPlaying}
-              isReady={isReady}
-              onPlayPause={handleOverlayClick}
-              videoId={videoId}
-            />
+        <PlayerControls
+          playerRef={internalRef}
+          containerRef={containerRef}
+          isPlaying={isPlaying}
+          isReady={isReady}
+          onPlayPause={handleOverlayClick}
+          videoId={videoId}
+          subtitlesAvailable={Boolean(transcriptUrl)}
+          subtitlesEnabled={subtitlesEnabled}
+          onToggleSubtitles={() => setSubtitlesEnabled((prev) => !prev)}
+        />
           </>
         )}
         
@@ -533,6 +663,14 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         />
         
         <LandscapeHint isReady={isReady} />
+
+        {subtitlesEnabled && activeSubtitle && (
+          <div className="pointer-events-none absolute inset-x-4 bottom-20 z-40 flex justify-center sm:bottom-24">
+            <div className="max-w-[90%] border border-white/30 bg-black/75 px-3 py-2 text-center text-sm font-semibold leading-relaxed text-white shadow-[0_0_0_1px_rgba(0,0,0,0.5)] backdrop-blur-sm sm:text-base">
+              {activeSubtitle}
+            </div>
+          </div>
+        )}
 
         {showPlaybackHelp && (
           <div className="absolute inset-0 z-60 flex items-center justify-center bg-black/85 p-4">

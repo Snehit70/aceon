@@ -15,6 +15,7 @@ type Week = {
     title: string;
     youtubeId: string;
     duration: number;
+    transcriptUrl?: string;
     order: number;
   }>;
 };
@@ -24,6 +25,7 @@ type VideoWithWeek = {
   title: string;
   youtubeId: string;
   duration: number;
+  transcriptUrl?: string;
   order: number;
   weekTitle: string;
   weekOrder: number;

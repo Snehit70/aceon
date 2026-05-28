@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
-import { Play, Pause, Maximize, Minimize } from "lucide-react";
+import { Play, Pause, Maximize, Minimize, Captions } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { VideoPlayerRef } from "../video-player";
 import ProgressBar from "./progress-bar";
@@ -16,6 +16,9 @@ interface PlayerControlsProps {
   isReady: boolean;
   onPlayPause: () => void;
   videoId: string;
+  subtitlesAvailable?: boolean;
+  subtitlesEnabled?: boolean;
+  onToggleSubtitles?: () => void;
 }
 
 /**
@@ -47,6 +50,9 @@ export default function PlayerControls({
   isReady,
   onPlayPause,
   videoId,
+  subtitlesAvailable = false,
+  subtitlesEnabled = false,
+  onToggleSubtitles,
 }: PlayerControlsProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -286,6 +292,22 @@ export default function PlayerControls({
             rate={playbackRate}
             onRateChange={handlePlaybackRateChange}
           />
+
+          {/* Subtitles toggle */}
+          {subtitlesAvailable && (
+            <button
+              type="button"
+              onClick={onToggleSubtitles}
+              className={cn(
+                "min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center rounded-sm transition-colors",
+                subtitlesEnabled ? "bg-primary/20 text-primary" : "hover:bg-white/10 text-white"
+              )}
+              aria-label={subtitlesEnabled ? "Turn subtitles off" : "Turn subtitles on"}
+              title={subtitlesEnabled ? "Subtitles on" : "Subtitles off"}
+            >
+              <Captions className="w-5 h-5" />
+            </button>
+          )}
 
           {/* View on YouTube */}
           <a

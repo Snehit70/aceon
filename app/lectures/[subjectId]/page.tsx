@@ -296,6 +296,7 @@ function LecturePlayerPageContent() {
                   ref={playerRef}
                   videoId={navigation.currentVideo.youtubeId}
                   title={navigation.currentVideo.title}
+                  transcriptUrl={navigation.currentVideo.transcriptUrl}
                   initialPosition={progressData?.find(p => p.videoId === navigation.activeVideoId)?.lastPosition ?? 0}
                   onProgressUpdate={progressWithVideo.handleProgressUpdate}
                   onPause={progressWithVideo.handlePause}
