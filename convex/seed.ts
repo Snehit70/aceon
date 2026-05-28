@@ -63,6 +63,19 @@ type ImportCourse = {
   weeks: ImportWeek[];
 };
 
+const requireSeedAuth = async (
+  ctx: { auth: { getUserIdentity: () => Promise<unknown> } },
+  importToken?: string,
+) => {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity) return;
+
+  const expectedToken = process.env.CONVEX_SEED_IMPORT_TOKEN;
+  if (!expectedToken || importToken !== expectedToken) {
+    throw new Error("Unauthorized");
+  }
+};
+
 const upsertCourseData = async (ctx: any, course: ImportCourse) => {
   let courseId = null;
   const existingCourse = await ctx.db
@@ -180,8 +193,11 @@ export const syncCourseData = mutation({
 export const replaceCourseData = mutation({
   args: {
     course: courseSchema,
+    importToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireSeedAuth(ctx, args.importToken);
+
     const existingCourse = await ctx.db
       .query("courses")
       .withIndex("by_code", (q: any) => q.eq("code", args.course.code))
@@ -204,11 +220,20 @@ export const replaceCourseData = mutation({
       }
     }
 
-    const courseId = await ctx.db.insert("courses", {
-      code: args.course.code,
-      title: args.course.title,
-      level: args.course.level,
-    });
+    const courseId = existingCourse
+      ? existingCourse._id
+      : await ctx.db.insert("courses", {
+          code: args.course.code,
+          title: args.course.title,
+          level: args.course.level,
+        });
+
+    if (existingCourse) {
+      await ctx.db.patch(courseId, {
+        title: args.course.title,
+        level: args.course.level,
+      });
+    }
 
     let lectureCount = 0;
     let totalDurationSeconds = 0;

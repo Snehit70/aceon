@@ -226,7 +226,10 @@ async function run() {
   console.log(`Saved import-ready payload: ${outPath}`);
 
   const client = new ConvexHttpClient(convexUrl);
-  const result = await client.mutation(api.seed.replaceCourseData, { course: payload });
+  const result = await client.mutation(api.seed.replaceCourseData, {
+    course: payload,
+    importToken: process.env.CONVEX_SEED_IMPORT_TOKEN,
+  });
   console.log("Replace import complete:", result);
 }
 

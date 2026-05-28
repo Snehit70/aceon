@@ -36,6 +36,14 @@ function findRateIndex(rate: number): number {
   return closestIndex;
 }
 
+function isTypingTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    (target instanceof HTMLElement && target.isContentEditable)
+  );
+}
+
 export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: UseVideoShortcutsOptions) {
   const spaceHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const spaceIsDownRef = useRef(false);
@@ -50,11 +58,7 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!enabled) return;
 
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        (e.target instanceof HTMLElement && e.target.isContentEditable)
-      ) {
+      if (isTypingTarget(e.target)) {
         return;
       }
 
@@ -192,6 +196,7 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
     const handleKeyUp = (e: KeyboardEvent) => {
       if (!enabled) return;
       if (e.key !== " ") return;
+      if (isTypingTarget(e.target)) return;
 
       const player = playerRefCopy.current;
       if (!player) return;
