@@ -55,11 +55,18 @@ async function isKnownVideoId(youtubeId: string): Promise<boolean> {
   if (cachedExpiry && cachedExpiry > Date.now()) return true;
   if (!convexClient) return false;
 
-  const exists = await convexClient.query((api as any).courses.videoExistsByYoutubeId, { youtubeId });
-  if (exists) {
-    allowedVideoCache.set(youtubeId, Date.now() + ALLOWED_VIDEO_CACHE_TTL_MS);
+  try {
+    const exists = await convexClient.query((api as any).courses.videoExistsByYoutubeId, { youtubeId });
+    if (exists) {
+      allowedVideoCache.set(youtubeId, Date.now() + ALLOWED_VIDEO_CACHE_TTL_MS);
+    }
+    return Boolean(exists);
+  } catch (error) {
+    // Failsafe: if Convex lookup fails, don't hard-fail subtitle playback for
+    // authenticated users; rely on strict youtubeId validation + subtitle cache.
+    console.error("Subtitle known-video lookup failed; bypassing guard for this request", error);
+    return true;
   }
-  return Boolean(exists);
 }
 
 type ExecSpec = { file: string; argsPrefix?: string[] };
