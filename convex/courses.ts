@@ -136,6 +136,17 @@ export const getVideos = query({
   },
 });
 
+export const videoExistsByYoutubeId = query({
+  args: { youtubeId: v.string() },
+  handler: async (ctx, args) => {
+    const video = await ctx.db
+      .query("videos")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+    return Boolean(video);
+  },
+});
+
 /**
  * Retrieves the full content structure of a course.
  * Includes all weeks and their associated videos.

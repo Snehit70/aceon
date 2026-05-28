@@ -4,14 +4,22 @@ import { promisify } from "util";
 import { mkdtemp, readdir, readFile, rm } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
+import { auth } from "@clerk/nextjs/server";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 
 const execFileAsync = promisify(execFile);
 const subtitleCache = new Map<string, string>();
 const CACHE_TTL_MS = 1000 * 60 * 60 * 6;
 const cacheExpiry = new Map<string, number>();
+const allowedVideoCache = new Map<string, number>();
+const ALLOWED_VIDEO_CACHE_TTL_MS = 1000 * 60 * 30;
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convexClient = CONVEX_URL ? new ConvexHttpClient(CONVEX_URL) : null;
 
 function getCachedSubtitle(youtubeId: string): string | null {
   const expiry = cacheExpiry.get(youtubeId);
@@ -26,6 +34,18 @@ function getCachedSubtitle(youtubeId: string): string | null {
 function setCachedSubtitle(youtubeId: string, content: string) {
   subtitleCache.set(youtubeId, content);
   cacheExpiry.set(youtubeId, Date.now() + CACHE_TTL_MS);
+}
+
+async function isKnownVideoId(youtubeId: string): Promise<boolean> {
+  const cachedExpiry = allowedVideoCache.get(youtubeId);
+  if (cachedExpiry && cachedExpiry > Date.now()) return true;
+  if (!convexClient) return false;
+
+  const exists = await convexClient.query((api as any).courses.videoExistsByYoutubeId, { youtubeId });
+  if (exists) {
+    allowedVideoCache.set(youtubeId, Date.now() + ALLOWED_VIDEO_CACHE_TTL_MS);
+  }
+  return Boolean(exists);
 }
 
 type ExecSpec = { file: string; argsPrefix?: string[] };
@@ -92,9 +112,22 @@ async function fetchSubtitleViaYtDlp(youtubeId: string): Promise<string | null> 
 }
 
 export async function GET(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const youtubeId = req.nextUrl.searchParams.get("youtubeId")?.trim();
   if (!youtubeId) {
     return NextResponse.json({ error: "youtubeId is required" }, { status: 400 });
+  }
+  if (!/^[A-Za-z0-9_-]{11}$/.test(youtubeId)) {
+    return NextResponse.json({ error: "Invalid youtubeId" }, { status: 400 });
+  }
+
+  const knownVideo = await isKnownVideoId(youtubeId);
+  if (!knownVideo) {
+    return NextResponse.json({ error: "Unknown videoId" }, { status: 404 });
   }
 
   const cached = getCachedSubtitle(youtubeId);
