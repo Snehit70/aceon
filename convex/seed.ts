@@ -64,12 +64,9 @@ type ImportCourse = {
 };
 
 const requireSeedAuth = async (
-  ctx: { auth: { getUserIdentity: () => Promise<unknown> } },
+  _ctx: { auth: { getUserIdentity: () => Promise<unknown> } },
   importToken?: string,
 ) => {
-  const identity = await ctx.auth.getUserIdentity();
-  if (identity) return;
-
   const expectedToken = process.env.CONVEX_SEED_IMPORT_TOKEN;
   if (!expectedToken || importToken !== expectedToken) {
     throw new Error("Unauthorized");
@@ -184,8 +181,10 @@ const upsertCourseData = async (ctx: any, course: ImportCourse) => {
 export const syncCourseData = mutation({
   args: {
     course: courseSchema,
+    importToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireSeedAuth(ctx, args.importToken);
     return upsertCourseData(ctx, args.course);
   },
 });
@@ -275,8 +274,11 @@ export const dedupeCourseById = mutation({
     keepCourseId: v.id("courses"),
     removeCourseId: v.id("courses"),
     newTitle: v.optional(v.string()),
+    importToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireSeedAuth(ctx, args.importToken);
+
     if (args.keepCourseId === args.removeCourseId) {
       throw new Error("keepCourseId and removeCourseId must be different");
     }

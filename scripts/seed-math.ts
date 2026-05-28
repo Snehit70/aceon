@@ -119,19 +119,19 @@ async function seedMath() {
 
   // 2. Payload for Mutation
   const coursePayload = {
-    courseId: code, // e.g. ns_25t1_ma1001
     code: 'MA1001', // Standard code
-    term: '25t1',
     title: course.title,
-    level: 'foundation',
+    level: 'foundation' as const,
     weeks: weeks
   };
 
   // 3. Send to Convex
   try {
       // Using the same mutation as the main seed script
-      // @ts-expect-error - types might be inferred differently
-      await client.mutation(api.seed.syncCourseData, { course: coursePayload });
+      await client.mutation(api.seed.syncCourseData, {
+        course: coursePayload,
+        importToken: process.env.CONVEX_SEED_IMPORT_TOKEN,
+      });
       console.log(`✅ Successfully seeded ${coursePayload.code}`);
   } catch (err) {
       console.error(`❌ Seed failed:`, err);

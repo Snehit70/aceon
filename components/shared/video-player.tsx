@@ -406,7 +406,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     };
 
     // Expose to forwarded ref
-    useImperativeHandle(ref, () => imperativeHandle, [isReady]);
+    useImperativeHandle(ref, () => imperativeHandle, [isReady, hasSubtitleTrack]);
     
     // Sync internal ref in effect (not during render)
     useEffect(() => {
