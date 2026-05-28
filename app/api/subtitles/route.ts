@@ -79,6 +79,21 @@ async function fetchSubtitleViaYtDlp(youtubeId: string): Promise<string | null> 
       url,
     ];
 
+    const isUnavailableError = (candidate: ExecSpec, error: unknown) => {
+      const errno = (error as NodeJS.ErrnoException).code;
+      if (errno === "ENOENT") return true;
+
+      // python3 exists but the yt_dlp module is not installed in runtime.
+      if (candidate.file === "python3") {
+        const stderr = String((error as { stderr?: unknown }).stderr ?? "");
+        const stdout = String((error as { stdout?: unknown }).stdout ?? "");
+        const combined = `${stderr}\n${stdout}`;
+        if (combined.includes("No module named yt_dlp")) return true;
+      }
+
+      return false;
+    };
+
     let lastError: unknown = null;
     let attempted = 0;
     for (const candidate of getYtDlpCandidates()) {
@@ -89,8 +104,7 @@ async function fetchSubtitleViaYtDlp(youtubeId: string): Promise<string | null> 
         break;
       } catch (error: unknown) {
         lastError = error;
-        const code = (error as NodeJS.ErrnoException).code;
-        if (code !== "ENOENT") {
+        if (!isUnavailableError(candidate, error)) {
           throw error;
         }
       }
