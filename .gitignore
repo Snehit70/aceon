@@ -68,3 +68,6 @@ dev.log
 
 # Sisyphus work tracking
 .sisyphus/
+
+# Local import/transcript artifacts
+data/

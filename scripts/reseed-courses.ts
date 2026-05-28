@@ -79,7 +79,10 @@ async function reseed() {
     console.log(`  Videos: ${weeks.reduce((s: number, w: { videos: unknown[] }) => s + w.videos.length, 0)}`);
 
     try {
-      const result = await client.mutation(api.seed.syncCourseData, { course: payload });
+      const result = await client.mutation(api.seed.syncCourseData, {
+        course: payload,
+        importToken: process.env.CONVEX_SEED_IMPORT_TOKEN,
+      });
       console.log(`✅ Synced: ${result.code}\n`);
     } catch (error) {
       console.error(`❌ Failed to sync ${code}:`, error);

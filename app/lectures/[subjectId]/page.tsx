@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useParams, useRouter, useSearchParams, notFound } from "next/navigation";
+import { useParams, useSearchParams, notFound } from "next/navigation";
 import { useState, useRef, useCallback, Suspense, useEffect } from "react";
 import { Menu, ArrowLeft } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -22,6 +22,7 @@ import { LectureSidebar } from "@/components/lectures/lecture-sidebar";
 import { AutoplayOverlay } from "@/components/lectures/autoplay-overlay";
 import { LectureHeader } from "@/components/lectures/lecture-header";
 import LecturePlayerSkeleton from "@/components/lectures/lecture-player-skeleton";
+import { VideoNotesPanel } from "@/components/lectures/video-notes-panel";
 
 import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useAutoplay } from "@/hooks/use-autoplay";
@@ -61,7 +62,6 @@ import useMediaQuery from "@/hooks/use-media-query";
  */
 function LecturePlayerPageContent() {
   const { user } = useUser();
-  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const subjectId = params.subjectId as Id<"courses">;
@@ -90,6 +90,13 @@ function LecturePlayerPageContent() {
   // Toggle shortcuts help with ?
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target instanceof HTMLElement && e.target.isContentEditable)
+      ) {
+        return;
+      }
       if (e.key === "?") {
         e.preventDefault();
         setShowShortcutsHelp((prev) => !prev);
@@ -296,6 +303,7 @@ function LecturePlayerPageContent() {
                   ref={playerRef}
                   videoId={navigation.currentVideo.youtubeId}
                   title={navigation.currentVideo.title}
+                  transcriptUrl={navigation.currentVideo.transcriptUrl}
                   initialPosition={progressData?.find(p => p.videoId === navigation.activeVideoId)?.lastPosition ?? 0}
                   onProgressUpdate={progressWithVideo.handleProgressUpdate}
                   onPause={progressWithVideo.handlePause}
@@ -323,6 +331,11 @@ function LecturePlayerPageContent() {
                 onMarkComplete={handleMarkComplete}
               />
 
+              <VideoNotesPanel
+                userId={user?.id}
+                videoId={navigation.activeVideoId}
+                playerRef={playerRef}
+              />
 
             </div>
           ) : (

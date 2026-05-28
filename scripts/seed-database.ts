@@ -28,7 +28,7 @@ const slugify = (text: string) => {
 };
 
 // Helper to determine level
-const getLevel = (code: string) => {
+const getLevel = (code: string): "foundation" | "diploma" | "degree" => {
   const numberPart = code.match(/\d+/)?.[0];
   if (!numberPart) return "foundation";
 
@@ -97,8 +97,10 @@ async function seed() {
     };
 
     try {
-      // @ts-expect-error - The generated types might be slightly off for the script environment
-      const result = await client.mutation(api.seed.syncCourseData, { course: coursePayload });
+      const result = await client.mutation(api.seed.syncCourseData, {
+        course: coursePayload,
+        importToken: process.env.CONVEX_SEED_IMPORT_TOKEN,
+      });
       console.log(`✅ Synced ${code}: ${result.code}`);
     } catch (error) {
       console.error(`❌ Failed to sync ${code}:`, error);
