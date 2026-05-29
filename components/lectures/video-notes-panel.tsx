@@ -20,7 +20,8 @@ interface VideoNotesPanelProps {
   defaultOpen?: boolean;
 }
 
-const MAX_NOTE_LENGTH = 300;
+const MAX_NOTE_LENGTH = 1000;
+const EXPAND_TRIGGER_LENGTH = 120;
 
 function formatTimestamp(seconds: number) {
   const total = Math.max(0, Math.floor(seconds));
@@ -47,6 +48,7 @@ export function VideoNotesPanel({
   const [editingText, setEditingText] = useState("");
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [displayTimestamp, setDisplayTimestamp] = useState(0);
+  const [isComposerExpanded, setIsComposerExpanded] = useState(false);
   const quickInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const notes = useQuery(
@@ -91,6 +93,7 @@ export function VideoNotesPanel({
         content: text,
       });
       setNoteInput("");
+      setIsComposerExpanded(false);
       quickInputRef.current?.focus();
       toast.success("Note added");
     } catch (error) {
@@ -198,33 +201,74 @@ export function VideoNotesPanel({
             <Textarea
               ref={quickInputRef}
               value={noteInput}
-              onChange={(e) => setNoteInput(e.target.value)}
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                setNoteInput(nextValue);
+                if (!isComposerExpanded && nextValue.length >= EXPAND_TRIGGER_LENGTH) {
+                  setIsComposerExpanded(true);
+                }
+              }}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (!isComposerExpanded && e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   if (!isSubmitting) void handleAddNote();
                 }
+                if (
+                  isComposerExpanded &&
+                  e.key === "Enter" &&
+                  (e.metaKey || e.ctrlKey) &&
+                  !e.shiftKey
+                ) {
+                  e.preventDefault();
+                  if (!isSubmitting) void handleAddNote();
+                }
+                if (!isComposerExpanded && e.key === "Enter" && e.shiftKey) {
+                  setIsComposerExpanded(true);
+                }
               }}
               maxLength={MAX_NOTE_LENGTH}
-              placeholder={`Press Enter to capture quickly at ${formatTimestamp(displayTimestamp)}...`}
-              rows={1}
-              className="min-h-[44px] border-white/15 bg-black/40 text-sm text-white placeholder:text-white/35"
+              placeholder={
+                isComposerExpanded
+                  ? `Write a detailed note at ${formatTimestamp(displayTimestamp)}...`
+                  : `Press Enter to capture quickly at ${formatTimestamp(displayTimestamp)}...`
+              }
+              rows={isComposerExpanded ? 5 : 1}
+              className={cn(
+                "border-white/15 bg-black/40 text-sm text-white placeholder:text-white/35",
+                isComposerExpanded ? "min-h-[140px]" : "min-h-[44px]"
+              )}
             />
             <div className="flex items-center justify-between gap-2">
               <p className="font-mono text-[10px] uppercase tracking-wider text-white/50">
                 {noteInput.trim().length}/{MAX_NOTE_LENGTH}
+                {isComposerExpanded ? " • Ctrl/Cmd+Enter to save" : " • Enter to save"}
               </p>
-              <Button
-                onClick={handleAddNote}
-                disabled={!canCreate || isSubmitting}
-                className={cn(
-                  "min-h-[40px] gap-1.5 font-bold uppercase tracking-wider",
-                  compact ? "text-[11px] px-3" : "text-xs"
+              <div className="flex items-center gap-2">
+                {isComposerExpanded && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setNoteInput("");
+                      setIsComposerExpanded(false);
+                      quickInputRef.current?.focus();
+                    }}
+                    className="min-h-[40px] border border-white/10 text-[11px] uppercase tracking-wider"
+                  >
+                    Cancel
+                  </Button>
                 )}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Add at {formatTimestamp(displayTimestamp)}
-              </Button>
+                <Button
+                  onClick={handleAddNote}
+                  disabled={!canCreate || isSubmitting}
+                  className={cn(
+                    "min-h-[40px] gap-1.5 font-bold uppercase tracking-wider",
+                    compact ? "text-[11px] px-3" : "text-xs"
+                  )}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add at {formatTimestamp(displayTimestamp)}
+                </Button>
+              </div>
             </div>
           </div>
 
