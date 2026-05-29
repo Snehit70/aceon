@@ -189,7 +189,7 @@ export default function MobileCoursePage() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[center_top] opacity-60 contrast-125"
+            className="object-cover object-[center_top] opacity-45 contrast-125"
           />
           <Image
             src="/images/bg-denji-power.jpg"
@@ -197,7 +197,7 @@ export default function MobileCoursePage() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[center_top] opacity-60 grayscale contrast-125 transition-all duration-700"
+            className="object-cover object-[center_top] opacity-85 grayscale contrast-125 transition-all duration-700"
             style={{ clipPath: `inset(0 ${Math.min(100, Math.max(0, percent))}% 0 0)` }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/40 to-black" />
