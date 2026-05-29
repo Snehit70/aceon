@@ -117,6 +117,7 @@ export default function MobileCoursePage() {
     ).length;
     return { total, done, complete: total > 0 && done === total };
   });
+  const progressLoaded = progressData !== undefined;
   const nextWeekIdx = weekStats.findIndex((w) => !w.complete && w.total > 0);
   const allComplete = nextWeekIdx === -1;
   const isCourseComplete = totalVideos > 0 && completed === totalVideos;
@@ -224,12 +225,12 @@ export default function MobileCoursePage() {
               <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-white/65">
                 {totalVideos} lectures · {durationLabel}
               </p>
-              {user && totalVideos > 0 && (
+              {user && totalVideos > 0 && progressLoaded && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setConfirmAction({ type: "course", markAsComplete: !isCourseComplete })}
-                  className="mt-2 h-7 border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
+                  className="mt-2 min-h-[44px] border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
                 >
                   <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
                   {isCourseComplete ? "Mark Course Incomplete" : "Mark Course Done"}
@@ -324,7 +325,7 @@ export default function MobileCoursePage() {
                     className={`h-4 w-4 shrink-0 ${isNext ? "text-primary" : "text-white/30"}`}
                   />
                 </Link>
-                {user && stats.total > 0 && (
+                {user && stats.total > 0 && progressLoaded && (
                   <div className="mt-1.5 flex justify-end">
                     <Button
                       size="sm"
@@ -337,7 +338,7 @@ export default function MobileCoursePage() {
                           markAsComplete: !stats.complete,
                         })
                       }
-                      className="h-7 border border-white/10 px-2 text-[10px] font-mono uppercase tracking-wider text-white/70 hover:bg-white/10 hover:text-white"
+                      className="min-h-[44px] border border-white/10 px-2 text-[10px] font-mono uppercase tracking-wider text-white/70 hover:bg-white/10 hover:text-white"
                     >
                       <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
                       {stats.complete ? "Mark Incomplete" : "Mark Week Done"}
