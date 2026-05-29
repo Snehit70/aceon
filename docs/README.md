@@ -7,6 +7,8 @@ Updated: 2026-05-21
 - `docs/ARCHITECTURE.md`: implementation architecture and runtime flow
 - `docs/SYSTEM_DESIGN.md`: system-level design, reliability, security, CI/CD posture
 - `docs/PERFORMANCE.md`: performance hotspots, baselines, and optimization plan
+- `docs/COMPLETION_AND_NOTES_BEHAVIOR.md`: completion toggle semantics, notes limits, confirmation UX, and mobile header reveal logic
+- `docs/TEST_PLAN_COMPLETION_AND_NOTES.md`: manual verification checklist for completion and notes flows
 - `PRODUCT.md`: product intent, user value, roadmap priorities
 - `DESIGN.md`: design implementation guide
 - `docs/DESIGN.yaml`: machine-readable visual design source of truth

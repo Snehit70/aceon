@@ -164,11 +164,12 @@ function LecturePlayerPageContent() {
   const handleMarkWeekComplete = async (weekId: string) => {
     if (!user) return;
     try {
-      await markWeekComplete({
+      const result = await markWeekComplete({
         clerkId: user.id,
         courseId: subjectId,
         weekId: weekId as Id<"weeks">,
       });
+      toast.success(result.completed ? "Week marked complete" : "Week marked incomplete");
     } catch (error) {
       console.error("Failed to mark week complete", error);
       toast.error("Failed to mark week complete", {
@@ -180,10 +181,11 @@ function LecturePlayerPageContent() {
   const handleMarkCourseComplete = async () => {
     if (!user) return;
     try {
-      await markCourseComplete({
+      const result = await markCourseComplete({
         clerkId: user.id,
         courseId: subjectId,
       });
+      toast.success(result.completed ? "Course marked complete" : "Course marked incomplete");
     } catch (error) {
       console.error("Failed to mark course complete", error);
       toast.error("Failed to mark course complete", {

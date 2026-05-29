@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-const MAX_NOTE_LENGTH = 1000;
+const MAX_NOTE_LENGTH = 4000;
 
 function normalizeTimestamp(timestamp: number) {
   return Math.max(0, Math.floor(timestamp));
