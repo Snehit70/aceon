@@ -3,12 +3,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useQuery } from "convex/react";
+import { useState } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
-import { Check, ChevronLeft, Play } from "lucide-react";
+import { Check, CheckCircle2, ChevronLeft, Play } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { MobileWeekSkeleton } from "@/components/mobile/mobile-skeletons";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function CircularProgress({ percent, size = 64 }: { percent: number; size?: number }) {
   const stroke = 5;
@@ -53,11 +66,13 @@ function CircularProgress({ percent, size = 64 }: { percent: number; size?: numb
 export default function MobileWeekPage() {
   const { user } = useUser();
   const params = useParams();
+  const [showConfirm, setShowConfirm] = useState(false);
   const subjectId = params.subjectId as Id<"courses">;
   const weekId = params.weekId as Id<"weeks">;
 
   const course = useQuery(api.courses.get, { id: subjectId });
   const content = useQuery(api.courses.getCourseContent, { courseId: subjectId });
+  const markWeekComplete = useMutation(api.progress.markWeekComplete);
   const progressData = useQuery(
     api.progress.getCourseProgress,
     user?.id ? { clerkId: user.id, courseId: subjectId } : "skip",
@@ -91,8 +106,44 @@ export default function MobileWeekPage() {
   );
   const allComplete = nextVideoIdx === -1 && week.videos.length > 0;
 
+  const handleWeekToggle = async () => {
+    if (!user) return;
+    try {
+      const result = await markWeekComplete({
+        clerkId: user.id,
+        courseId: subjectId,
+        weekId,
+      });
+      toast.success(result.completed ? "Week marked complete" : "Week marked incomplete");
+    } catch {
+      toast.error("Failed to update week completion");
+    } finally {
+      setShowConfirm(false);
+    }
+  };
+
   return (
     <div className="pb-6">
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent className="border border-white/15 bg-black text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-wide text-white">
+              {allComplete ? `Mark ${week.title} as incomplete?` : `Mark ${week.title} as complete?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              {allComplete
+                ? "This will unmark every lecture in this week."
+                : "This will mark every lecture in this week as done."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border border-white/20 bg-transparent text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-primary text-white hover:bg-primary/90" onClick={handleWeekToggle}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <section className="relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0">
           <Image
@@ -101,7 +152,16 @@ export default function MobileWeekPage() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[center_top] opacity-60 grayscale contrast-125"
+            className="object-cover object-[center_top] opacity-60 contrast-125"
+          />
+          <Image
+            src="/images/bg-denji-power.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[center_top] opacity-60 grayscale contrast-125 transition-all duration-700"
+            style={{ clipPath: `inset(0 ${Math.min(100, Math.max(0, percent))}% 0 0)` }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/40 to-black" />
           <div className="absolute inset-0 bg-[url('/images/noise.svg')] opacity-30 mix-blend-overlay" />
@@ -127,6 +187,17 @@ export default function MobileWeekPage() {
               <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-white/65">
                 {week.videos.length} lectures · {durationLabel}
               </p>
+              {user && week.videos.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowConfirm(true)}
+                  className="mt-2 h-7 border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
+                >
+                  <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+                  {allComplete ? "Mark Week Incomplete" : "Mark Week Done"}
+                </Button>
+              )}
             </div>
             <div className="shrink-0 text-center">
               <CircularProgress percent={percent} />

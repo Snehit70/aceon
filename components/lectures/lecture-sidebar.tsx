@@ -1,10 +1,21 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { CheckCircle2, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, cleanCourseTitle } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Doc } from "@/convex/_generated/dataModel";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export interface SidebarProps {
   courseTitle: string;
@@ -24,6 +35,10 @@ export interface SidebarProps {
   onMarkWeekComplete?: (weekId: string) => void;
   onMarkCourseComplete?: () => void;
 }
+
+type ConfirmAction =
+  | { type: "week"; weekId: string; weekTitle: string; markAsComplete: boolean }
+  | { type: "course"; markAsComplete: boolean };
 
 /**
  * LectureSidebar - Navigation sidebar for the lecture viewing experience.
@@ -66,6 +81,7 @@ export function LectureSidebar({
   onMarkWeekComplete, 
   onMarkCourseComplete 
 }: SidebarProps) {
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const activeWeekId = content.find(w => w.videos.some(v => v._id === currentVideoId))?._id;
   
   const getProgress = (videoId: string) => {
@@ -81,12 +97,60 @@ export function LectureSidebar({
   const completedVideos = progressData?.filter(p => p.completed).length || 0;
   const overallProgress = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
   const isCourseComplete = totalVideos > 0 && completedVideos === totalVideos;
+  const confirmTitle = useMemo(() => {
+    if (!confirmAction) return "";
+    if (confirmAction.type === "week") {
+      return confirmAction.markAsComplete
+        ? `Mark ${confirmAction.weekTitle} as complete?`
+        : `Mark ${confirmAction.weekTitle} as incomplete?`;
+    }
+    return confirmAction.markAsComplete
+      ? "Mark full course as complete?"
+      : "Mark full course as incomplete?";
+  }, [confirmAction]);
+  const confirmDescription = useMemo(() => {
+    if (!confirmAction) return "";
+    if (confirmAction.type === "week") {
+      return confirmAction.markAsComplete
+        ? "This will mark every lecture in this week as done."
+        : "This will unmark every lecture in this week.";
+    }
+    return confirmAction.markAsComplete
+      ? "This will mark every lecture in this course as done."
+      : "This will unmark every lecture in this course.";
+  }, [confirmAction]);
 
   return (
-    <div className="flex flex-col h-full relative overflow-hidden bg-black">
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-transparent pointer-events-none" />
-      
-      <div className="relative z-10 flex flex-col h-full">
+    <>
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
+        <AlertDialogContent className="border border-white/15 bg-black text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display uppercase tracking-wide text-white">{confirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">{confirmDescription}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border border-white/20 bg-transparent text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-primary text-white hover:bg-primary/90"
+              onClick={() => {
+                if (!confirmAction) return;
+                if (confirmAction.type === "week") {
+                  onMarkWeekComplete?.(confirmAction.weekId);
+                } else {
+                  onMarkCourseComplete?.();
+                }
+                setConfirmAction(null);
+              }}
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <div className="flex flex-col h-full relative overflow-hidden bg-black">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-transparent pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col h-full">
       <div className="relative p-3 sm:p-5 min-h-[84px] sm:min-h-[110px] border-b border-white/10 sticky top-0 z-10 overflow-hidden backdrop-blur-sm">
         <div className="absolute inset-0 bg-[url('/images/bg-denji-power.jpg')] bg-cover bg-[center_top] opacity-60 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/70 to-black pointer-events-none" />
@@ -127,15 +191,15 @@ export function LectureSidebar({
             <p className="text-[9px] sm:text-xs text-muted-foreground mt-0.5 drop-shadow-lg">
               {completedVideos} of {totalVideos} completed
             </p>
-            {onMarkCourseComplete && !isCourseComplete && (
+            {onMarkCourseComplete && totalVideos > 0 && (
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={onMarkCourseComplete}
+                onClick={() => setConfirmAction({ type: "course", markAsComplete: !isCourseComplete })}
                 className="h-6 px-1.5 text-[9px] sm:text-xs mt-1 text-muted-foreground hover:text-foreground bg-white/5 hover:bg-white/10 border border-white/10"
               >
                 <CheckCircle2 className="h-3 w-3 mr-1" />
-                Mark All Done
+                {isCourseComplete ? "Mark Course Incomplete" : "Mark All Done"}
               </Button>
             )}
           </div>
@@ -163,16 +227,21 @@ export function LectureSidebar({
                       <span className="text-left font-display font-bold uppercase tracking-wide text-foreground text-[12px] sm:text-[15px] leading-none">{week.title}</span>
                     </div>
                   </AccordionTrigger>
-                  {onMarkWeekComplete && !weekComplete && week.videos.length > 0 && (
+                  {onMarkWeekComplete && week.videos.length > 0 && (
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onMarkWeekComplete(week._id);
+                        setConfirmAction({
+                          type: "week",
+                          weekId: week._id,
+                          weekTitle: week.title,
+                          markAsComplete: !weekComplete,
+                        });
                       }}
                       className="h-6 px-1.5 text-[9px] text-muted-foreground hover:text-foreground shrink-0"
-                      title="Mark week as done"
+                      title={weekComplete ? "Mark week as incomplete" : "Mark week as done"}
                     >
                       <CheckCircle2 className="h-3 w-3" />
                     </Button>
@@ -228,6 +297,7 @@ export function LectureSidebar({
         </div>
       </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

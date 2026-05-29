@@ -20,7 +20,7 @@ interface VideoNotesPanelProps {
   defaultOpen?: boolean;
 }
 
-const MAX_NOTE_LENGTH = 1000;
+const MAX_NOTE_LENGTH = 4000;
 const EXPAND_TRIGGER_LENGTH = 120;
 
 function formatTimestamp(seconds: number) {
