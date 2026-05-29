@@ -101,6 +101,7 @@ export default function MobileWeekPage() {
   ).length;
   const percent =
     week.videos.length > 0 ? Math.round((doneCount / week.videos.length) * 100) : 0;
+  const progressLoaded = progressData !== undefined;
   const nextVideoIdx = week.videos.findIndex(
     (v) => !progressData?.find((p) => p.videoId === v._id)?.completed,
   );
@@ -187,12 +188,12 @@ export default function MobileWeekPage() {
               <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-white/65">
                 {week.videos.length} lectures · {durationLabel}
               </p>
-              {user && week.videos.length > 0 && (
+              {user && week.videos.length > 0 && progressLoaded && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowConfirm(true)}
-                  className="mt-2 h-7 border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
+                  className="mt-2 min-h-[44px] border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
                 >
                   <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
                   {allComplete ? "Mark Week Incomplete" : "Mark Week Done"}
