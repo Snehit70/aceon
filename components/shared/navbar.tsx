@@ -7,8 +7,7 @@ import { Info, History, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-
-const GITHUB_URL = "https://github.com/Snehit70";
+import { SOCIAL } from "@/lib/links";
 
 /**
  * Links surfaced in the navbar for signed-in users. Internal routes use Next
@@ -18,7 +17,7 @@ const GITHUB_URL = "https://github.com/Snehit70";
 const navLinks = [
   { label: "About", href: "/about", icon: Info, external: false },
   { label: "Changelog", href: "/changelog", icon: History, external: false },
-  { label: "GitHub", href: GITHUB_URL, icon: Github, external: true },
+  { label: "GitHub", href: SOCIAL.github, icon: Github, external: true },
 ] as const;
 
 /**
@@ -75,12 +74,12 @@ export function Navbar() {
               const isActive = !external && pathname === href;
               const className = cn(
                 "relative font-display text-xs uppercase tracking-wider transition-colors sm:text-sm",
-                isActive ? "text-[#E62E2D]" : "text-white/70 hover:text-[#E62E2D]",
+                isActive ? "text-primary" : "text-white/70 hover:text-primary",
               );
               const marker = isActive ? (
                 <span
                   aria-hidden="true"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#E62E2D]"
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
                 />
               ) : null;
 
