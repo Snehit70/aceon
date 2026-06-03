@@ -1,18 +1,12 @@
-import { LegalShell } from "@/components/shared/legal-shell";
+import { LegalShell, LegalHeading } from "@/components/shared/legal-shell";
 
 export default function ChangelogPage() {
   return (
     <LegalShell showFooter={false}>
       <div className="flex flex-col items-center text-center space-y-10 sm:space-y-12">
-        {/* Title */}
-        <div className="space-y-4">
-          <h1 className="text-[clamp(2.5rem,14vw,4.5rem)] md:text-7xl font-display font-black uppercase tracking-normal md:tracking-tighter break-words">
-            Change<span className="text-[#E62E2D]">log</span>
-          </h1>
-          <p className="text-neutral-400 font-mono text-sm">
-            What&apos;s new in Aceon.
-          </p>
-        </div>
+        <LegalHeading subtitle="What's new in Aceon.">
+          Change<span className="text-primary">log</span>
+        </LegalHeading>
 
         {/* Placeholder */}
         <section className="max-w-2xl w-full">
