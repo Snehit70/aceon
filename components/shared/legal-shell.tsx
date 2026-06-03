@@ -5,8 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-const GITHUB_URL = "https://github.com/Snehit70";
+import { SOCIAL } from "@/lib/links";
 
 type LegalKey = "about" | "privacy" | "terms";
 
@@ -14,8 +13,52 @@ const footerLinks = [
   { key: "about", label: "About", href: "/about", external: false },
   { key: "privacy", label: "Privacy", href: "/privacy", external: false },
   { key: "terms", label: "Terms", href: "/terms", external: false },
-  { key: "github", label: "GitHub", href: GITHUB_URL, external: true },
+  { key: "github", label: "GitHub", href: SOCIAL.github, external: true },
 ] as const;
+
+/**
+ * LegalHeading - The page title + subtitle block shared by content pages.
+ * Pass the title (with any accent markup) as children.
+ */
+export function LegalHeading({
+  children,
+  subtitle,
+}: {
+  children: ReactNode;
+  subtitle: string;
+}) {
+  return (
+    <div className="space-y-4">
+      <h1 className="text-[clamp(2.5rem,14vw,4.5rem)] md:text-7xl font-display font-black uppercase tracking-normal md:tracking-tighter break-words">
+        {children}
+      </h1>
+      <p className="text-neutral-400 font-mono text-sm">{subtitle}</p>
+    </div>
+  );
+}
+
+/**
+ * LegalSection - A titled content block: heading, the red underline accent, then
+ * the body. Centralizes the section grammar the content pages repeat. Pass
+ * `className` to override the default width/spacing (e.g. `w-full` for grids).
+ */
+export function LegalSection({
+  title,
+  className,
+  children,
+}: {
+  title: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className={cn("space-y-3 max-w-2xl", className)}>
+      <h2 className="text-2xl font-display font-black uppercase">{title}</h2>
+      <span className="mx-auto block h-1 w-12 bg-primary" aria-hidden="true" />
+      {children}
+    </section>
+  );
+}
 
 interface LegalShellProps {
   /**
@@ -69,7 +112,7 @@ export function LegalShell({ active, showFooter = true, children }: LegalShellPr
 
       {/* Footer */}
       {showFooter && (
-        <footer className="border-t-4 border-black py-3 bg-[#E62E2D]">
+        <footer className="border-t-4 border-black py-3 bg-primary">
           <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-sm font-bold uppercase text-black">
             <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-6 tracking-widest">
               {footerLinks.map(({ key, label, href, external }) => {
