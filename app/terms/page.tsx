@@ -1,141 +1,117 @@
-import Link from "next/link";
-import { GraduationCap, ArrowLeft } from "lucide-react";
+import { LegalShell, LegalHeading, LegalSection } from "@/components/shared/legal-shell";
+import { SOCIAL } from "@/lib/links";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white">
-      <header className="border-b-4 border-[#E62E2D] py-4">
-        <div className="container flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="p-1.5 bg-[#E62E2D] text-white">
-              <GraduationCap className="h-5 w-5" />
-            </div>
-            <span className="font-display font-black text-xl tracking-widest">Aceon</span>
-          </Link>
-          <Link 
-            href="/" 
-            className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Link>
-        </div>
-      </header>
+    <LegalShell active="terms">
+      <div className="flex flex-col items-center text-center space-y-12 sm:space-y-16">
+        <LegalHeading subtitle="Last updated: June 2026">
+          Terms of <span className="text-primary">Service</span>
+        </LegalHeading>
 
-      <main className="container py-10 sm:py-16 max-w-3xl">
-        <div className="space-y-9 sm:space-y-12">
-          <div className="space-y-4">
-            <h1 className="text-[clamp(2.5rem,14vw,4.5rem)] md:text-7xl font-display font-black uppercase tracking-normal md:tracking-tighter break-words">
-              Terms<span className="text-[#E62E2D]">_of_Service</span>
-            </h1>
-            <p className="text-neutral-400 font-mono text-sm">
-              Last updated: January 2026
+        <LegalSection title="Acceptance">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            By using Aceon, you agree to these terms. If you don&apos;t agree with them, please
+            stop using the service.
+          </p>
+        </LegalSection>
+
+        <LegalSection title="What Aceon Is">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            Aceon is a free study companion for IIT Madras BS Degree students. It organizes
+            publicly available lecture content so you can watch and track your progress in one
+            place. It is an independent project and is not officially affiliated with IIT
+            Madras.
+          </p>
+        </LegalSection>
+
+        <LegalSection title="Your Account">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            Using Aceon requires an account, which you create by signing in through Clerk.
+            You&apos;re responsible for keeping your account secure and for activity that happens
+            under it.
+          </p>
+        </LegalSection>
+
+        <LegalSection title="Acceptable Use">
+          <ul className="text-neutral-300 leading-relaxed space-y-2 pt-1">
+            <li className="flex items-start justify-center gap-2">
+              <span className="text-primary font-bold">01.</span>
+              Use Aceon for your own learning
+            </li>
+            <li className="flex items-start justify-center gap-2">
+              <span className="text-primary font-bold">02.</span>
+              Don&apos;t scrape, copy, or redistribute content from the service
+            </li>
+            <li className="flex items-start justify-center gap-2">
+              <span className="text-primary font-bold">03.</span>
+              Don&apos;t disrupt, break, or attempt unauthorized access to the service
+            </li>
+          </ul>
+        </LegalSection>
+
+        <LegalSection title="Content & Ownership">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            Lecture videos and course materials belong to IIT Madras and their respective
+            creators; Aceon doesn&apos;t claim ownership of them. The Aceon name, interface, and
+            design belong to the project and its creator.
+          </p>
+        </LegalSection>
+
+        <LegalSection title="Service Availability">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            Aceon is a free, best-effort project. Features may change, and the service may be
+            unavailable or discontinued at any time without notice.
+          </p>
+        </LegalSection>
+
+        <LegalSection title="Disclaimer" className="w-full">
+          <div className="bg-neutral-900 border-2 border-primary p-4 mt-1">
+            <p className="text-neutral-300 leading-relaxed text-sm">
+              Aceon is not officially affiliated with, or endorsed by, IIT Madras. It is an
+              independent project created by a student, for students.
             </p>
           </div>
+        </LegalSection>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Acceptance</h2>
-            <p className="text-neutral-300 leading-relaxed">
-              By accessing and using Aceon, you agree to be bound by these Terms of Service. 
-              If you do not agree, please discontinue use immediately.
-            </p>
-          </section>
+        <LegalSection title="Limitation of Liability">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            Aceon is provided &quot;as is,&quot; without warranties of any kind. We aren&apos;t liable
+            for any damages arising from your use of the service, including data loss,
+            interruptions, or inaccuracies in content.
+          </p>
+        </LegalSection>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Purpose</h2>
-            <p className="text-neutral-300 leading-relaxed">
-              Aceon is an unofficial academic companion designed for IITM BS Degree students. 
-              It aggregates publicly available lecture content to provide a streamlined learning experience.
-            </p>
-          </section>
+        <LegalSection title="Changes to These Terms">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            We may update these terms from time to time. Continued use of Aceon after changes
+            means you accept the updated terms.
+          </p>
+        </LegalSection>
 
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">User Responsibilities</h2>
-            <ul className="text-neutral-300 leading-relaxed space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="text-[#E62E2D] font-bold">01.</span>
-                Use the platform for educational purposes only
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#E62E2D] font-bold">02.</span>
-                Do not attempt to scrape, copy, or redistribute content
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#E62E2D] font-bold">03.</span>
-                Maintain the security of your account credentials
-              </li>
-            </ul>
-          </section>
-
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Intellectual Property</h2>
-            <p className="text-neutral-300 leading-relaxed">
-              All lecture content belongs to IIT Madras and respective content creators. 
-              Aceon does not claim ownership of any educational materials. 
-              The Aceon platform interface and design are open source.
-            </p>
-          </section>
-
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Disclaimer</h2>
-            <div className="bg-neutral-900 border-2 border-[#E62E2D] p-4">
-              <p className="text-neutral-300 leading-relaxed font-mono text-sm">
-                Aceon is NOT officially affiliated with IIT Madras. 
-                This is an independent, community-driven project created by students, for students.
-              </p>
-            </div>
-          </section>
-
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Limitation of Liability</h2>
-            <p className="text-neutral-300 leading-relaxed">
-              Aceon is provided &quot;as is&quot; without warranties of any kind. We are not liable for 
-              any damages arising from your use of the platform, including but not limited to 
-              data loss, service interruptions, or inaccuracies in content.
-            </p>
-          </section>
-
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Changes to Terms</h2>
-            <p className="text-neutral-300 leading-relaxed">
-              We reserve the right to modify these terms at any time. Continued use of Aceon 
-              after changes constitutes acceptance of the new terms.
-            </p>
-          </section>
-
-          <section className="space-y-4 border-l-4 border-[#E62E2D] pl-4 sm:pl-6">
-            <h2 className="text-2xl font-display font-black uppercase">Contact</h2>
-            <p className="text-neutral-300 leading-relaxed">
-              Questions? Reach out via{" "}
-              <a 
-                href="https://github.com/Snehit70" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#E62E2D] hover:underline"
-              >
-                GitHub
-              </a>.
-            </p>
-          </section>
-        </div>
-      </main>
-
-      <footer className="border-t-4 border-black py-3 bg-[#E62E2D]">
-        <div className="container flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-sm font-bold uppercase text-black">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-black text-white">
-              <GraduationCap className="h-4 w-4" />
-            </div>
-            <span className="font-display font-black text-lg tracking-widest">Aceon</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-6 tracking-widest">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/terms" className="text-white">Terms</Link>
-            <a href="https://github.com/Snehit70" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
-          </div>
-          <p className="font-sans text-xs opacity-80 hidden sm:block">© {new Date().getFullYear()} Aceon</p>
-        </div>
-      </footer>
-    </div>
+        <LegalSection title="Contact">
+          <p className="text-neutral-300 leading-relaxed pt-1">
+            Questions about these terms? Reach out on{" "}
+            <a
+              href={SOCIAL.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              LinkedIn
+            </a>{" "}
+            or{" "}
+            <a
+              href={SOCIAL.x}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              X
+            </a>.
+          </p>
+        </LegalSection>
+      </div>
+    </LegalShell>
   );
 }
