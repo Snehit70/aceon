@@ -4,21 +4,37 @@ All notable changes to Aceon. This file is generated automatically from GitHub R
 
 ## Aceon v0.15.0 (2026-06-03)
 
-## Features
+## Aceon v0.15.0
 
-- **About** page, with a shared shell powering the legal/content pages
-- **Changelog** page that renders release notes, plus CI to generate them from GitHub Releases
-- About / Changelog / GitHub links surfaced in the navbar
+This release surfaces the new About and Changelog pages, wires up an automated changelog generated from GitHub Releases, and adds navbar shortcuts to reach them — plus a fix so the legal pages stay reachable for signed-out visitors.
 
-## Fixes
+## What Changed Since v0.14.0
 
-- Legal-page **Back** link now points to a public route, so signed-out visitors no longer hit the auth wall
-- CI workflow is valid again (the `build` job no longer uses the `secrets` context in a job-level `if`), and the pre-existing lint backlog is cleared
+### About & Changelog pages (new)
+- Added an **About** page covering what Aceon is, its features, and contact links.
+- Added a **Changelog** page that renders release notes directly in the app.
+- Built About / Privacy / Terms on a shared shell so layout and chrome stay consistent.
 
-## Internal
+### Automated changelog
+- Added a GitHub Actions workflow that regenerates `CHANGELOG.md` from published GitHub Releases on every release.
+- The Changelog page reads that file and renders it as GitHub-flavored markdown, with a graceful placeholder before the first release.
 
-- Content pages rebuilt on shared primitives; centralized link constants; navbar uses the `primary` design token
-- `convex/seed.ts` properly typed with generated `Id<>`/`Doc<>` types
+### Navigation
+- Surfaced About / Changelog / GitHub links in the navbar for signed-in users (folded into the avatar menu on mobile).
+- Privacy and Terms remain reachable from the page footers.
+
+### Fixes
+- Legal-page **Back** link now points to a public route, so signed-out visitors who open About / Privacy / Terms from the landing footer are no longer sent to the login wall.
+
+## Scope Summary
+- PRs: #38 (`feat: add About/Changelog pages, shared legal shell, and changelog CI`), #39 (`fix(ci): make CI workflow valid`)
+- Diff from `v0.14.0`: 17 files changed, 1043 insertions, 301 deletions
+
+## Upgrade Notes
+- No migration required.
+- The changelog workflow needs repo Actions "Read and write permissions" to commit `CHANGELOG.md`.
+
+**Full Changelog**: https://github.com/Snehit70/aceon/compare/v0.14.0...v0.15.0
 
 ## Aceon v0.14.0 (2026-05-29)
 
