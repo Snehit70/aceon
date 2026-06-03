@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { SOCIAL } from "@/lib/links";
 
@@ -84,13 +85,19 @@ interface LegalShellProps {
  * @param props.children - Page body, rendered inside the centered content column.
  */
 export function LegalShell({ active, showFooter = true, children }: LegalShellProps) {
+  // These pages are public (linked from the landing footer), so Back must land
+  // somewhere public. Signed-in users go to their app home; everyone else (and
+  // while auth is still loading) goes to the public landing page.
+  const { isSignedIn } = useAuth();
+  const backHref = isSignedIn ? "/lectures" : "/";
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#E62E2D] selection:text-white">
       {/* Back row — branding lives in the global navbar, so no logo here. */}
       <div className="border-b border-white/10 py-4">
         <div className="container mx-auto">
           <Link
-            href="/lectures"
+            href={backHref}
             className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
