@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // One-off operational/dev tooling (scrapers, probes, seeders, console
+    // pastes) — not part of the app build, so not gated by the app lint.
+    "scripts/**",
   ]),
 ]);
 
