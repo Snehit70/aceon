@@ -284,11 +284,15 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     useEffect(() => {
       let cancelled = false;
 
-      // Reset immediately on video switch so old captions never bleed into the new lecture.
+      // Reset immediately on video switch so old captions never bleed into the
+      // new lecture. Intentional reset-on-dependency-change before the fetch
+      // below; not a render-loop hazard.
+      /* eslint-disable react-hooks/set-state-in-effect */
       setSubtitleCues([]);
       setHasSubtitleTrack(false);
       setSubtitlesEnabled(false);
       setActiveSubtitle(null);
+      /* eslint-enable react-hooks/set-state-in-effect */
 
       const loadFromSource = async (source: string) => {
         const response = await fetch(source);
@@ -339,6 +343,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
     useEffect(() => {
       if (!subtitlesEnabled || subtitleCues.length === 0 || !isReady) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional clear when captions are off/unavailable
         setActiveSubtitle(null);
         return;
       }
@@ -466,11 +471,14 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
     useEffect(() => {
       // Ensure playback-error overlays from the previous lecture do not persist
-      // when the user navigates to a different video.
+      // when the user navigates to a different video. Intentional
+      // reset-on-videoId-change, not a render-loop hazard.
       clearPlayAttemptTimeout();
+      /* eslint-disable react-hooks/set-state-in-effect */
       setShowPlaybackHelp(false);
       setPlayerErrorCode(null);
       setShowBrowserFixes(false);
+      /* eslint-enable react-hooks/set-state-in-effect */
     }, [videoId, clearPlayAttemptTimeout]);
 
     const beginPlayAttemptCheck = useCallback(() => {
