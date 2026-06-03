@@ -1,4 +1,5 @@
-import { internalMutation, mutation } from "./_generated/server";
+import { internalMutation, mutation, type MutationCtx } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 
 export const clearAll = internalMutation({
@@ -63,18 +64,6 @@ type ImportCourse = {
   weeks: ImportWeek[];
 };
 
-type VideoDoc = {
-  _id: any;
-  youtubeId: string;
-  slug: string;
-  title: string;
-  duration: number;
-  transcriptUrl?: string;
-  order: number;
-  weekId: any;
-  courseId: any;
-};
-
 const requireSeedAuth = async (
   _ctx: { auth: { getUserIdentity: () => Promise<unknown> } },
   importToken?: string,
@@ -87,27 +76,27 @@ const requireSeedAuth = async (
 
 const videoIdentityKey = (video: { youtubeId: string }) => video.youtubeId;
 
-const deleteProgressAndNotesForVideo = async (ctx: any, videoId: any) => {
+const deleteProgressAndNotesForVideo = async (ctx: MutationCtx, videoId: Id<"videos">) => {
   const notesRows = (await ctx.db.query("videoNotes").collect()).filter(
-    (row: any) => row.videoId === videoId,
+    (row) => row.videoId === videoId,
   );
   for (const row of notesRows) {
     await ctx.db.delete(row._id);
   }
 
   const progressRows = (await ctx.db.query("videoProgress").collect()).filter(
-    (row: any) => row.videoId === videoId,
+    (row) => row.videoId === videoId,
   );
   for (const row of progressRows) {
     await ctx.db.delete(row._id);
   }
 };
 
-const upsertCourseData = async (ctx: any, course: ImportCourse) => {
+const upsertCourseData = async (ctx: MutationCtx, course: ImportCourse) => {
   let courseId = null;
   const existingCourse = await ctx.db
     .query("courses")
-    .withIndex("by_code", (q: any) => q.eq("code", course.code))
+    .withIndex("by_code", (q) => q.eq("code", course.code))
     .first();
 
   if (existingCourse) {
@@ -133,10 +122,10 @@ const upsertCourseData = async (ctx: any, course: ImportCourse) => {
     // For now, we'll just check all weeks for this course (usually small number ~12)
     const existingWeeks = await ctx.db
       .query("weeks")
-      .withIndex("by_course", (q: any) => q.eq("courseId", courseId!))
+      .withIndex("by_course", (q) => q.eq("courseId", courseId!))
       .collect();
 
-    const existingWeek = existingWeeks.find((w: any) => w.title === week.title);
+    const existingWeek = existingWeeks.find((w) => w.title === week.title);
 
     if (existingWeek) {
       weekId = existingWeek._id;
@@ -161,10 +150,10 @@ const upsertCourseData = async (ctx: any, course: ImportCourse) => {
       // Let's find if this video exists in this week
       const existingVideosInWeek = await ctx.db
         .query("videos")
-        .withIndex("by_week", (q: any) => q.eq("weekId", weekId!))
+        .withIndex("by_week", (q) => q.eq("weekId", weekId!))
         .collect();
 
-      const existingVideo = existingVideosInWeek.find((v: any) => v.youtubeId === video.youtubeId);
+      const existingVideo = existingVideosInWeek.find((v) => v.youtubeId === video.youtubeId);
 
       if (existingVideo) {
         await ctx.db.patch(existingVideo._id, {
@@ -192,11 +181,11 @@ const upsertCourseData = async (ctx: any, course: ImportCourse) => {
 
   const courseVideos = await ctx.db
     .query("videos")
-    .withIndex("by_course", (q: any) => q.eq("courseId", courseId!))
+    .withIndex("by_course", (q) => q.eq("courseId", courseId!))
     .collect();
   const lectureCount = courseVideos.length;
   const totalDurationSeconds = courseVideos.reduce(
-    (sum: number, video: any) => sum + (video.duration || 0),
+    (sum, video) => sum + (video.duration || 0),
     0,
   );
 
@@ -229,26 +218,26 @@ export const replaceCourseData = mutation({
 
     const existingCourse = await ctx.db
       .query("courses")
-      .withIndex("by_code", (q: any) => q.eq("code", args.course.code))
+      .withIndex("by_code", (q) => q.eq("code", args.course.code))
       .first();
 
-    const oldVideosByKey = new Map<string, VideoDoc[]>();
-    const oldVideoIdsToDelete = new Set<any>();
+    const oldVideosByKey = new Map<string, Doc<"videos">[]>();
+    const oldVideoIdsToDelete = new Set<Id<"videos">>();
 
     if (existingCourse) {
       const weeks = await ctx.db
         .query("weeks")
-        .withIndex("by_course", (q: any) => q.eq("courseId", existingCourse._id))
+        .withIndex("by_course", (q) => q.eq("courseId", existingCourse._id))
         .collect();
       for (const week of weeks) {
         const videos = await ctx.db
           .query("videos")
-          .withIndex("by_week", (q: any) => q.eq("weekId", week._id))
+          .withIndex("by_week", (q) => q.eq("weekId", week._id))
           .collect();
         for (const video of videos) {
           const key = videoIdentityKey(video);
           const list = oldVideosByKey.get(key) ?? [];
-          list.push(video as VideoDoc);
+          list.push(video);
           oldVideosByKey.set(key, list);
           oldVideoIdsToDelete.add(video._id);
         }
@@ -322,12 +311,12 @@ export const replaceCourseData = mutation({
 
       const staleWeeks = await ctx.db
         .query("weeks")
-        .withIndex("by_course", (q: any) => q.eq("courseId", existingCourse._id))
+        .withIndex("by_course", (q) => q.eq("courseId", existingCourse._id))
         .collect();
       for (const staleWeek of staleWeeks) {
         const hasVideos = await ctx.db
           .query("videos")
-          .withIndex("by_week", (q: any) => q.eq("weekId", staleWeek._id))
+          .withIndex("by_week", (q) => q.eq("weekId", staleWeek._id))
           .first();
         if (!hasVideos) {
           await ctx.db.delete(staleWeek._id);
@@ -365,30 +354,30 @@ export const dedupeCourseById = mutation({
 
     const keepWeeks = await ctx.db
       .query("weeks")
-      .withIndex("by_course", (q: any) => q.eq("courseId", args.keepCourseId))
+      .withIndex("by_course", (q) => q.eq("courseId", args.keepCourseId))
       .collect();
     const keepVideos = (
       await Promise.all(
-        keepWeeks.map((week: any) =>
-          ctx.db.query("videos").withIndex("by_week", (q: any) => q.eq("weekId", week._id)).collect(),
+        keepWeeks.map((week) =>
+          ctx.db.query("videos").withIndex("by_week", (q) => q.eq("weekId", week._id)).collect(),
         ),
       )
     ).flat();
-    const keepVideoByKey = new Map<string, any>();
+    const keepVideoByKey = new Map<string, Doc<"videos">>();
     for (const keepVideo of keepVideos) {
       keepVideoByKey.set(videoIdentityKey(keepVideo), keepVideo);
     }
 
     const removeWeeks = await ctx.db
       .query("weeks")
-      .withIndex("by_course", (q: any) => q.eq("courseId", args.removeCourseId))
+      .withIndex("by_course", (q) => q.eq("courseId", args.removeCourseId))
       .collect();
-    const removeToKeepVideoId = new Map<any, any>();
-    const removeVideoIds: any[] = [];
+    const removeToKeepVideoId = new Map<Id<"videos">, Id<"videos">>();
+    const removeVideoIds: Id<"videos">[] = [];
     for (const week of removeWeeks) {
       const videos = await ctx.db
         .query("videos")
-        .withIndex("by_week", (q: any) => q.eq("weekId", week._id))
+        .withIndex("by_week", (q) => q.eq("weekId", week._id))
         .collect();
       for (const video of videos) {
         const matchingKeep = keepVideoByKey.get(videoIdentityKey(video));
@@ -422,7 +411,7 @@ export const dedupeCourseById = mutation({
 
       const existingTarget = await ctx.db
         .query("videoProgress")
-        .withIndex("by_user_video", (q: any) =>
+        .withIndex("by_user_video", (q) =>
           q.eq("clerkId", row.clerkId).eq("videoId", targetVideoId),
         )
         .first();
@@ -446,14 +435,14 @@ export const dedupeCourseById = mutation({
     }
 
     const noteRows = (await ctx.db.query("videoNotes").collect()).filter(
-      (row: any) => removeToKeepVideoId.has(row.videoId),
+      (row) => removeToKeepVideoId.has(row.videoId),
     );
     for (const row of noteRows) {
       await ctx.db.patch(row._id, { videoId: removeToKeepVideoId.get(row.videoId) });
     }
 
     const orphanNotes = (await ctx.db.query("videoNotes").collect()).filter(
-      (row: any) => removeVideoIds.includes(row.videoId) && !removeToKeepVideoId.has(row.videoId),
+      (row) => removeVideoIds.includes(row.videoId) && !removeToKeepVideoId.has(row.videoId),
     );
     for (const row of orphanNotes) {
       await ctx.db.delete(row._id);
@@ -462,7 +451,7 @@ export const dedupeCourseById = mutation({
     for (const week of removeWeeks) {
       const videos = await ctx.db
         .query("videos")
-        .withIndex("by_week", (q: any) => q.eq("weekId", week._id))
+        .withIndex("by_week", (q) => q.eq("weekId", week._id))
         .collect();
       for (const video of videos) {
         await ctx.db.delete(video._id);

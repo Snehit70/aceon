@@ -56,7 +56,7 @@ async function isKnownVideoId(youtubeId: string): Promise<boolean> {
   if (!convexClient) return false;
 
   try {
-    const exists = await convexClient.query((api as any).courses.videoExistsByYoutubeId, { youtubeId });
+    const exists = await convexClient.query(api.courses.videoExistsByYoutubeId, { youtubeId });
     if (exists) {
       allowedVideoCache.set(youtubeId, Date.now() + ALLOWED_VIDEO_CACHE_TTL_MS);
     }

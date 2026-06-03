@@ -75,7 +75,6 @@ jobs:
 
   build:
     name: Production Build
-    if: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY != '' || secrets.CLERK_PUBLISHABLE_KEY != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -93,5 +92,8 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # The secrets context isn't allowed in `if`, so gate on the env var the
+      # secret is mapped into: skip the build when no Clerk key is configured.
       - name: Build
+        if: ${{ env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY != '' }}
         run: bun run build
