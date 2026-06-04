@@ -44,6 +44,19 @@ export default defineSchema({
       filterFields: ["courseId"],
     }),
 
+  videoSubtitles: defineTable({
+    youtubeId: v.string(),
+    subtitleVtt: v.string(),
+    updatedAt: v.number(),
+  }).index("by_youtubeId", ["youtubeId"]),
+
+  videoSubtitleChunks: defineTable({
+    youtubeId: v.string(),
+    chunkIndex: v.number(),
+    content: v.string(),
+    updatedAt: v.number(),
+  }).index("by_youtubeId_chunkIndex", ["youtubeId", "chunkIndex"]),
+
   videoProgress: defineTable({
     clerkId: v.string(),
     videoId: v.id("videos"),

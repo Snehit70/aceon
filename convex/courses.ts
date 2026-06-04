@@ -1,5 +1,40 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
+
+const SUBTITLE_CHUNK_BYTES = 64 * 1024;
+const textEncoder = new TextEncoder();
+
+function requireSubtitlePersistToken(providedToken?: string) {
+  const expectedToken = process.env.CONVEX_SUBTITLE_PERSIST_TOKEN;
+  if (!expectedToken || providedToken !== expectedToken) {
+    throw new Error("Unauthorized");
+  }
+}
+
+function chunkSubtitleVtt(subtitleVtt: string): string[] {
+  const chunks: string[] = [];
+  let currentChunk = "";
+  let currentChunkBytes = 0;
+
+  for (const char of subtitleVtt) {
+    const charBytes = textEncoder.encode(char).length;
+    if (currentChunkBytes > 0 && currentChunkBytes + charBytes > SUBTITLE_CHUNK_BYTES) {
+      chunks.push(currentChunk);
+      currentChunk = char;
+      currentChunkBytes = charBytes;
+      continue;
+    }
+
+    currentChunk += char;
+    currentChunkBytes += charBytes;
+  }
+
+  if (currentChunk.length > 0) {
+    chunks.push(currentChunk);
+  }
+
+  return chunks;
+}
 
 /**
  * Lists all available courses.
@@ -144,6 +179,105 @@ export const videoExistsByYoutubeId = query({
       .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
       .first();
     return Boolean(video);
+  },
+});
+
+export const getSubtitleStateByYoutubeId = query({
+  args: { youtubeId: v.string() },
+  handler: async (ctx, args) => {
+    const video = await ctx.db
+      .query("videos")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    if (!video) {
+      return { exists: false, subtitleVtt: null as string | null };
+    }
+
+    const legacySubtitleDoc = await ctx.db
+      .query("videoSubtitles")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    const subtitleChunks = await ctx.db
+      .query("videoSubtitleChunks")
+      .withIndex("by_youtubeId_chunkIndex", (q) => q.eq("youtubeId", args.youtubeId))
+      .collect();
+
+    return {
+      exists: true,
+      subtitleVtt:
+        subtitleChunks.length > 0
+          ? subtitleChunks
+              .sort((a, b) => a.chunkIndex - b.chunkIndex)
+              .map((chunk) => chunk.content)
+              .join("")
+          : (legacySubtitleDoc?.subtitleVtt ?? null),
+    };
+  },
+});
+
+export const storeSubtitleVttByYoutubeId = mutation({
+  args: {
+    youtubeId: v.string(),
+    subtitleVtt: v.string(),
+    persistToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    requireSubtitlePersistToken(args.persistToken);
+
+    const video = await ctx.db
+      .query("videos")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    if (!video) {
+      return { stored: false, reason: "missing" as const };
+    }
+
+    const existingLegacySubtitle = await ctx.db
+      .query("videoSubtitles")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    const existingSubtitleChunks = await ctx.db
+      .query("videoSubtitleChunks")
+      .withIndex("by_youtubeId_chunkIndex", (q) => q.eq("youtubeId", args.youtubeId))
+      .collect();
+
+    const existingSubtitleVtt = existingSubtitleChunks
+      .length > 0
+      ? existingSubtitleChunks
+          .sort((a, b) => a.chunkIndex - b.chunkIndex)
+          .map((chunk) => chunk.content)
+          .join("")
+      : (existingLegacySubtitle?.subtitleVtt ?? "");
+
+    if ((existingSubtitleChunks.length > 0 || existingLegacySubtitle) && existingSubtitleVtt === args.subtitleVtt) {
+      return { stored: false, reason: "unchanged" as const };
+    }
+
+    if (existingLegacySubtitle) {
+      await ctx.db.delete(existingLegacySubtitle._id);
+    }
+
+    for (const chunk of existingSubtitleChunks) {
+      await ctx.db.delete(chunk._id);
+    }
+
+    const subtitleChunks = chunkSubtitleVtt(args.subtitleVtt);
+    const updatedAt = Date.now();
+
+    for (const [chunkIndex, content] of subtitleChunks.entries()) {
+      await ctx.db.insert("videoSubtitleChunks", {
+        youtubeId: args.youtubeId,
+        chunkIndex,
+        content,
+        updatedAt,
+      });
+    }
+
+    return { stored: true, reason: "updated" as const };
   },
 });
 

@@ -11,7 +11,6 @@ import { YouTubeIcon } from "./icons";
 
 interface PlayerControlsProps {
   playerRef: React.RefObject<VideoPlayerRef | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
   isPlaying: boolean;
   isReady: boolean;
   onPlayPause: () => void;
@@ -45,7 +44,6 @@ function formatTime(seconds: number): string {
  */
 export default function PlayerControls({
   playerRef,
-  containerRef,
   isPlaying,
   isReady,
   onPlayPause,
@@ -182,6 +180,13 @@ export default function PlayerControls({
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const getFullscreenElement = () => {
+    const fullscreenDocument = document as Document & {
+      webkitFullscreenElement?: Element | null;
+    };
+    return document.fullscreenElement ?? fullscreenDocument.webkitFullscreenElement ?? null;
+  };
+
   const getOrientationController = ():
     | (ScreenOrientation & {
       lock?: (orientation: string) => Promise<void>;
@@ -192,45 +197,45 @@ export default function PlayerControls({
   // Track fullscreen state changes
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const fullscreenElement = getFullscreenElement();
+      setIsFullscreen(!!fullscreenElement);
 
       const orientation = getOrientationController();
-      if (!document.fullscreenElement && orientation?.unlock) {
+      if (!fullscreenElement && orientation?.unlock) {
         orientation.unlock();
       }
     };
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange as EventListener);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange as EventListener);
+    };
   }, []);
 
   const handleFullscreenToggle = useCallback(async () => {
-    const container = containerRef.current;
-    if (!container) return;
-    
-    if (!document.fullscreenElement) {
-      try {
-        await container.requestFullscreen({ navigationUI: "hide" });
-      } catch (error) {
-        console.error(error);
-        return;
-      }
+    if (!playerRef.current) return;
 
-      const orientation = getOrientationController();
-      if (orientation?.lock) {
-        try {
-          await orientation.lock("landscape");
-        } catch (error) {
-          console.debug("Orientation lock failed:", error);
-        }
-      }
-    } else {
+    const enteringFullscreen = !getFullscreenElement();
+    const toggled = await playerRef.current.toggleFullscreen().catch((error) => {
+      console.error(error);
+      return false;
+    });
+
+    if (!toggled || !enteringFullscreen) {
+      return;
+    }
+
+    const orientation = getOrientationController();
+    if (orientation?.lock) {
       try {
-        await document.exitFullscreen();
+        await orientation.lock("landscape");
       } catch (error) {
-        console.error(error);
+        console.debug("Orientation lock failed:", error);
       }
     }
-  }, [containerRef]);
+  }, [playerRef]);
 
   return (
     <div

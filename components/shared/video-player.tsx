@@ -48,8 +48,18 @@ interface YTPlayer {
   unMute: () => void;
   setPlaybackRate: (rate: number) => void;
   getPlaybackRate: () => number;
+  getIframe: () => HTMLIFrameElement;
   destroy: () => void;
 }
+
+type FullscreenCapableElement = HTMLElement & {
+  webkitRequestFullscreen?: () => Promise<void> | void;
+};
+
+type FullscreenCapableDocument = Document & {
+  webkitExitFullscreen?: () => Promise<void> | void;
+  webkitFullscreenElement?: Element | null;
+};
 
 export interface VideoPlayerRef {
   seekTo: (seconds: number) => void;
@@ -66,6 +76,7 @@ export interface VideoPlayerRef {
   getPlaybackRate: () => number;
   setPlaybackRate: (rate: number) => void;
   toggleSubtitles: () => void;
+  toggleFullscreen: () => Promise<boolean>;
 }
 
 interface VideoPlayerProps {
@@ -158,6 +169,36 @@ function parseVttContent(content: string): SubtitleCue[] {
   }
 
   return cues;
+}
+
+async function requestElementFullscreen(element: FullscreenCapableElement): Promise<boolean> {
+  if (typeof element.requestFullscreen === "function") {
+    await element.requestFullscreen({ navigationUI: "hide" });
+    return true;
+  }
+  if (typeof element.webkitRequestFullscreen === "function") {
+    await element.webkitRequestFullscreen();
+    return true;
+  }
+  return false;
+}
+
+async function exitAnyFullscreen(): Promise<boolean> {
+  const fullscreenDocument = document as FullscreenCapableDocument;
+  if (typeof document.exitFullscreen === "function") {
+    await document.exitFullscreen();
+    return true;
+  }
+  if (typeof fullscreenDocument.webkitExitFullscreen === "function") {
+    await fullscreenDocument.webkitExitFullscreen();
+    return true;
+  }
+  return false;
+}
+
+function getFullscreenElement(): Element | null {
+  const fullscreenDocument = document as FullscreenCapableDocument;
+  return document.fullscreenElement ?? fullscreenDocument.webkitFullscreenElement ?? null;
 }
 
 // Track if API script is loaded
@@ -427,6 +468,32 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         if (!hasSubtitleTrack) return;
         setSubtitlesEnabled((prev) => !prev);
       },
+      toggleFullscreen: async () => {
+        if (getFullscreenElement()) {
+          return exitAnyFullscreen();
+        }
+
+        const container = containerRef.current;
+        const iframe = playerRef.current?.getIframe?.() ?? null;
+
+        try {
+          if (container && (await requestElementFullscreen(container))) {
+            return true;
+          }
+        } catch (error) {
+          console.error(error);
+        }
+
+        if (iframe) {
+          try {
+            return await requestElementFullscreen(iframe);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+
+        return false;
+      },
     };
 
     // Expose to forwarded ref
@@ -578,6 +645,15 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           events: {
             onReady: () => {
               setIsReady(true);
+              const iframe = playerRef.current?.getIframe?.();
+              if (iframe) {
+                iframe.setAttribute(
+                  "allow",
+                  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                );
+                iframe.setAttribute("allowfullscreen", "");
+                iframe.setAttribute("webkitallowfullscreen", "");
+              }
               if (pendingSeekRef.current !== null && playerRef.current) {
                 playerRef.current.seekTo(pendingSeekRef.current, true);
                 pendingSeekRef.current = null;
@@ -645,7 +721,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     return (
       <div
         ref={containerRef}
-        className="relative w-full aspect-video max-h-[52dvh] sm:max-h-none overflow-hidden bg-black transition-all duration-500 group"
+        className="group relative w-full aspect-video max-h-[52dvh] overflow-hidden bg-black transition-all duration-500 fullscreen:h-full fullscreen:w-full fullscreen:max-h-none fullscreen:aspect-auto sm:max-h-none"
       >
         {/* YouTube iframe container */}
         <div
@@ -698,7 +774,6 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             {/* Custom player controls */}
         <PlayerControls
           playerRef={internalRef}
-          containerRef={containerRef}
           isPlaying={isPlaying}
           isReady={isReady}
           onPlayPause={handleOverlayClick}
