@@ -171,12 +171,6 @@ function parseVttContent(content: string): SubtitleCue[] {
   return cues;
 }
 
-function isAppleMobileBrowser(): boolean {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent;
-  return /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && "ontouchend" in document);
-}
-
 async function requestElementFullscreen(element: FullscreenCapableElement): Promise<boolean> {
   if (typeof element.requestFullscreen === "function") {
     await element.requestFullscreen({ navigationUI: "hide" });
@@ -479,24 +473,20 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           return exitAnyFullscreen();
         }
 
-        const iframe = playerRef.current?.getIframe?.() ?? null;
         const container = containerRef.current;
-        const preferIframeFullscreen = isAppleMobileBrowser();
-        const target = (preferIframeFullscreen ? iframe : container ?? iframe) as FullscreenCapableElement | null;
-
-        if (!target) return false;
+        const iframe = playerRef.current?.getIframe?.() ?? null;
 
         try {
-          if (await requestElementFullscreen(target)) {
+          if (container && (await requestElementFullscreen(container))) {
             return true;
           }
         } catch (error) {
           console.error(error);
         }
 
-        if (target !== container && container) {
+        if (iframe) {
           try {
-            return await requestElementFullscreen(container);
+            return await requestElementFullscreen(iframe);
           } catch (error) {
             console.error(error);
           }
