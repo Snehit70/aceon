@@ -2,6 +2,13 @@
 
 All notable changes to Aceon. This file is generated automatically from GitHub Releases — do not edit it by hand.
 
+## v0.15.1 (2026-06-04)
+
+## What's Changed
+* fix: restore mobile lecture fullscreen by @Snehit70 in https://github.com/Snehit70/aceon/pull/41
+
+**Full Changelog**: https://github.com/Snehit70/aceon/compare/v0.15.0...v0.15.1
+
 ## Aceon v0.15.0 (2026-06-03)
 
 ## Aceon v0.15.0
