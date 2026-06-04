@@ -21,6 +21,7 @@ export const dynamic = "force-dynamic";
 
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
 const convexClient = CONVEX_URL ? new ConvexHttpClient(CONVEX_URL) : null;
+const subtitlePersistToken = process.env.CONVEX_SUBTITLE_PERSIST_TOKEN?.trim() ?? "";
 
 function getCachedSubtitle(youtubeId: string): string | null {
   const missExpiry = noSubtitleCacheExpiry.get(youtubeId);
@@ -186,15 +187,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No subtitles found" }, { status: 404 });
     }
     setCachedSubtitle(youtubeId, subtitle);
-    if (convexClient) {
+    if (convexClient && subtitlePersistToken) {
       try {
         await convexClient.mutation(api.courses.storeSubtitleVttByYoutubeId, {
           youtubeId,
           subtitleVtt: subtitle,
+          persistToken: subtitlePersistToken,
         });
       } catch (error) {
         console.error("Failed to persist subtitle fallback to Convex", error);
       }
+    } else if (!subtitlePersistToken) {
+      console.warn("Skipping subtitle persistence because CONVEX_SUBTITLE_PERSIST_TOKEN is not set");
     }
     return new NextResponse(subtitle, {
       status: 200,

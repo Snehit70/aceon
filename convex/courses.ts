@@ -1,6 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+function requireSubtitlePersistToken(providedToken?: string) {
+  const expectedToken = process.env.CONVEX_SUBTITLE_PERSIST_TOKEN;
+  if (!expectedToken || providedToken !== expectedToken) {
+    throw new Error("Unauthorized");
+  }
+}
+
 /**
  * Lists all available courses.
  *
@@ -159,9 +166,14 @@ export const getSubtitleStateByYoutubeId = query({
       return { exists: false, subtitleVtt: null as string | null };
     }
 
+    const subtitleDoc = await ctx.db
+      .query("videoSubtitles")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
     return {
       exists: true,
-      subtitleVtt: video.subtitleVtt ?? null,
+      subtitleVtt: subtitleDoc?.subtitleVtt ?? null,
     };
   },
 });
@@ -170,8 +182,11 @@ export const storeSubtitleVttByYoutubeId = mutation({
   args: {
     youtubeId: v.string(),
     subtitleVtt: v.string(),
+    persistToken: v.string(),
   },
   handler: async (ctx, args) => {
+    requireSubtitlePersistToken(args.persistToken);
+
     const video = await ctx.db
       .query("videos")
       .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
@@ -181,11 +196,28 @@ export const storeSubtitleVttByYoutubeId = mutation({
       return { stored: false, reason: "missing" as const };
     }
 
-    if (video.subtitleVtt === args.subtitleVtt) {
+    const existingSubtitle = await ctx.db
+      .query("videoSubtitles")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    if (existingSubtitle?.subtitleVtt === args.subtitleVtt) {
       return { stored: false, reason: "unchanged" as const };
     }
 
-    await ctx.db.patch(video._id, { subtitleVtt: args.subtitleVtt });
+    if (existingSubtitle) {
+      await ctx.db.patch(existingSubtitle._id, {
+        subtitleVtt: args.subtitleVtt,
+        updatedAt: Date.now(),
+      });
+    } else {
+      await ctx.db.insert("videoSubtitles", {
+        youtubeId: args.youtubeId,
+        subtitleVtt: args.subtitleVtt,
+        updatedAt: Date.now(),
+      });
+    }
+
     return { stored: true, reason: "updated" as const };
   },
 });

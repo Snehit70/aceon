@@ -34,7 +34,6 @@ export default defineSchema({
     duration: v.number(),
     slug: v.string(),
     transcriptUrl: v.optional(v.string()),
-    subtitleVtt: v.optional(v.string()),
     order: v.number(),
   })
     .index("by_course", ["courseId"])
@@ -44,6 +43,12 @@ export default defineSchema({
       searchField: "title",
       filterFields: ["courseId"],
     }),
+
+  videoSubtitles: defineTable({
+    youtubeId: v.string(),
+    subtitleVtt: v.string(),
+    updatedAt: v.number(),
+  }).index("by_youtubeId", ["youtubeId"]),
 
   videoProgress: defineTable({
     clerkId: v.string(),
