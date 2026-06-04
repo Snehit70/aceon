@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 /**
  * Lists all available courses.
@@ -144,6 +144,49 @@ export const videoExistsByYoutubeId = query({
       .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
       .first();
     return Boolean(video);
+  },
+});
+
+export const getSubtitleStateByYoutubeId = query({
+  args: { youtubeId: v.string() },
+  handler: async (ctx, args) => {
+    const video = await ctx.db
+      .query("videos")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    if (!video) {
+      return { exists: false, subtitleVtt: null as string | null };
+    }
+
+    return {
+      exists: true,
+      subtitleVtt: video.subtitleVtt ?? null,
+    };
+  },
+});
+
+export const storeSubtitleVttByYoutubeId = mutation({
+  args: {
+    youtubeId: v.string(),
+    subtitleVtt: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const video = await ctx.db
+      .query("videos")
+      .withIndex("by_youtubeId", (q) => q.eq("youtubeId", args.youtubeId))
+      .first();
+
+    if (!video) {
+      return { stored: false, reason: "missing" as const };
+    }
+
+    if (video.subtitleVtt === args.subtitleVtt) {
+      return { stored: false, reason: "unchanged" as const };
+    }
+
+    await ctx.db.patch(video._id, { subtitleVtt: args.subtitleVtt });
+    return { stored: true, reason: "updated" as const };
   },
 });
 

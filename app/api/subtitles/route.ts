@@ -13,10 +13,8 @@ const subtitleCache = new Map<string, string>();
 const CACHE_TTL_MS = 1000 * 60 * 60 * 6;
 const cacheExpiry = new Map<string, number>();
 const noSubtitleCacheExpiry = new Map<string, number>();
-const allowedVideoCache = new Map<string, number>();
-const ALLOWED_VIDEO_CACHE_TTL_MS = 1000 * 60 * 30;
-const KNOWN_VIDEO_LOOKUP_FAILURE_COOLDOWN_MS = 1000 * 60 * 10;
-let knownVideoLookupRetryAt = 0;
+const SUBTITLE_STATE_LOOKUP_FAILURE_COOLDOWN_MS = 1000 * 60 * 10;
+let subtitleStateLookupRetryAt = 0;
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -52,26 +50,18 @@ function setNoSubtitleCache(youtubeId: string) {
   noSubtitleCacheExpiry.set(youtubeId, Date.now() + CACHE_TTL_MS);
 }
 
-async function isKnownVideoId(youtubeId: string): Promise<boolean> {
-  const cachedExpiry = allowedVideoCache.get(youtubeId);
-  if (cachedExpiry && cachedExpiry > Date.now()) return true;
-  if (!convexClient) return false;
-  if (knownVideoLookupRetryAt > Date.now()) {
-    return true;
-  }
+async function getStoredSubtitleState(youtubeId: string): Promise<{ exists: boolean; subtitleVtt: string | null } | null> {
+  if (!convexClient) return null;
+  if (subtitleStateLookupRetryAt > Date.now()) return null;
 
   try {
-    const exists = await convexClient.query(api.courses.videoExistsByYoutubeId, { youtubeId });
-    if (exists) {
-      allowedVideoCache.set(youtubeId, Date.now() + ALLOWED_VIDEO_CACHE_TTL_MS);
-    }
-    return Boolean(exists);
+    return await convexClient.query(api.courses.getSubtitleStateByYoutubeId, { youtubeId });
   } catch (error) {
     // Failsafe: if Convex lookup fails, don't hard-fail subtitle playback for
     // authenticated users; rely on strict youtubeId validation + subtitle cache.
-    knownVideoLookupRetryAt = Date.now() + KNOWN_VIDEO_LOOKUP_FAILURE_COOLDOWN_MS;
-    console.error("Subtitle known-video lookup failed; bypassing guard for this request", error);
-    return true;
+    subtitleStateLookupRetryAt = Date.now() + SUBTITLE_STATE_LOOKUP_FAILURE_COOLDOWN_MS;
+    console.error("Subtitle state lookup failed; bypassing Convex for this request", error);
+    return null;
   }
 }
 
@@ -166,11 +156,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid youtubeId" }, { status: 400 });
   }
 
-  const knownVideo = await isKnownVideoId(youtubeId);
-  if (!knownVideo) {
-    return NextResponse.json({ error: "Unknown videoId" }, { status: 404 });
-  }
-
   const cached = getCachedSubtitle(youtubeId);
   if (cached === "__NO_SUBTITLE__") {
     return NextResponse.json({ error: "No subtitles found" }, { status: 404 });
@@ -182,6 +167,18 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  const storedState = await getStoredSubtitleState(youtubeId);
+  if (storedState && !storedState.exists) {
+    return NextResponse.json({ error: "Unknown videoId" }, { status: 404 });
+  }
+  if (storedState?.subtitleVtt) {
+    setCachedSubtitle(youtubeId, storedState.subtitleVtt);
+    return new NextResponse(storedState.subtitleVtt, {
+      status: 200,
+      headers: { "Content-Type": "text/vtt; charset=utf-8", "X-Subtitle-Source": "convex" },
+    });
+  }
+
   try {
     const subtitle = await fetchSubtitleViaYtDlp(youtubeId);
     if (!subtitle) {
@@ -189,6 +186,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No subtitles found" }, { status: 404 });
     }
     setCachedSubtitle(youtubeId, subtitle);
+    if (convexClient) {
+      try {
+        await convexClient.mutation(api.courses.storeSubtitleVttByYoutubeId, {
+          youtubeId,
+          subtitleVtt: subtitle,
+        });
+      } catch (error) {
+        console.error("Failed to persist subtitle fallback to Convex", error);
+      }
+    }
     return new NextResponse(subtitle, {
       status: 200,
       headers: { "Content-Type": "text/vtt; charset=utf-8", "X-Subtitle-Source": "yt-dlp" },

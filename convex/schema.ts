@@ -34,6 +34,7 @@ export default defineSchema({
     duration: v.number(),
     slug: v.string(),
     transcriptUrl: v.optional(v.string()),
+    subtitleVtt: v.optional(v.string()),
     order: v.number(),
   })
     .index("by_course", ["courseId"])
