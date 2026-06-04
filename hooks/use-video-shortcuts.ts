@@ -126,6 +126,10 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
         case "F": {
           e.preventDefault();
           e.stopPropagation();
+          if (player?.toggleFullscreen) {
+            player.toggleFullscreen().catch(console.error);
+            break;
+          }
           if (!container) return;
           if (!document.fullscreenElement) {
             container.requestFullscreen().catch(console.error);

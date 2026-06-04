@@ -28,7 +28,7 @@ export function MobileBottomTabs() {
   })();
 
   return (
-    <nav className="shrink-0 border-t border-white/10 bg-black/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav className="shrink-0 border-t border-white/10 bg-black/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-3">
         {tabs.map((item) => {
           const active = activeKey === item.key;

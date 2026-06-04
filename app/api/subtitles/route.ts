@@ -15,6 +15,8 @@ const cacheExpiry = new Map<string, number>();
 const noSubtitleCacheExpiry = new Map<string, number>();
 const allowedVideoCache = new Map<string, number>();
 const ALLOWED_VIDEO_CACHE_TTL_MS = 1000 * 60 * 30;
+const KNOWN_VIDEO_LOOKUP_FAILURE_COOLDOWN_MS = 1000 * 60 * 10;
+let knownVideoLookupRetryAt = 0;
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,6 +56,9 @@ async function isKnownVideoId(youtubeId: string): Promise<boolean> {
   const cachedExpiry = allowedVideoCache.get(youtubeId);
   if (cachedExpiry && cachedExpiry > Date.now()) return true;
   if (!convexClient) return false;
+  if (knownVideoLookupRetryAt > Date.now()) {
+    return true;
+  }
 
   try {
     const exists = await convexClient.query(api.courses.videoExistsByYoutubeId, { youtubeId });
@@ -64,6 +69,7 @@ async function isKnownVideoId(youtubeId: string): Promise<boolean> {
   } catch (error) {
     // Failsafe: if Convex lookup fails, don't hard-fail subtitle playback for
     // authenticated users; rely on strict youtubeId validation + subtitle cache.
+    knownVideoLookupRetryAt = Date.now() + KNOWN_VIDEO_LOOKUP_FAILURE_COOLDOWN_MS;
     console.error("Subtitle known-video lookup failed; bypassing guard for this request", error);
     return true;
   }
