@@ -298,21 +298,36 @@ export default function PlayerControls({
             onRateChange={handlePlaybackRateChange}
           />
 
-          {/* Subtitles toggle */}
-          {subtitlesAvailable && (
-            <button
-              type="button"
-              onClick={onToggleSubtitles}
-              className={cn(
-                "min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center rounded-sm transition-colors",
-                subtitlesEnabled ? "bg-primary/20 text-primary" : "hover:bg-white/10 text-white"
-              )}
-              aria-label={subtitlesEnabled ? "Turn subtitles off" : "Turn subtitles on"}
-              title={subtitlesEnabled ? "Subtitles on" : "Subtitles off"}
-            >
-              <Captions className="w-5 h-5" />
-            </button>
-          )}
+          {/* Subtitles toggle — always visible; greyed out when no track is available */}
+          <button
+            type="button"
+            onClick={subtitlesAvailable ? onToggleSubtitles : undefined}
+            disabled={!subtitlesAvailable}
+            className={cn(
+              "min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center rounded-sm transition-colors",
+              !subtitlesAvailable
+                ? "text-white/30 cursor-not-allowed"
+                : subtitlesEnabled
+                  ? "bg-primary/20 text-primary"
+                  : "hover:bg-white/10 text-white"
+            )}
+            aria-label={
+              !subtitlesAvailable
+                ? "Subtitles unavailable"
+                : subtitlesEnabled
+                  ? "Turn subtitles off"
+                  : "Turn subtitles on"
+            }
+            title={
+              !subtitlesAvailable
+                ? "No subtitles available for this video"
+                : subtitlesEnabled
+                  ? "Subtitles on"
+                  : "Subtitles off"
+            }
+          >
+            <Captions className="w-5 h-5" />
+          </button>
 
           {/* View on YouTube */}
           <a
