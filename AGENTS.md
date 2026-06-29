@@ -17,7 +17,7 @@ Aceon is an academic companion app for IITM BS Degree students.
 
 - **Local dev uses PRODUCTION database** (`prod:glad-marten-760`)
 - ⚠️ **DO NOT switch to dev deployment** - all real data is in production
-- Dev deployment (`dev:marvelous-lobster-114`) exists but is empty/unused
+- Dev deployment (`dev:marvelous-lobster-114`) exists but only has MA1001 subset
 
 | Action         | Command              | Notes                               |
 | -------------- | -------------------- | ----------------------------------- |

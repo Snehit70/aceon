@@ -376,6 +376,16 @@ export const searchLectures = query({
  * @param args.courseId - The ID of the course.
  * @returns An object containing `lectureCount`, `totalDurationSeconds`, and `totalDurationFormatted`.
  */
+/** Returns all unique YouTube IDs from every video in the DB. Used by bulk subtitle scripts. */
+export const getAllYoutubeIds = query({
+  args: {},
+  handler: async (ctx) => {
+    const videos = await ctx.db.query("videos").collect();
+    const ids = [...new Set(videos.map((v) => v.youtubeId).filter(Boolean))];
+    return ids;
+  },
+});
+
 export const getCourseStats = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
