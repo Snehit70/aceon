@@ -155,7 +155,12 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           e.preventDefault();
           e.stopPropagation();
           if (!player) return;
-          player.toggleSubtitles();
+          const captionsOn = player.toggleSubtitles();
+          if (captionsOn === null) {
+            toast("No captions available for this video", { duration: 1500 });
+          } else {
+            toast.success(`Captions ${captionsOn ? "on" : "off"}`, { duration: 1500 });
+          }
           break;
         }
         case "+":
