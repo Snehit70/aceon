@@ -19,6 +19,7 @@ const shortcuts = [
   { key: "-", action: "Previous rate" },
   { key: "F", action: "Toggle fullscreen" },
   { key: "M", action: "Mute / Unmute" },
+  { key: "C", action: "Captions on / off" },
   { key: "?", action: "Show this help" },
   { key: "Esc", action: "Close / Exit fullscreen" },
 ];
