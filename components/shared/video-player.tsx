@@ -349,7 +349,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
     const subtitlesEnabledRef = useRef(subtitlesEnabled);
     const hasSubtitleTrackRef = useRef(hasSubtitleTrack);
-    const nativeCaptionsModuleSeenRef = useRef(false);
+    const nativeCaptionsDetectedRef = useRef(false);
     const nativeCaptionsDetectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const pendingSeekRef = useRef<number | null>(null);
     const pendingPlaybackRateRef = useRef<number | null>(null);
@@ -460,26 +460,30 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     }, []);
 
     const updateSubtitlesEnabled = useCallback((enabled: boolean) => {
+      // Update the ref synchronously so back-to-back toggles see the latest value.
+      subtitlesEnabledRef.current = enabled;
       setSubtitlesEnabled(enabled);
       writeCaptionsPreference(enabled);
     }, []);
 
+    const toggleSubtitlesEnabled = useCallback(() => {
+      const next = !subtitlesEnabledRef.current;
+      updateSubtitlesEnabled(next);
+      return next;
+    }, [updateSubtitlesEnabled]);
+
     /**
      * YouTube's built-in captions are the fallback when no stored VTT track
      * exists. They render inside the iframe, so they must be off whenever the
-     * custom overlay is in use, or the user would see captions twice.
+     * custom overlay is in use, or the user would see captions twice. This
+     * does not wait for track detection: suppression must work even if the
+     * tracklist option is unreadable.
      */
     const syncNativeCaptions = useCallback(() => {
       const player = playerRef.current;
-      if (!player || !nativeCaptionsModuleSeenRef.current) return;
+      if (!player) return;
       setNativeCaptions(player, subtitlesEnabledRef.current && !hasSubtitleTrackRef.current);
     }, []);
-
-    useEffect(() => {
-      subtitlesEnabledRef.current = subtitlesEnabled;
-      hasSubtitleTrackRef.current = hasSubtitleTrack;
-      syncNativeCaptions();
-    }, [subtitlesEnabled, hasSubtitleTrack, syncNativeCaptions]);
 
     const clearNativeCaptionsDetectTimeout = useCallback(() => {
       if (nativeCaptionsDetectTimeoutRef.current) {
@@ -487,6 +491,23 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         nativeCaptionsDetectTimeoutRef.current = null;
       }
     }, []);
+
+    /** Returns true once YouTube reports caption tracks for the current player. */
+    const detectNativeCaptions = useCallback(() => {
+      if (nativeCaptionsDetectedRef.current) return true;
+      const player = playerRef.current;
+      if (!player || !hasNativeCaptionTracks(player)) return false;
+      nativeCaptionsDetectedRef.current = true;
+      clearNativeCaptionsDetectTimeout();
+      setNativeCaptionsAvailable(true);
+      return true;
+    }, [clearNativeCaptionsDetectTimeout]);
+
+    useEffect(() => {
+      subtitlesEnabledRef.current = subtitlesEnabled;
+      hasSubtitleTrackRef.current = hasSubtitleTrack;
+      syncNativeCaptions();
+    }, [subtitlesEnabled, hasSubtitleTrack, syncNativeCaptions]);
 
     // Captions stay toggleable until we know the video has none at all.
     const subtitlesAvailable = hasSubtitleTrack || nativeCaptionsAvailable !== false;
@@ -559,9 +580,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       },
       toggleSubtitles: () => {
         if (!subtitlesAvailable) return null;
-        const next = !subtitlesEnabled;
-        updateSubtitlesEnabled(next);
-        return next;
+        return toggleSubtitlesEnabled();
       },
       toggleFullscreen: async () => {
         if (getFullscreenElement()) {
@@ -592,7 +611,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     };
 
     // Expose to forwarded ref
-    useImperativeHandle(ref, () => imperativeHandle, [isReady, subtitlesAvailable, subtitlesEnabled, updateSubtitlesEnabled]);
+    useImperativeHandle(ref, () => imperativeHandle, [isReady, subtitlesAvailable, toggleSubtitlesEnabled]);
     
     // Sync internal ref in effect (not during render)
     useEffect(() => {
@@ -723,8 +742,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         if (!container) return;
 
         container.innerHTML = `<div id="${playerIdRef.current}"></div>`;
-        nativeCaptionsModuleSeenRef.current = false;
+        // A new player instance (video switch or retry) starts detection over.
+        nativeCaptionsDetectedRef.current = false;
         clearNativeCaptionsDetectTimeout();
+        setNativeCaptionsAvailable(null);
 
         playerRef.current = new window.YT.Player(playerIdRef.current, {
           videoId,
@@ -783,10 +804,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 // YouTube re-applies captions (cc_load_policy or its own sticky
                 // setting) when playback starts or restarts, so re-assert ours.
                 syncNativeCaptions();
-                if (!nativeCaptionsModuleSeenRef.current && !nativeCaptionsDetectTimeoutRef.current) {
+                // Probe on every PLAYING too: track metadata can become readable
+                // after onApiChange, and a late hit recovers from a timed-out miss.
+                if (!detectNativeCaptions() && !nativeCaptionsDetectTimeoutRef.current) {
                   nativeCaptionsDetectTimeoutRef.current = setTimeout(() => {
                     nativeCaptionsDetectTimeoutRef.current = null;
-                    if (!nativeCaptionsModuleSeenRef.current) {
+                    if (!detectNativeCaptions()) {
                       setNativeCaptionsAvailable(false);
                     }
                   }, NATIVE_CAPTIONS_DETECT_MS);
@@ -811,13 +834,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               clearPlayAttemptTimeout();
             },
             onApiChange: () => {
-              const player = playerRef.current;
-              if (!player || !hasNativeCaptionTracks(player)) return;
-              if (!nativeCaptionsModuleSeenRef.current) {
-                nativeCaptionsModuleSeenRef.current = true;
-                clearNativeCaptionsDetectTimeout();
-                setNativeCaptionsAvailable(true);
-              }
+              detectNativeCaptions();
               syncNativeCaptions();
             },
           },
@@ -838,7 +855,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, reloadNonce, clearPlayAttemptTimeout, clearNativeCaptionsDetectTimeout, startProgressTracking, stopProgressTracking, syncNativeCaptions, videoState.initialPosition]);
+    }, [videoId, reloadNonce, clearPlayAttemptTimeout, clearNativeCaptionsDetectTimeout, detectNativeCaptions, startProgressTracking, stopProgressTracking, syncNativeCaptions, videoState.initialPosition]);
 
     return (
       <div
@@ -902,7 +919,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           videoId={videoId}
           subtitlesAvailable={subtitlesAvailable}
           subtitlesEnabled={subtitlesEnabled}
-          onToggleSubtitles={() => updateSubtitlesEnabled(!subtitlesEnabled)}
+          onToggleSubtitles={toggleSubtitlesEnabled}
         />
           </>
         )}
