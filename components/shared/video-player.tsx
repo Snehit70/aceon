@@ -19,6 +19,7 @@ declare global {
             onReady?: (event: { target: YTPlayer }) => void;
             onStateChange?: (event: { data: number; target: YTPlayer }) => void;
             onError?: (event: { data: number; target: YTPlayer }) => void;
+            onApiChange?: (event: { target: YTPlayer }) => void;
           };
         }
       ) => YTPlayer;
@@ -50,6 +51,11 @@ interface YTPlayer {
   getPlaybackRate: () => number;
   getIframe: () => HTMLIFrameElement;
   destroy: () => void;
+  // Captions module methods. Undocumented by YouTube but widely used; optional
+  // here and guarded with try/catch at every call site in case they disappear.
+  loadModule?: (moduleName: string) => void;
+  unloadModule?: (moduleName: string) => void;
+  getOption?: (moduleName: string, option: string) => unknown;
 }
 
 type FullscreenCapableElement = HTMLElement & {
@@ -75,7 +81,8 @@ export interface VideoPlayerRef {
   unmute: () => void;
   getPlaybackRate: () => number;
   setPlaybackRate: (rate: number) => void;
-  toggleSubtitles: () => void;
+  /** Returns the new captions state, or null when the video has no captions. */
+  toggleSubtitles: () => boolean | null;
   toggleFullscreen: () => Promise<boolean>;
 }
 
@@ -201,6 +208,49 @@ function getFullscreenElement(): Element | null {
   return document.fullscreenElement ?? fullscreenDocument.webkitFullscreenElement ?? null;
 }
 
+const CAPTIONS_PREF_KEY = "aceon:captions-enabled";
+// YouTube loads the captions module (and fires onApiChange) shortly after
+// playback starts. If nothing arrives within this window, the video has no
+// caption tracks.
+const NATIVE_CAPTIONS_DETECT_MS = 5000;
+
+function readCaptionsPreference(): boolean {
+  try {
+    return window.localStorage.getItem(CAPTIONS_PREF_KEY) !== "off";
+  } catch {
+    return true;
+  }
+}
+
+function writeCaptionsPreference(enabled: boolean) {
+  try {
+    window.localStorage.setItem(CAPTIONS_PREF_KEY, enabled ? "on" : "off");
+  } catch {
+    // Storage unavailable (private mode, blocked site data): keep in-memory state only.
+  }
+}
+
+function hasNativeCaptionTracks(player: YTPlayer): boolean {
+  try {
+    const tracks = player.getOption?.("captions", "tracklist");
+    return Array.isArray(tracks) && tracks.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function setNativeCaptions(player: YTPlayer, enabled: boolean) {
+  try {
+    if (enabled) {
+      player.loadModule?.("captions");
+    } else {
+      player.unloadModule?.("captions");
+    }
+  } catch (error) {
+    console.warn("Failed to toggle YouTube captions", error);
+  }
+}
+
 // Track if API script is loaded
 let apiLoaded = false;
 let apiLoading = false;
@@ -291,8 +341,16 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [showBrowserFixes, setShowBrowserFixes] = useState(false);
     const [subtitleCues, setSubtitleCues] = useState<SubtitleCue[]>([]);
     const [hasSubtitleTrack, setHasSubtitleTrack] = useState(false);
-    const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
+    // User preference, shared by both caption sources. On by default; persisted
+    // across lectures once the user toggles it.
+    const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
+    // YouTube's own caption tracks: null until detected after playback starts.
+    const [nativeCaptionsAvailable, setNativeCaptionsAvailable] = useState<boolean | null>(null);
     const [activeSubtitle, setActiveSubtitle] = useState<string | null>(null);
+    const subtitlesEnabledRef = useRef(subtitlesEnabled);
+    const hasSubtitleTrackRef = useRef(hasSubtitleTrack);
+    const nativeCaptionsModuleSeenRef = useRef(false);
+    const nativeCaptionsDetectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const pendingSeekRef = useRef<number | null>(null);
     const pendingPlaybackRateRef = useRef<number | null>(null);
     const playIndicatorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -331,7 +389,6 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       /* eslint-disable react-hooks/set-state-in-effect */
       setSubtitleCues([]);
       setHasSubtitleTrack(false);
-      setSubtitlesEnabled(false);
       setActiveSubtitle(null);
       /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -362,15 +419,13 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           const parsed = parseVttContent(text);
           setSubtitleCues(parsed);
           setHasSubtitleTrack(parsed.length > 0);
-          // Keep captions OFF by default even when a track is available.
-          setSubtitlesEnabled(false);
           setActiveSubtitle(null);
         } catch (error) {
           if (!cancelled) {
+            // Not fatal: YouTube's own caption tracks are used instead.
             console.warn("Failed to load subtitles", error);
             setSubtitleCues([]);
             setHasSubtitleTrack(false);
-            setSubtitlesEnabled(false);
             setActiveSubtitle(null);
           }
         }
@@ -397,6 +452,44 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
       return () => window.clearInterval(interval);
     }, [isReady, subtitleCues, subtitlesEnabled]);
+
+    useEffect(() => {
+      // Read the stored preference after mount so SSR markup stays deterministic.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage
+      setSubtitlesEnabled(readCaptionsPreference());
+    }, []);
+
+    const updateSubtitlesEnabled = useCallback((enabled: boolean) => {
+      setSubtitlesEnabled(enabled);
+      writeCaptionsPreference(enabled);
+    }, []);
+
+    /**
+     * YouTube's built-in captions are the fallback when no stored VTT track
+     * exists. They render inside the iframe, so they must be off whenever the
+     * custom overlay is in use, or the user would see captions twice.
+     */
+    const syncNativeCaptions = useCallback(() => {
+      const player = playerRef.current;
+      if (!player || !nativeCaptionsModuleSeenRef.current) return;
+      setNativeCaptions(player, subtitlesEnabledRef.current && !hasSubtitleTrackRef.current);
+    }, []);
+
+    useEffect(() => {
+      subtitlesEnabledRef.current = subtitlesEnabled;
+      hasSubtitleTrackRef.current = hasSubtitleTrack;
+      syncNativeCaptions();
+    }, [subtitlesEnabled, hasSubtitleTrack, syncNativeCaptions]);
+
+    const clearNativeCaptionsDetectTimeout = useCallback(() => {
+      if (nativeCaptionsDetectTimeoutRef.current) {
+        clearTimeout(nativeCaptionsDetectTimeoutRef.current);
+        nativeCaptionsDetectTimeoutRef.current = null;
+      }
+    }, []);
+
+    // Captions stay toggleable until we know the video has none at all.
+    const subtitlesAvailable = hasSubtitleTrack || nativeCaptionsAvailable !== false;
 
     // Create the imperative handle object
     const imperativeHandle: VideoPlayerRef = {
@@ -465,8 +558,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         }
       },
       toggleSubtitles: () => {
-        if (!hasSubtitleTrack) return;
-        setSubtitlesEnabled((prev) => !prev);
+        if (!subtitlesAvailable) return null;
+        const next = !subtitlesEnabled;
+        updateSubtitlesEnabled(next);
+        return next;
       },
       toggleFullscreen: async () => {
         if (getFullscreenElement()) {
@@ -497,7 +592,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     };
 
     // Expose to forwarded ref
-    useImperativeHandle(ref, () => imperativeHandle, [isReady, hasSubtitleTrack]);
+    useImperativeHandle(ref, () => imperativeHandle, [isReady, subtitlesAvailable, subtitlesEnabled, updateSubtitlesEnabled]);
     
     // Sync internal ref in effect (not during render)
     useEffect(() => {
@@ -545,6 +640,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       setShowPlaybackHelp(false);
       setPlayerErrorCode(null);
       setShowBrowserFixes(false);
+      setNativeCaptionsAvailable(null);
       /* eslint-enable react-hooks/set-state-in-effect */
     }, [videoId, clearPlayAttemptTimeout]);
 
@@ -627,6 +723,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         if (!container) return;
 
         container.innerHTML = `<div id="${playerIdRef.current}"></div>`;
+        nativeCaptionsModuleSeenRef.current = false;
+        clearNativeCaptionsDetectTimeout();
 
         playerRef.current = new window.YT.Player(playerIdRef.current, {
           videoId,
@@ -641,6 +739,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             playsinline: 1,
             start: Math.floor(videoState.initialPosition),
             disablekb: 1,
+            // Always load the captions module so we can detect tracks;
+            // syncNativeCaptions turns it off again when the user opted out.
+            cc_load_policy: 1,
+            cc_lang_pref: "en",
           },
           events: {
             onReady: () => {
@@ -678,6 +780,17 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 setPlayerErrorCode(null);
                 clearPlayAttemptTimeout();
                 startProgressTracking();
+                // YouTube re-applies captions (cc_load_policy or its own sticky
+                // setting) when playback starts or restarts, so re-assert ours.
+                syncNativeCaptions();
+                if (!nativeCaptionsModuleSeenRef.current && !nativeCaptionsDetectTimeoutRef.current) {
+                  nativeCaptionsDetectTimeoutRef.current = setTimeout(() => {
+                    nativeCaptionsDetectTimeoutRef.current = null;
+                    if (!nativeCaptionsModuleSeenRef.current) {
+                      setNativeCaptionsAvailable(false);
+                    }
+                  }, NATIVE_CAPTIONS_DETECT_MS);
+                }
               } else {
                 setIsPlaying(false);
                 stopProgressTracking();
@@ -697,6 +810,16 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               setShowPlaybackHelp(true);
               clearPlayAttemptTimeout();
             },
+            onApiChange: () => {
+              const player = playerRef.current;
+              if (!player || !hasNativeCaptionTracks(player)) return;
+              if (!nativeCaptionsModuleSeenRef.current) {
+                nativeCaptionsModuleSeenRef.current = true;
+                clearNativeCaptionsDetectTimeout();
+                setNativeCaptionsAvailable(true);
+              }
+              syncNativeCaptions();
+            },
           },
         });
       };
@@ -707,6 +830,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         mounted = false;
         stopProgressTracking();
         clearPlayAttemptTimeout();
+        clearNativeCaptionsDetectTimeout();
         if (playerRef.current) {
           playerRef.current.destroy();
           playerRef.current = null;
@@ -714,9 +838,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         setIsReady(false);
         pendingSeekRef.current = null;
       };
-    }, [videoId, reloadNonce, clearPlayAttemptTimeout, startProgressTracking, stopProgressTracking, videoState.initialPosition]);
-
-    const subtitlesAvailable = hasSubtitleTrack || Boolean(transcriptUrl);
+    }, [videoId, reloadNonce, clearPlayAttemptTimeout, clearNativeCaptionsDetectTimeout, startProgressTracking, stopProgressTracking, syncNativeCaptions, videoState.initialPosition]);
 
     return (
       <div
@@ -780,7 +902,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           videoId={videoId}
           subtitlesAvailable={subtitlesAvailable}
           subtitlesEnabled={subtitlesEnabled}
-          onToggleSubtitles={() => setSubtitlesEnabled((prev) => !prev)}
+          onToggleSubtitles={() => updateSubtitlesEnabled(!subtitlesEnabled)}
         />
           </>
         )}
