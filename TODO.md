@@ -2,7 +2,7 @@
 
 - [x] Keep CC toggleable when native caption metadata is unavailable or captions are off.
 - [x] Apply the caption preference on iframe readiness and prevent duplicate VTT/native captions.
-- [ ] Backfill and verify all 33 System Commands subtitle tracks in production.
+- [x] Backfill and verify all 33 System Commands subtitle tracks in production.
 - [x] Consolidate current design documentation into `docs/DESIGN.yaml`.
 - [x] Refresh architecture documentation for the current app.
 - [x] Update README onboarding and project map.
