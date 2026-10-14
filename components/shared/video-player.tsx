@@ -51,11 +51,12 @@ interface YTPlayer {
   getPlaybackRate: () => number;
   getIframe: () => HTMLIFrameElement;
   destroy: () => void;
-  // Captions module methods. Undocumented by YouTube but widely used; optional
-  // here and guarded with try/catch at every call site in case they disappear.
+  // Module inspection is documented; load/unload and the tracklist option are
+  // not. Keep the optional controls guarded in case YouTube changes them.
   loadModule?: (moduleName: string) => void;
   unloadModule?: (moduleName: string) => void;
   getOption?: (moduleName: string, option: string) => unknown;
+  getOptions?: (moduleName?: string) => string[];
 }
 
 type FullscreenCapableElement = HTMLElement & {
@@ -209,9 +210,8 @@ function getFullscreenElement(): Element | null {
 }
 
 const CAPTIONS_PREF_KEY = "aceon:captions-enabled";
-// YouTube loads the captions module (and fires onApiChange) shortly after
-// playback starts. If nothing arrives within this window, the video has no
-// caption tracks.
+// Allow track metadata to settle after playback. A timeout alone is not proof
+// that captions are absent: the module may be disabled or metadata unsupported.
 const NATIVE_CAPTIONS_DETECT_MS = 5000;
 
 function readCaptionsPreference(): boolean {
@@ -230,17 +230,35 @@ function writeCaptionsPreference(enabled: boolean) {
   }
 }
 
-function hasNativeCaptionTracks(player: YTPlayer): boolean {
+function getNativeCaptionModules(player: YTPlayer): string[] | null {
+  try {
+    const modules = player.getOptions?.();
+    return Array.isArray(modules) ? modules : null;
+  } catch {
+    return null;
+  }
+}
+
+function hasNativeCaptionTracks(player: YTPlayer): boolean | null {
+  let emptyTrackList = false;
   try {
     const tracks = player.getOption?.("captions", "tracklist");
-    return Array.isArray(tracks) && tracks.length > 0;
+    if (Array.isArray(tracks)) {
+      if (tracks.length > 0) return true;
+      emptyTrackList = true;
+    }
   } catch {
-    return false;
+    // tracklist is undocumented. Fall back to the documented module listing.
   }
+  if (getNativeCaptionModules(player)?.includes("captions")) return !emptyTrackList;
+  // Neither an unreadable list nor an unloaded module proves absence.
+  return null;
 }
 
 function setNativeCaptions(player: YTPlayer, enabled: boolean) {
   try {
+    const modules = getNativeCaptionModules(player);
+    if (modules && modules.includes("captions") === enabled) return;
     if (enabled) {
       player.loadModule?.("captions");
     } else {
@@ -496,7 +514,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const detectNativeCaptions = useCallback(() => {
       if (nativeCaptionsDetectedRef.current) return true;
       const player = playerRef.current;
-      if (!player || !hasNativeCaptionTracks(player)) return false;
+      if (!player) return null;
+      const available = hasNativeCaptionTracks(player);
+      if (available !== true) return available;
       nativeCaptionsDetectedRef.current = true;
       clearNativeCaptionsDetectTimeout();
       setNativeCaptionsAvailable(true);
@@ -768,6 +788,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           events: {
             onReady: () => {
               setIsReady(true);
+              detectNativeCaptions();
+              syncNativeCaptions();
               const iframe = playerRef.current?.getIframe?.();
               if (iframe) {
                 iframe.setAttribute(
@@ -803,13 +825,18 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 startProgressTracking();
                 // YouTube re-applies captions (cc_load_policy or its own sticky
                 // setting) when playback starts or restarts, so re-assert ours.
-                syncNativeCaptions();
                 // Probe on every PLAYING too: track metadata can become readable
                 // after onApiChange, and a late hit recovers from a timed-out miss.
-                if (!detectNativeCaptions() && !nativeCaptionsDetectTimeoutRef.current) {
+                const nativeTracksDetected = detectNativeCaptions();
+                syncNativeCaptions();
+                if (nativeTracksDetected !== true && !nativeCaptionsDetectTimeoutRef.current) {
                   nativeCaptionsDetectTimeoutRef.current = setTimeout(() => {
                     nativeCaptionsDetectTimeoutRef.current = null;
-                    if (!detectNativeCaptions()) {
+                    if (
+                      detectNativeCaptions() === false &&
+                      subtitlesEnabledRef.current &&
+                      !hasSubtitleTrackRef.current
+                    ) {
                       setNativeCaptionsAvailable(false);
                     }
                   }, NATIVE_CAPTIONS_DETECT_MS);
