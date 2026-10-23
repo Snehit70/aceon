@@ -11,6 +11,7 @@ import {
   CONTROLS_HIDE_OPTIONS,
   DEFAULT_SETTINGS,
   HOLD_BOOST_OPTIONS,
+  INTRO_SKIP_OPTIONS,
   PLAYBACK_RATES,
   SEEK_STEP_OPTIONS,
 } from "@/lib/settings";
@@ -170,6 +171,28 @@ export function SettingsPanel() {
             label="Resume where I left off"
             checked={settings.resumePlayback}
             onCheckedChange={(resumePlayback) => updateSettings({ resumePlayback })}
+          />
+        </SettingRow>
+        <SettingRow
+          label="Auto skip intro"
+          description="Jump past the opening bumper when a lecture starts. Rewinding still shows Skip intro."
+        >
+          <SettingSwitch
+            label="Auto skip intro"
+            checked={settings.autoSkipIntro}
+            onCheckedChange={(autoSkipIntro) => updateSettings({ autoSkipIntro })}
+          />
+        </SettingRow>
+        <SettingRow
+          label="Intro length"
+          description="How far Skip intro and auto skip jump. Most IITM bumpers land around 10 seconds."
+        >
+          <Segmented
+            label="Intro length"
+            value={settings.introSkipSeconds}
+            options={INTRO_SKIP_OPTIONS}
+            onChange={(introSkipSeconds) => updateSettings({ introSkipSeconds })}
+            format={formatSeconds}
           />
         </SettingRow>
       </Section>

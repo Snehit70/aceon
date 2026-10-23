@@ -5,6 +5,7 @@ import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useSta
 import LandscapeHint from "./landscape-hint";
 import { useSettings } from "@/hooks/use-settings";
 import { PlayerControls, PlayerOverlay, VolumeIndicator } from "./player";
+import SkipIntroButton from "./player/skip-intro-button";
 import { AngularPlayIcon, AngularPauseIcon } from "./player/icons";
 
 // YouTube IFrame API types
@@ -948,6 +949,15 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
               onPlay={handlePlayFromOverlay}
             />
         
+            <SkipIntroButton
+              key={videoId}
+              playerRef={internalRef}
+              isReady={isReady}
+              introSeconds={settings.introSkipSeconds}
+              autoSkip={settings.autoSkipIntro}
+              videoId={videoId}
+            />
+
             {/* Custom player controls */}
         <PlayerControls
           playerRef={internalRef}

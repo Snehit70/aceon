@@ -37,6 +37,13 @@ describe("sanitizeSettings", () => {
   it("allows 0 for controlsHideSeconds (never hide)", () => {
     expect(sanitizeSettings({ controlsHideSeconds: 0 }).controlsHideSeconds).toBe(0);
   });
+
+  it("keeps skip-intro values in range", () => {
+    expect(sanitizeSettings({ autoSkipIntro: true, introSkipSeconds: 20 }).autoSkipIntro).toBe(true);
+    expect(sanitizeSettings({ autoSkipIntro: true, introSkipSeconds: 20 }).introSkipSeconds).toBe(20);
+    expect(sanitizeSettings({ introSkipSeconds: 7 }).introSkipSeconds).toBe(DEFAULT_SETTINGS.introSkipSeconds);
+    expect(sanitizeSettings({}).autoSkipIntro).toBe(false);
+  });
 });
 
 describe("parseSettings", () => {

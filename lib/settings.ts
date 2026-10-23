@@ -12,6 +12,7 @@ export const SEEK_STEP_OPTIONS = [5, 10, 15, 30] as const;
 export const CONTROLS_HIDE_OPTIONS = [2, 3, 5, 0] as const;
 export const AUTOPLAY_COUNTDOWN_OPTIONS = [3, 5, 10, 15] as const;
 export const HOLD_BOOST_OPTIONS = [1.5, 1.75, 2] as const;
+export const INTRO_SKIP_OPTIONS = [10, 15, 20, 30] as const;
 
 export interface Settings {
   /** Speed applied when a lecture loads. */
@@ -26,6 +27,10 @@ export interface Settings {
   controlsHideSeconds: number;
   /** Start lectures from where you last stopped. */
   resumePlayback: boolean;
+  /** Seek past the opening bumper when a lecture starts. */
+  autoSkipIntro: boolean;
+  /** Seconds Skip intro and auto skip jump. */
+  introSkipSeconds: number;
   /** Offer the next lecture when one ends. */
   autoplayNext: boolean;
   /** Seconds to wait before the next lecture starts. */
@@ -41,6 +46,8 @@ export const DEFAULT_SETTINGS: Settings = {
   captionsDefault: true,
   controlsHideSeconds: 3,
   resumePlayback: true,
+  autoSkipIntro: false,
+  introSkipSeconds: 10,
   autoplayNext: true,
   autoplayCountdownSeconds: 10,
   confirmBulkActions: true,
@@ -73,6 +80,8 @@ export function sanitizeSettings(raw: unknown): Settings {
     captionsDefault: pickBoolean(input.captionsDefault, d.captionsDefault),
     controlsHideSeconds: pickOption(input.controlsHideSeconds, CONTROLS_HIDE_OPTIONS, d.controlsHideSeconds),
     resumePlayback: pickBoolean(input.resumePlayback, d.resumePlayback),
+    autoSkipIntro: pickBoolean(input.autoSkipIntro, d.autoSkipIntro),
+    introSkipSeconds: pickOption(input.introSkipSeconds, INTRO_SKIP_OPTIONS, d.introSkipSeconds),
     autoplayNext: pickBoolean(input.autoplayNext, d.autoplayNext),
     autoplayCountdownSeconds: pickOption(
       input.autoplayCountdownSeconds,
