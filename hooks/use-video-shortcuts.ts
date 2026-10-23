@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
 import { useSettings } from "@/hooks/use-settings";
 import { PLAYBACK_RATES, closestRateIndex } from "@/lib/settings";
+import { introSkipTarget, isInIntro } from "@/lib/skip-intro";
 
 interface UseVideoShortcutsOptions {
   playerRef: React.RefObject<VideoPlayerRef | null>;
@@ -132,6 +133,19 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
             player.unmute();
           } else {
             player.mute();
+          }
+          break;
+        }
+        case "i":
+        case "I": {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!player) return;
+          const introSeconds = settingsRef.current.introSkipSeconds;
+          const currentTime = player.getCurrentTime();
+          const duration = player.getDuration();
+          if (isInIntro(currentTime, introSeconds, duration)) {
+            player.seekTo(introSkipTarget(introSeconds, duration));
           }
           break;
         }

@@ -21,6 +21,7 @@ const getShortcuts = (seekStep: number, boostRate: number) => [
   { key: "F", action: "Toggle fullscreen" },
   { key: "M", action: "Mute / Unmute" },
   { key: "C", action: "Captions on / off" },
+  { key: "I", action: "Skip intro" },
   { key: "?", action: "Show this help" },
   { key: "Esc", action: "Close / Exit fullscreen" },
 ];

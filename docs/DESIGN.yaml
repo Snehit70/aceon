@@ -172,6 +172,7 @@ components:
       - seek
       - volume
       - playback_speed
+      - skip_intro
       - fullscreen
       - keyboard_shortcuts
     rules:

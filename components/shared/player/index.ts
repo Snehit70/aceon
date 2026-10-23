@@ -4,3 +4,4 @@ export { default as VolumeControl } from "./volume-control";
 export { default as PlaybackSpeed } from "./playback-speed";
 export { default as PlayerOverlay } from "./player-overlay";
 export { default as VolumeIndicator } from "./volume-indicator";
+export { default as SkipIntroButton } from "./skip-intro-button";
