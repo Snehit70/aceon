@@ -15,6 +15,10 @@ function mobileRedirect(req: NextRequest): NextResponse | null {
 
   const { pathname, search, searchParams } = req.nextUrl;
 
+  if (pathname === "/settings") {
+    return NextResponse.redirect(new URL("/m/settings", req.url));
+  }
+
   // /lectures (?tab=enrolled|library) → /m/lectures?tab=enrolled|archives
   if (pathname === "/lectures") {
     const tab = searchParams.get("tab");

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Info, History, Github } from "lucide-react";
+import { Info, History, Github, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ import { SOCIAL } from "@/lib/links";
  * not here.
  */
 const navLinks = [
+  { label: "Settings", href: "/settings", icon: Settings, external: false },
   { label: "About", href: "/about", icon: Info, external: false },
   { label: "Changelog", href: "/changelog", icon: History, external: false },
   { label: "GitHub", href: SOCIAL.github, icon: Github, external: true },

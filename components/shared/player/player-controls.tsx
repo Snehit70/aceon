@@ -18,6 +18,8 @@ interface PlayerControlsProps {
   subtitlesAvailable?: boolean;
   subtitlesEnabled?: boolean;
   onToggleSubtitles?: () => void;
+  /** Seconds of inactivity before controls hide while playing. 0 keeps them visible. */
+  hideDelaySeconds?: number;
 }
 
 /**
@@ -51,6 +53,7 @@ export default function PlayerControls({
   subtitlesAvailable = false,
   subtitlesEnabled = false,
   onToggleSubtitles,
+  hideDelaySeconds = 3,
 }: PlayerControlsProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -88,7 +91,7 @@ export default function PlayerControls({
     }
   }, [isReady, playerRef]);
 
-  // Auto-hide controls after 3s of inactivity when playing
+  // Auto-hide controls after the configured inactivity delay when playing
   // Show controls immediately when paused (via derived visibility below)
   useEffect(() => {
     if (!isPlaying) {
@@ -100,10 +103,12 @@ export default function PlayerControls({
       return;
     }
 
-    // When playing, start hide timer (controls will auto-hide)
-    hideTimeoutRef.current = setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
+    // When playing, start hide timer (controls will auto-hide). 0 = never hide.
+    if (hideDelaySeconds > 0) {
+      hideTimeoutRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, hideDelaySeconds * 1000);
+    }
 
     return () => {
       if (hideTimeoutRef.current) {
@@ -111,7 +116,7 @@ export default function PlayerControls({
         hideTimeoutRef.current = null;
       }
     };
-  }, [isPlaying]);
+  }, [isPlaying, hideDelaySeconds]);
 
   // Derive effective visibility: always show when paused, otherwise use state
   const controlsVisible = !isPlaying || showControls;
@@ -121,12 +126,12 @@ export default function PlayerControls({
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
     }
-    if (isPlaying) {
+    if (isPlaying && hideDelaySeconds > 0) {
       hideTimeoutRef.current = setTimeout(() => {
         setShowControls(false);
-      }, 3000);
+      }, hideDelaySeconds * 1000);
     }
-  }, [isPlaying]);
+  }, [isPlaying, hideDelaySeconds]);
 
   const handlePointerMove = useCallback(() => {
     handleMouseMove();

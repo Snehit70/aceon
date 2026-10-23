@@ -28,6 +28,7 @@ import { useVideoProgress } from "@/hooks/use-video-progress";
 import { useAutoplay } from "@/hooks/use-autoplay";
 import { useVideoNavigation } from "@/hooks/use-video-navigation";
 import { useVideoShortcuts } from "@/hooks/use-video-shortcuts";
+import { useSettings } from "@/hooks/use-settings";
 import { KeyboardShortcutsHelp } from "@/components/shared/keyboard-shortcuts-help";
 import useMediaQuery from "@/hooks/use-media-query";
 
@@ -62,6 +63,7 @@ import useMediaQuery from "@/hooks/use-media-query";
  */
 function LecturePlayerPageContent() {
   const { user } = useUser();
+  const { settings } = useSettings();
   const params = useParams();
   const searchParams = useSearchParams();
   const subjectId = params.subjectId as Id<"courses">;
@@ -117,6 +119,7 @@ function LecturePlayerPageContent() {
 
   const autoplay = useAutoplay({
     onAutoplay: handleAutoplay,
+    countdownSeconds: settings.autoplayCountdownSeconds,
   });
 
   const navigation = useVideoNavigation({
@@ -195,11 +198,12 @@ function LecturePlayerPageContent() {
   };
 
   const handleVideoEnd = useCallback(() => {
+    if (!settings.autoplayNext) return;
     const nextVideoId = navigation.findNextVideo();
     if (nextVideoId) {
       autoplay.startCountdown(nextVideoId);
     }
-  }, [navigation, autoplay]);
+  }, [navigation, autoplay, settings.autoplayNext]);
 
   const handlePlayNextNow = useCallback(() => {
     const nextVideoId = navigation.findNextVideo();
@@ -306,7 +310,7 @@ function LecturePlayerPageContent() {
                   videoId={navigation.currentVideo.youtubeId}
                   title={navigation.currentVideo.title}
                   transcriptUrl={navigation.currentVideo.transcriptUrl}
-                  initialPosition={progressData?.find(p => p.videoId === navigation.activeVideoId)?.lastPosition ?? 0}
+                  initialPosition={settings.resumePlayback ? (progressData?.find(p => p.videoId === navigation.activeVideoId)?.lastPosition ?? 0) : 0}
                   onProgressUpdate={progressWithVideo.handleProgressUpdate}
                   onPause={progressWithVideo.handlePause}
                   onEnded={handleVideoEnd}
@@ -315,6 +319,7 @@ function LecturePlayerPageContent() {
                 {autoplay.showCountdown && navigation.findNextVideo() && (
                   <AutoplayOverlay 
                     secondsRemaining={autoplay.countdown}
+                    totalSeconds={settings.autoplayCountdownSeconds}
                     nextVideoTitle={findVideo(navigation.findNextVideo())?.title}
                     onCancel={autoplay.cancelAutoplay}
                     onPlayNow={handlePlayNextNow}

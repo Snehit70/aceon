@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { CheckCircle2, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn, cleanCourseTitle } from "@/lib/utils";
+import { cn, cleanCourseTitle, formatTotalDuration } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Doc } from "@/convex/_generated/dataModel";
 import {
@@ -82,6 +83,7 @@ export function LectureSidebar({
   onMarkCourseComplete 
 }: SidebarProps) {
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const { settings } = useSettings();
   const activeWeekId = content.find(w => w.videos.some(v => v._id === currentVideoId))?._id;
   
   const getProgress = (videoId: string) => {
@@ -97,6 +99,20 @@ export function LectureSidebar({
   const completedVideos = progressData?.filter(p => p.completed).length || 0;
   const overallProgress = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
   const isCourseComplete = totalVideos > 0 && completedVideos === totalVideos;
+  const runAction = (action: ConfirmAction) => {
+    if (action.type === "week") {
+      onMarkWeekComplete?.(action.weekId);
+    } else {
+      onMarkCourseComplete?.();
+    }
+  };
+  const requestAction = (action: ConfirmAction) => {
+    if (settings.confirmBulkActions) {
+      setConfirmAction(action);
+    } else {
+      runAction(action);
+    }
+  };
   const confirmTitle = useMemo(() => {
     if (!confirmAction) return "";
     if (confirmAction.type === "week") {
@@ -134,11 +150,7 @@ export function LectureSidebar({
               className="bg-primary text-white hover:bg-primary/90"
               onClick={() => {
                 if (!confirmAction) return;
-                if (confirmAction.type === "week") {
-                  onMarkWeekComplete?.(confirmAction.weekId);
-                } else {
-                  onMarkCourseComplete?.();
-                }
+                runAction(confirmAction);
                 setConfirmAction(null);
               }}
             >
@@ -195,7 +207,7 @@ export function LectureSidebar({
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => setConfirmAction({ type: "course", markAsComplete: !isCourseComplete })}
+                onClick={() => requestAction({ type: "course", markAsComplete: !isCourseComplete })}
                 className="h-6 px-1.5 text-[9px] sm:text-xs mt-1 text-muted-foreground hover:text-foreground bg-white/5 hover:bg-white/10 border border-white/10"
               >
                 <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -211,6 +223,7 @@ export function LectureSidebar({
           <Accordion type="single" collapsible defaultValue={activeWeekId} className="space-y-1.5 sm:space-y-2">
             {content.map((week, index) => {
               const weekComplete = isWeekComplete(week);
+              const weekSeconds = week.videos.reduce((sum, v) => sum + (v.duration || 0), 0);
               return (
               <AccordionItem
                 key={week._id}
@@ -225,6 +238,14 @@ export function LectureSidebar({
                     <div className="flex items-center gap-1.5 sm:gap-2">
                       {weekComplete && <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary shrink-0" />}
                       <span className="text-left font-display font-bold uppercase tracking-wide text-foreground text-[12px] sm:text-[15px] leading-none">{week.title}</span>
+                      {weekSeconds > 0 && (
+                        <span
+                          className="font-mono text-[9px] sm:text-[11px] font-normal normal-case tracking-normal leading-none text-muted-foreground tabular-nums"
+                          title={`${week.videos.length} lectures · ${formatTotalDuration(weekSeconds)} total`}
+                        >
+                          {formatTotalDuration(weekSeconds)}
+                        </span>
+                      )}
                     </div>
                   </AccordionTrigger>
                   {onMarkWeekComplete && week.videos.length > 0 && (
@@ -233,7 +254,7 @@ export function LectureSidebar({
                       variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setConfirmAction({
+                        requestAction({
                           type: "week",
                           weekId: week._id,
                           weekTitle: week.title,
