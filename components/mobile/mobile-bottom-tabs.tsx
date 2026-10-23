@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { BookOpen, Archive, User } from "lucide-react";
+import { BookOpen, Archive, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/m/lectures?tab=enrolled", key: "enrolled", label: "Enrolled", icon: BookOpen },
   { href: "/m/lectures?tab=archives", key: "archives", label: "Archives", icon: Archive },
   { href: "/m/profile", key: "profile", label: "Profile", icon: User },
+  { href: "/m/settings", key: "settings", label: "Settings", icon: Settings },
 ] as const;
 
 type TabKey = (typeof tabs)[number]["key"];
@@ -20,6 +21,7 @@ export function MobileBottomTabs() {
 
   const activeKey: TabKey | null = (() => {
     if (pathname.startsWith("/m/profile")) return "profile";
+    if (pathname.startsWith("/m/settings")) return "settings";
     if (pathname === "/m/lectures") return tabParam === "archives" ? "archives" : "enrolled";
     // Nested course / week / lecture views all hang off the Enrolled flow.
     if (pathname.startsWith("/m/course")) return "enrolled";
@@ -29,7 +31,7 @@ export function MobileBottomTabs() {
 
   return (
     <nav className="shrink-0 border-t border-white/10 bg-black/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-4">
         {tabs.map((item) => {
           const active = activeKey === item.key;
           const Icon = item.icon;

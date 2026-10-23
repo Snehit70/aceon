@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import type { VideoPlayerRef } from "@/components/shared/video-player";
+import { useSettings } from "@/hooks/use-settings";
+import { PLAYBACK_RATES, closestRateIndex } from "@/lib/settings";
 
 interface UseVideoShortcutsOptions {
   playerRef: React.RefObject<VideoPlayerRef | null>;
@@ -10,31 +12,7 @@ interface UseVideoShortcutsOptions {
   enabled?: boolean;
 }
 
-// Playback rates: 1x to 2x range for lecture content
-// +/= increases rate (clamped at 2x), -/_ decreases rate (clamped at 1x)
-// Intentionally starts at 1x - this is the default for new videos
-const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
-
-/**
- * Find the index of the current rate in PLAYBACK_RATES array.
- * If rate is not in array (e.g., user set via YouTube UI), find closest.
- */
-function findRateIndex(rate: number): number {
-  const exactIndex = PLAYBACK_RATES.indexOf(rate);
-  if (exactIndex !== -1) return exactIndex;
-  
-  // Find closest rate
-  let closestIndex = 0;
-  let closestDiff = Math.abs(PLAYBACK_RATES[0] - rate);
-  for (let i = 1; i < PLAYBACK_RATES.length; i++) {
-    const diff = Math.abs(PLAYBACK_RATES[i] - rate);
-    if (diff < closestDiff) {
-      closestDiff = diff;
-      closestIndex = i;
-    }
-  }
-  return closestIndex;
-}
+// +/= steps up through PLAYBACK_RATES (clamped at 2x), -/_ steps down (clamped at 1x).
 
 function isTypingTarget(target: EventTarget | null): boolean {
   return (
@@ -50,6 +28,12 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
   const spaceDidBoostRef = useRef(false);
   const spacePrevRateRef = useRef(1);
   const SPACE_HOLD_MS = 180;
+  const { settings } = useSettings();
+  // Read through a ref so changing a setting does not re-register the key listeners.
+  const settingsRef = useRef(settings);
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   useEffect(() => {
     const playerRefCopy = playerRef;
@@ -84,8 +68,9 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
             if (!activePlayer || !spaceIsDownRef.current) return;
             const currentRate = activePlayer.getPlaybackRate();
             spacePrevRateRef.current = currentRate;
-            if (currentRate !== 2) {
-              activePlayer.setPlaybackRate(2);
+            const boostRate = settingsRef.current.holdBoostRate;
+            if (currentRate !== boostRate) {
+              activePlayer.setPlaybackRate(boostRate);
             }
             spaceDidBoostRef.current = true;
           }, SPACE_HOLD_MS);
@@ -96,14 +81,14 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           e.stopPropagation();
           if (!player) return;
           const currentTime = player.getCurrentTime();
-          player.seekTo(Math.max(0, currentTime - 10));
+          player.seekTo(Math.max(0, currentTime - settingsRef.current.seekStepSeconds));
           break;
         }
         case "ArrowRight": {
           e.preventDefault();
           e.stopPropagation();
           if (!player) return;
-          player.seekTo(player.getCurrentTime() + 10);
+          player.seekTo(player.getCurrentTime() + settingsRef.current.seekStepSeconds);
           break;
         }
         case "ArrowUp": {
@@ -171,7 +156,7 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           
           // Always read actual rate from player (handles YouTube UI changes, video switches)
           const currentRate = player.getPlaybackRate();
-          const currentIndex = findRateIndex(currentRate);
+          const currentIndex = closestRateIndex(currentRate);
           const nextIndex = Math.min(currentIndex + 1, PLAYBACK_RATES.length - 1);
           const newRate = PLAYBACK_RATES[nextIndex];
           
@@ -189,7 +174,7 @@ export function useVideoShortcuts({ playerRef, containerRef, enabled = true }: U
           
           // Always read actual rate from player (handles YouTube UI changes, video switches)
           const currentRate = player.getPlaybackRate();
-          const currentIndex = findRateIndex(currentRate);
+          const currentIndex = closestRateIndex(currentRate);
           const nextIndex = Math.max(currentIndex - 1, 0);
           const newRate = PLAYBACK_RATES[nextIndex];
           

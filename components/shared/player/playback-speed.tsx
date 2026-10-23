@@ -2,15 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { PLAYBACK_RATES } from "@/lib/settings";
 
 interface PlaybackSpeedProps {
   rate: number;
   onRateChange: (rate: number) => void;
 }
-
-// Playback rates matching keyboard shortcuts (use-video-shortcuts.ts)
-// Range: 1x to 2x - designed for lecture content where slower speeds aren't needed
-const PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
 
 /**
  * PlaybackSpeed - Playback speed selector dropdown.

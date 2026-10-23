@@ -25,6 +25,25 @@ describe("useAutoplay", () => {
     vi.useRealTimers();
   });
 
+  it("uses a custom countdown length", () => {
+    vi.useFakeTimers();
+    const onAutoplay = vi.fn();
+    const { result } = renderHook(() => useAutoplay({ onAutoplay, countdownSeconds: 3 }));
+
+    act(() => {
+      result.current.startCountdown("video-4");
+    });
+
+    expect(result.current.countdown).toBe(3);
+
+    act(() => {
+      vi.advanceTimersByTime(3_000);
+    });
+
+    expect(onAutoplay).toHaveBeenCalledWith("video-4");
+    vi.useRealTimers();
+  });
+
   it("cancels autoplay before countdown ends", () => {
     vi.useFakeTimers();
     const onAutoplay = vi.fn();

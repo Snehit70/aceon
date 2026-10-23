@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface UseAutoplayOptions {
   onAutoplay: (nextVideoId: string) => void;
+  /** Seconds to wait before playing the next video. Defaults to 10. */
+  countdownSeconds?: number;
 }
 
 export interface UseAutoplayReturn {
@@ -16,9 +18,10 @@ export interface UseAutoplayReturn {
 
 export function useAutoplay({
   onAutoplay,
+  countdownSeconds = 10,
 }: UseAutoplayOptions): UseAutoplayReturn {
   const [showCountdown, setShowCountdown] = useState(false);
-  const [countdown, setCountdown] = useState(10);
+  const [countdown, setCountdown] = useState(countdownSeconds);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pendingVideoRef = useRef<string | null>(null);
 
@@ -29,8 +32,8 @@ export function useAutoplay({
     }
     pendingVideoRef.current = null;
     setShowCountdown(false);
-    setCountdown(10);
-  }, [setShowCountdown, setCountdown]);
+    setCountdown(countdownSeconds);
+  }, [setShowCountdown, setCountdown, countdownSeconds]);
 
   const startCountdown = useCallback(
     (nextVideoId: string) => {
@@ -40,7 +43,7 @@ export function useAutoplay({
       }
       pendingVideoRef.current = nextVideoId;
       setShowCountdown(true);
-      setCountdown(10);
+      setCountdown(countdownSeconds);
 
       countdownIntervalRef.current = setInterval(() => {
         setCountdown((prev) => {
@@ -54,13 +57,13 @@ export function useAutoplay({
               onAutoplay(pendingVideoRef.current);
               pendingVideoRef.current = null;
             }
-            return 10;
+            return countdownSeconds;
           }
           return prev - 1;
         });
       }, 1000);
     },
-    [onAutoplay, setShowCountdown, setCountdown]
+    [onAutoplay, setShowCountdown, setCountdown, countdownSeconds]
   );
 
   const playNextNow = useCallback(

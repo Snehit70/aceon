@@ -9,6 +9,8 @@ import { useUser } from "@clerk/nextjs";
 import { Check, CheckCircle2, ChevronLeft, Play } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useSettings } from "@/hooks/use-settings";
+import { formatTotalDuration } from "@/lib/utils";
 import { MobileWeekSkeleton } from "@/components/mobile/mobile-skeletons";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -65,6 +67,7 @@ function CircularProgress({ percent, size = 64 }: { percent: number; size?: numb
 
 export default function MobileWeekPage() {
   const { user } = useUser();
+  const { settings } = useSettings();
   const params = useParams();
   const [showConfirm, setShowConfirm] = useState(false);
   const subjectId = params.subjectId as Id<"courses">;
@@ -92,10 +95,7 @@ export default function MobileWeekPage() {
   }
 
   const totalSeconds = week.videos.reduce((sum, v) => sum + (v.duration || 0), 0);
-  const totalHours = Math.floor(totalSeconds / 3600);
-  const totalMins = Math.floor((totalSeconds % 3600) / 60);
-  const durationLabel =
-    totalHours > 0 ? `${totalHours}h ${totalMins}m` : `${totalMins}m`;
+  const durationLabel = formatTotalDuration(totalSeconds);
   const doneCount = week.videos.filter(
     (v) => progressData?.find((p) => p.videoId === v._id)?.completed,
   ).length;
@@ -192,7 +192,13 @@ export default function MobileWeekPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowConfirm(true)}
+                  onClick={() => {
+                    if (settings.confirmBulkActions) {
+                      setShowConfirm(true);
+                    } else {
+                      void handleWeekToggle();
+                    }
+                  }}
                   className="mt-2 min-h-[44px] border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
                 >
                   <CheckCircle2 className="mr-1 h-3.5 w-3.5" />

@@ -9,6 +9,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import VideoPlayer, { VideoPlayerRef } from "@/components/shared/video-player";
 import { useVideoProgress } from "@/hooks/use-video-progress";
+import { useSettings } from "@/hooks/use-settings";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowRight, Check, ChevronLeft, RotateCcw } from "lucide-react";
@@ -17,6 +18,7 @@ import { VideoNotesPanel } from "@/components/lectures/video-notes-panel";
 
 export default function MobileLecturePage() {
   const { user } = useUser();
+  const { settings } = useSettings();
   const router = useRouter();
   const params = useParams();
   const subjectId = params.subjectId as Id<"courses">;
@@ -107,7 +109,7 @@ export default function MobileLecturePage() {
   const remainSecs = Math.max(0, totalSecs - watchedSecs);
   const remainMins = Math.floor(remainSecs / 60);
   const remainSecsLeft = (remainSecs % 60).toString().padStart(2, "0");
-  const showResume = !isDone && watchedPct > 0;
+  const showResume = settings.resumePlayback && !isDone && watchedPct > 0;
 
   const mins = Math.floor(currentVideo.duration / 60);
   const secs = (currentVideo.duration % 60).toString().padStart(2, "0");
@@ -142,7 +144,7 @@ export default function MobileLecturePage() {
           videoId={currentVideo.youtubeId}
           title={currentVideo.title}
           transcriptUrl={currentVideo.transcriptUrl}
-          initialPosition={currentProgress?.lastPosition ?? 0}
+          initialPosition={settings.resumePlayback ? (currentProgress?.lastPosition ?? 0) : 0}
           onProgressUpdate={progress.handleProgressUpdate}
           onPause={progress.handlePause}
         />

@@ -93,81 +93,93 @@ const deleteProgressAndNotesForVideo = async (ctx: MutationCtx, videoId: Id<"vid
 };
 
 const upsertCourseData = async (ctx: MutationCtx, course: ImportCourse) => {
-  let courseId = null;
   const existingCourse = await ctx.db
     .query("courses")
     .withIndex("by_code", (q) => q.eq("code", course.code))
     .first();
 
+  const courseId = existingCourse
+    ? existingCourse._id
+    : await ctx.db.insert("courses", {
+        code: course.code,
+        title: course.title,
+        level: course.level,
+      });
+
   if (existingCourse) {
-    courseId = existingCourse._id;
     await ctx.db.patch(courseId, {
-      title: course.title,
-      level: course.level,
-    });
-  } else {
-    courseId = await ctx.db.insert("courses", {
-      code: course.code,
       title: course.title,
       level: course.level,
     });
   }
 
-  // 2. Sync Weeks and Videos
+  const existingWeeks = await ctx.db
+    .query("weeks")
+    .withIndex("by_course", (q) => q.eq("courseId", courseId))
+    .collect();
+  const existingVideos = await ctx.db
+    .query("videos")
+    .withIndex("by_course", (q) => q.eq("courseId", courseId))
+    .collect();
+
+  const weekByTitle = new Map(existingWeeks.map((week) => [week.title, week]));
+  const videoByYoutubeId = new Map(
+    existingVideos.filter((video) => video.youtubeId).map((video) => [video.youtubeId, video]),
+  );
+  const incomingYoutubeIds = new Set(
+    course.weeks.flatMap((week) => week.videos.map((video) => video.youtubeId).filter(Boolean)),
+  );
+
+  let weeksCreated = 0;
+  let weeksReused = 0;
+  let videosPatched = 0;
+  let videosInserted = 0;
+
   for (const week of course.weeks) {
-    // Check if week exists for this course
-    let weekId = null;
-    // We don't have a unique ID for weeks from source, so we match by title + courseId
-    // A better approach would be adding an index on courseId + order or title
-    // For now, we'll just check all weeks for this course (usually small number ~12)
-    const existingWeeks = await ctx.db
-      .query("weeks")
-      .withIndex("by_course", (q) => q.eq("courseId", courseId!))
-      .collect();
-
-    const existingWeek = existingWeeks.find((w) => w.title === week.title);
-
-    if (existingWeek) {
-      weekId = existingWeek._id;
-      await ctx.db.patch(weekId, {
-        order: week.order,
-      });
+    let weekDoc = weekByTitle.get(week.title);
+    if (weekDoc) {
+      weeksReused += 1;
+      if (weekDoc.order !== week.order) {
+        await ctx.db.patch(weekDoc._id, { order: week.order });
+      }
     } else {
-      weekId = await ctx.db.insert("weeks", {
-        courseId: courseId!,
+      const weekId = await ctx.db.insert("weeks", {
+        courseId,
         title: week.title,
         order: week.order,
       });
+      weekDoc = {
+        _id: weekId,
+        _creationTime: 0,
+        courseId,
+        title: week.title,
+        order: week.order,
+      };
+      weekByTitle.set(week.title, weekDoc);
+      weeksCreated += 1;
     }
 
-    // 3. Sync Videos
     for (const video of week.videos) {
-      // Check by youtubeId (globally unique usually) or slug
-      // We'll use weeks' children query if possible, but simplest is explicit check
-      // Ideally we'd have a unique index on youtubeId?
-      // Schema says: .index("by_week", ["weekId"])
-
-      // Let's find if this video exists in this week
-      const existingVideosInWeek = await ctx.db
-        .query("videos")
-        .withIndex("by_week", (q) => q.eq("weekId", weekId!))
-        .collect();
-
-      const existingVideo = existingVideosInWeek.find((v) => v.youtubeId === video.youtubeId);
+      const existingVideo = video.youtubeId
+        ? videoByYoutubeId.get(video.youtubeId)
+        : undefined;
 
       if (existingVideo) {
         await ctx.db.patch(existingVideo._id, {
+          weekId: weekDoc._id,
+          courseId,
           title: video.title,
-          duration: video.duration,
-          transcriptUrl: video.transcriptUrl,
+          youtubeId: video.youtubeId,
+          duration: video.duration > 0 ? video.duration : existingVideo.duration,
+          transcriptUrl: video.transcriptUrl || existingVideo.transcriptUrl,
           slug: video.slug,
           order: video.order,
-          courseId: courseId!,
         });
+        videosPatched += 1;
       } else {
-        await ctx.db.insert("videos", {
-          weekId: weekId!,
-          courseId: courseId!,
+        const videoId = await ctx.db.insert("videos", {
+          weekId: weekDoc._id,
+          courseId,
           title: video.title,
           youtubeId: video.youtubeId,
           duration: video.duration,
@@ -175,13 +187,28 @@ const upsertCourseData = async (ctx: MutationCtx, course: ImportCourse) => {
           slug: video.slug,
           order: video.order,
         });
+        if (video.youtubeId) {
+          videoByYoutubeId.set(video.youtubeId, {
+            _id: videoId,
+            _creationTime: 0,
+            weekId: weekDoc._id,
+            courseId,
+            title: video.title,
+            youtubeId: video.youtubeId,
+            duration: video.duration,
+            transcriptUrl: video.transcriptUrl,
+            slug: video.slug,
+            order: video.order,
+          });
+        }
+        videosInserted += 1;
       }
     }
   }
 
   const courseVideos = await ctx.db
     .query("videos")
-    .withIndex("by_course", (q) => q.eq("courseId", courseId!))
+    .withIndex("by_course", (q) => q.eq("courseId", courseId))
     .collect();
   const lectureCount = courseVideos.length;
   const totalDurationSeconds = courseVideos.reduce(
@@ -189,12 +216,23 @@ const upsertCourseData = async (ctx: MutationCtx, course: ImportCourse) => {
     0,
   );
 
-  await ctx.db.patch(courseId!, {
+  await ctx.db.patch(courseId, {
     lectureCount,
     totalDurationSeconds,
   });
 
-  return { success: true, code: course.code };
+  return {
+    success: true,
+    code: course.code,
+    weeksCreated,
+    weeksReused,
+    videosPatched,
+    videosInserted,
+    unmatchedVideosKept: existingVideos.filter(
+      (video) => video.youtubeId && !incomingYoutubeIds.has(video.youtubeId),
+    ).length,
+    lectureCount,
+  };
 };
 
 export const syncCourseData = mutation({
@@ -330,6 +368,94 @@ export const replaceCourseData = mutation({
     });
 
     return { success: true, code: args.course.code };
+  },
+});
+
+export const pingSeedAuth = mutation({
+  args: { importToken: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    await requireSeedAuth(ctx, args.importToken);
+    return { ok: true as const };
+  },
+});
+
+export const deleteCourseByCode = mutation({
+  args: {
+    code: v.string(),
+    importToken: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await requireSeedAuth(ctx, args.importToken);
+
+    const course = await ctx.db
+      .query("courses")
+      .withIndex("by_code", (q) => q.eq("code", args.code))
+      .first();
+
+    if (!course) {
+      return { success: false as const, reason: "missing" as const };
+    }
+
+    const weeks = await ctx.db
+      .query("weeks")
+      .withIndex("by_course", (q) => q.eq("courseId", course._id))
+      .collect();
+
+    const videoIds: Id<"videos">[] = [];
+    for (const week of weeks) {
+      const videos = await ctx.db
+        .query("videos")
+        .withIndex("by_week", (q) => q.eq("weekId", week._id))
+        .collect();
+      for (const video of videos) videoIds.push(video._id);
+    }
+    const videoIdSet = new Set(videoIds);
+
+    // Bulk user-data cleanup: single-pass collects filtered in memory
+    // (avoids the per-video full-table scans that blow transaction limits).
+    const progressRows = (
+      await ctx.db.query("videoProgress").collect()
+    ).filter((row) => row.courseId === course._id);
+    for (const row of progressRows) {
+      await ctx.db.delete(row._id);
+    }
+
+    const noteRows = (await ctx.db.query("videoNotes").collect()).filter((row) =>
+      videoIdSet.has(row.videoId),
+    );
+    for (const row of noteRows) {
+      await ctx.db.delete(row._id);
+    }
+
+    for (const videoId of videoIds) {
+      await ctx.db.delete(videoId);
+    }
+    for (const week of weeks) {
+      await ctx.db.delete(week._id);
+    }
+
+    const users = await ctx.db.query("users").collect();
+    let unenrolled = 0;
+    for (const user of users) {
+      const enrolled = user.enrolledCourseIds || [];
+      if (!enrolled.includes(course._id)) continue;
+      await ctx.db.patch(user._id, {
+        enrolledCourseIds: enrolled.filter((id) => id !== course._id),
+      });
+      unenrolled += 1;
+    }
+
+    await ctx.db.delete(course._id);
+
+    return {
+      success: true as const,
+      code: args.code,
+      deletedWeeks: weeks.length,
+      deletedVideos: videoIds.length,
+      deletedProgress: progressRows.length,
+      deletedNotes: noteRows.length,
+      unenrolledUsers: unenrolled,
+    };
   },
 });
 

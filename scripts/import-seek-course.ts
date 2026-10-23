@@ -25,6 +25,16 @@ const outFlagIndex = process.argv.indexOf("--out");
 const explicitOutPath = outFlagIndex >= 0 ? process.argv[outFlagIndex + 1] : null;
 
 type Level = "foundation" | "diploma" | "degree";
+
+function levelFromCode(code: string): Level {
+  const numberPart = code.match(/\d+/)?.[0];
+  if (!numberPart) return "foundation";
+  const firstDigit = Number.parseInt(numberPart[0] ?? "", 10);
+  if (firstDigit === 1) return "foundation";
+  if (firstDigit === 2) return "diploma";
+  if (firstDigit >= 3) return "degree";
+  return "foundation";
+}
 type Video = {
   title: string;
   youtubeId: string;
@@ -132,8 +142,14 @@ async function run() {
 
   const courseCode = importShape?.course.code ?? maybePayload.code;
   const courseTitle = importShape?.course.title ?? maybePayload.title;
-  const courseLevel = importShape?.course.level ?? maybePayload.level;
+  const declaredLevel = importShape?.course.level ?? maybePayload.level;
+  const courseLevel = courseCode ? levelFromCode(courseCode) : declaredLevel;
   const sourceWeeks = importShape?.weeks ?? maybePayload.weeks;
+  if (courseCode && declaredLevel && declaredLevel !== courseLevel) {
+    console.log(
+      `Level from JSON was ${declaredLevel}; using ${courseLevel} from course code ${courseCode}`,
+    );
+  }
 
   if (!courseCode || !courseTitle || !courseLevel || !Array.isArray(sourceWeeks)) {
     throw new Error(
@@ -162,11 +178,10 @@ async function run() {
     console.log("Fetching durations with fast yt-dlp batch mode...");
 
     const zeroDurationIds = allVideos
-      .filter((video) => (video.duration ?? 0) <= 0)
+      .filter((video) => (video.duration ?? 0) <= 0 && video.youtubeId)
       .map((video) => video.youtubeId);
-
     console.log(`Videos needing duration: ${zeroDurationIds.length}`);
-    const chunkSize = 20;
+    const chunkSize = 10;
     const totalChunks = Math.max(1, Math.ceil(zeroDurationIds.length / chunkSize));
     const durationById = new Map<string, number>();
 
@@ -215,9 +230,54 @@ async function run() {
   const missingDurations = allVideos.filter((video) => (video.duration ?? 0) <= 0).length;
   console.log(`Durations updated: ${updatedDurations}, still missing: ${missingDurations}`);
 
+  const client = new ConvexHttpClient(convexUrl);
+  const existingCourse = await client.query(api.courses.getCourseByCode, { code: courseCode });
+  if (existingCourse) {
+    const existingContent = await client.query(api.courses.getCourseContent, {
+      courseId: existingCourse._id,
+    });
+    const backupPath = path.resolve(
+      process.cwd(),
+      "backups",
+      `${courseCode.toLowerCase()}-pre-import-${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
+    );
+    fs.mkdirSync(path.dirname(backupPath), { recursive: true });
+    fs.writeFileSync(
+      backupPath,
+      JSON.stringify(
+        {
+          course: existingCourse,
+          weeks: existingContent,
+        },
+        null,
+        2,
+      ),
+    );
+    console.log(`Backed up existing ${courseCode} to ${backupPath}`);
+
+    const durationByYoutubeId = new Map<string, number>();
+    let preservedDurations = 0;
+    for (const week of existingContent) {
+      for (const video of week.videos) {
+        if (video.youtubeId && video.duration > 0) {
+          durationByYoutubeId.set(video.youtubeId, video.duration);
+        }
+      }
+    }
+    for (const video of allVideos) {
+      if ((video.duration ?? 0) > 0) continue;
+      const previous = durationByYoutubeId.get(video.youtubeId);
+      if (!previous) continue;
+      video.duration = previous;
+      preservedDurations += 1;
+    }
+    console.log(`Preserved existing durations for ${preservedDurations} videos yt-dlp missed`);
+    console.log(`Keeping existing course title: ${existingCourse.title}`);
+  }
+
   const payload = {
     code: courseCode,
-    title: courseTitle,
+    title: existingCourse?.title ?? courseTitle,
     level: courseLevel,
     weeks,
   };
@@ -234,7 +294,8 @@ async function run() {
   fs.writeFileSync(outPath, JSON.stringify(payload, null, 2));
   console.log(`Saved import-ready payload: ${outPath}`);
 
-  const client = new ConvexHttpClient(convexUrl);
+  // replaceCourseData remaps existing videos by youtubeId, so progress/notes
+  // on those documents stay. Weeks are rebuilt; leftover youtubeIds are dropped.
   const result = await client.mutation(api.seed.replaceCourseData, {
     course: payload,
     importToken: process.env.CONVEX_SEED_IMPORT_TOKEN,

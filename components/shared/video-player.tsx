@@ -3,6 +3,7 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState, useId } from "react";
 
 import LandscapeHint from "./landscape-hint";
+import { useSettings } from "@/hooks/use-settings";
 import { PlayerControls, PlayerOverlay, VolumeIndicator } from "./player";
 import { AngularPlayIcon, AngularPauseIcon } from "./player/icons";
 
@@ -214,11 +215,14 @@ const CAPTIONS_PREF_KEY = "aceon:captions-enabled";
 // that captions are absent: the module may be disabled or metadata unsupported.
 const NATIVE_CAPTIONS_DETECT_MS = 5000;
 
-function readCaptionsPreference(): boolean {
+function readCaptionsPreference(fallback: boolean): boolean {
   try {
-    return window.localStorage.getItem(CAPTIONS_PREF_KEY) !== "off";
+    const stored = window.localStorage.getItem(CAPTIONS_PREF_KEY);
+    if (stored === "off") return false;
+    if (stored === "on") return true;
+    return fallback;
   } catch {
-    return true;
+    return fallback;
   }
 }
 
@@ -339,6 +343,11 @@ function loadYouTubeAPI(): Promise<void> {
  */
 const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
   ({ videoId, transcriptUrl, onEnded, onPause, onProgressUpdate, initialPosition = 0 }, ref) => {
+    const { settings } = useSettings();
+    const settingsRef = useRef(settings);
+    useEffect(() => {
+      settingsRef.current = settings;
+    }, [settings]);
     const containerRef = useRef<HTMLDivElement>(null);
     const iframeContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<YTPlayer | null>(null);
@@ -359,8 +368,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const [showBrowserFixes, setShowBrowserFixes] = useState(false);
     const [subtitleCues, setSubtitleCues] = useState<SubtitleCue[]>([]);
     const [hasSubtitleTrack, setHasSubtitleTrack] = useState(false);
-    // User preference, shared by both caption sources. On by default; persisted
-    // across lectures once the user toggles it.
+    // User preference, shared by both caption sources. Settings supply the
+    // default; an explicit C-toggle is persisted across lectures.
     const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
     // YouTube's own caption tracks: null until detected after playback starts.
     const [nativeCaptionsAvailable, setNativeCaptionsAvailable] = useState<boolean | null>(null);
@@ -472,10 +481,10 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     }, [isReady, subtitleCues, subtitlesEnabled]);
 
     useEffect(() => {
-      // Read the stored preference after mount so SSR markup stays deterministic.
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage
-      setSubtitlesEnabled(readCaptionsPreference());
-    }, []);
+      // Explicit C-toggle wins; otherwise use the settings default.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from localStorage after SSR
+      setSubtitlesEnabled(readCaptionsPreference(settings.captionsDefault));
+    }, [settings.captionsDefault]);
 
     const updateSubtitlesEnabled = useCallback((enabled: boolean) => {
       // Update the ref synchronously so back-to-back toggles see the latest value.
@@ -803,9 +812,11 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
                 playerRef.current.seekTo(pendingSeekRef.current, true);
                 pendingSeekRef.current = null;
               }
-              if (pendingPlaybackRateRef.current !== null && playerRef.current) {
+              if (playerRef.current) {
+                // A rate picked during this session wins; otherwise use the saved default.
+                // Kept as the "preferred rate" so later video changes reuse it.
+                pendingPlaybackRateRef.current ??= settingsRef.current.defaultPlaybackRate;
                 playerRef.current.setPlaybackRate(pendingPlaybackRateRef.current);
-                // Don't clear - keep as "preferred rate" for subsequent video changes
               }
             },
             onStateChange: (event) => {
@@ -940,6 +951,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             {/* Custom player controls */}
         <PlayerControls
           playerRef={internalRef}
+          hideDelaySeconds={settings.controlsHideSeconds}
           isPlaying={isPlaying}
           isReady={isReady}
           onPlayPause={handleOverlayClick}

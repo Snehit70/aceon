@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 
 interface AutoplayOverlayProps {
   secondsRemaining: number;
+  /** Full countdown length, used to scale the progress ring. */
+  totalSeconds?: number;
   nextVideoTitle: string | undefined;
   onCancel: () => void;
   onPlayNow: () => void;
@@ -12,18 +14,19 @@ interface AutoplayOverlayProps {
 /**
  * AutoplayOverlay - Countdown overlay for auto-advancing to next video.
  * 
- * **Context**: Appears when a video ends, giving users 10 seconds to cancel before
+ * **Context**: Appears when a video ends, giving users a short countdown (see settings) to cancel before
  * automatically playing the next lecture in the sequence.
  * 
  * **User Flow**:
- * 1. Video ends -> Overlay appears with 10s countdown.
+ * 1. Video ends -> Overlay appears with a countdown.
  * 2. User can "Cancel" to stay on current video, or "Play Now" to skip countdown.
  * 3. If countdown reaches 0, next video auto-plays.
  * 
  * **Visual**: Dark overlay with circular countdown timer and next video title preview.
  * 
  * @param props - Component props.
- * @param props.secondsRemaining - Current countdown value (0-10).
+ * @param props.secondsRemaining - Current countdown value.
+ * @param props.totalSeconds - Full countdown length (from settings).
  * @param props.nextVideoTitle - Title of the upcoming video.
  * @param props.onCancel - Callback to cancel autoplay.
  * @param props.onPlayNow - Callback to immediately play next video.
@@ -31,6 +34,7 @@ interface AutoplayOverlayProps {
  */
 export function AutoplayOverlay({ 
   secondsRemaining, 
+  totalSeconds = 10,
   nextVideoTitle, 
   onCancel, 
   onPlayNow 
@@ -65,7 +69,7 @@ export function AutoplayOverlay({
                 strokeLinecap="round"
                 className="text-primary transition-all duration-1000"
                 strokeDasharray={`${2 * Math.PI * 42}`}
-                strokeDashoffset={`${2 * Math.PI * 42 * (1 - secondsRemaining / 10)}`}
+                strokeDashoffset={`${2 * Math.PI * 42 * (1 - secondsRemaining / totalSeconds)}`}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">

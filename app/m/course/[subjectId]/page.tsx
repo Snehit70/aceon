@@ -9,6 +9,8 @@ import { useUser } from "@clerk/nextjs";
 import { CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useSettings } from "@/hooks/use-settings";
+import { formatTotalDuration } from "@/lib/utils";
 import { MobileCourseSkeleton } from "@/components/mobile/mobile-skeletons";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -69,6 +71,7 @@ function CircularProgress({ percent, size = 72 }: { percent: number; size?: numb
 
 export default function MobileCoursePage() {
   const { user } = useUser();
+  const { settings } = useSettings();
   const params = useParams();
   const subjectId = params.subjectId as Id<"courses">;
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
@@ -115,17 +118,18 @@ export default function MobileCoursePage() {
     const done = week.videos.filter(
       (v) => progressData?.find((p) => p.videoId === v._id)?.completed,
     ).length;
-    return { total, done, complete: total > 0 && done === total };
+    const seconds = week.videos.reduce((sum, v) => sum + (v.duration || 0), 0);
+    return { total, done, complete: total > 0 && done === total, seconds };
   });
   const progressLoaded = progressData !== undefined;
   const nextWeekIdx = weekStats.findIndex((w) => !w.complete && w.total > 0);
   const allComplete = nextWeekIdx === -1;
   const isCourseComplete = totalVideos > 0 && completed === totalVideos;
 
-  const handleConfirmAction = async () => {
-    if (!user || !confirmAction) return;
+  const runAction = async (action: ConfirmAction) => {
+    if (!user) return;
     try {
-      if (confirmAction.type === "course") {
+      if (action.type === "course") {
         const result = await markCourseComplete({
           clerkId: user.id,
           courseId: subjectId,
@@ -135,7 +139,7 @@ export default function MobileCoursePage() {
         const result = await markWeekComplete({
           clerkId: user.id,
           courseId: subjectId,
-          weekId: confirmAction.weekId,
+          weekId: action.weekId,
         });
         toast.success(result.completed ? "Week marked complete" : "Week marked incomplete");
       }
@@ -143,6 +147,14 @@ export default function MobileCoursePage() {
       toast.error("Failed to update completion status");
     } finally {
       setConfirmAction(null);
+    }
+  };
+
+  const requestAction = (action: ConfirmAction) => {
+    if (settings.confirmBulkActions) {
+      setConfirmAction(action);
+    } else {
+      void runAction(action);
     }
   };
 
@@ -176,7 +188,12 @@ export default function MobileCoursePage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="border border-white/20 bg-transparent text-white hover:bg-white/10">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-primary text-white hover:bg-primary/90" onClick={handleConfirmAction}>
+            <AlertDialogAction
+              className="bg-primary text-white hover:bg-primary/90"
+              onClick={() => {
+                if (confirmAction) void runAction(confirmAction);
+              }}
+            >
               Confirm
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -229,7 +246,7 @@ export default function MobileCoursePage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setConfirmAction({ type: "course", markAsComplete: !isCourseComplete })}
+                  onClick={() => requestAction({ type: "course", markAsComplete: !isCourseComplete })}
                   className="mt-2 min-h-[44px] border border-white/15 bg-white/5 px-2.5 text-[10px] font-mono uppercase tracking-wider text-white/75 hover:bg-white/10 hover:text-white"
                 >
                   <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
@@ -280,9 +297,14 @@ export default function MobileCoursePage() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="line-clamp-1 font-display text-[0.95rem] font-bold uppercase leading-tight text-white">
+                      <p className="line-clamp-1 min-w-0 font-display text-[0.95rem] font-bold uppercase leading-tight text-white">
                         {week.title}
                       </p>
+                      {stats.seconds > 0 && (
+                        <span className="shrink-0 font-mono text-[10px] font-normal normal-case tracking-normal tabular-nums text-white/45">
+                          {formatTotalDuration(stats.seconds)}
+                        </span>
+                      )}
                       {isNext && (
                         <span className="shrink-0 font-mono text-[8px] font-bold uppercase tracking-wider text-primary">
                           {"// Next"}
@@ -331,7 +353,7 @@ export default function MobileCoursePage() {
                       size="sm"
                       variant="ghost"
                       onClick={() =>
-                        setConfirmAction({
+                        requestAction({
                           type: "week",
                           weekId: week._id as Id<"weeks">,
                           weekTitle: week.title,

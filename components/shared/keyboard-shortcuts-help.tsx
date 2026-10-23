@@ -3,16 +3,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Keyboard } from "lucide-react";
 import { useEffect } from "react";
+import { useSettings } from "@/hooks/use-settings";
 
 interface KeyboardShortcutsHelpProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const shortcuts = [
-  { key: "Space", action: "Play / Pause" },
-  { key: "←", action: "Seek backward 10s" },
-  { key: "→", action: "Seek forward 10s" },
+const getShortcuts = (seekStep: number, boostRate: number) => [
+  { key: "Space", action: `Play / Pause (hold for ${boostRate}x)` },
+  { key: "←", action: `Seek backward ${seekStep}s` },
+  { key: "→", action: `Seek forward ${seekStep}s` },
   { key: "↑", action: "Volume up" },
   { key: "↓", action: "Volume down" },
   { key: "+", action: "Next rate" },
@@ -25,6 +26,8 @@ const shortcuts = [
 ];
 
 export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelpProps) {
+  const { settings } = useSettings();
+  const shortcuts = getShortcuts(settings.seekStepSeconds, settings.holdBoostRate);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
